@@ -19,13 +19,21 @@ const resolvedImageWithDomain = new URL(
 
 const { title } = Astro.props;
 
+const siteName =
+  "Plataforma de Dados e Apoio à Gestão de Acidentes por Animais Peçonhentos";
+
 const makeTitle = title
-  ? title + " | " + "Astroship"
-  : "Astroship - Starter Template for Astro with Tailwind CSS";
+  ? `${title} | ${siteName}`
+  : siteName;
+
+//const makeTitle = title
+//  ? title + " | " + "Astroship"
+//  : "Astroship - Starter Template for Astro with Tailwind CSS";
 ---
 
+
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -35,7 +43,7 @@ const makeTitle = title
     <!-- <link rel="preload" as="image" href={src} alt="Hero" /> -->
     <SEO
       title={makeTitle}
-      description="Astroship is a starter website template for Astro built with TailwindCSS."
+      description="Visualização interativa de dados epidemiológicos, apoio à gestão e divulgação científica sobre acidentes por animais peçonhentos no Brasil."
       canonical={canonicalURL}
       twitter={{
         creator: "@surjithctly",
