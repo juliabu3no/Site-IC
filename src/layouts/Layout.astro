@@ -67,6 +67,29 @@ const makeTitle = title
     <Navbar />
     <slot />
     <Footer />
+
+    <!-- VLibras -->
+    <div class="enabled" data-vw>
+      <div class="active" data-vw-access-button></div>
+
+      <div data-vw-plugin-wrapper>
+        <div data-vw-plugin-top-wrapper></div>
+      </div>
+    </div>
+
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+
+    <script>
+      // @ts-ignore
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+
+    <!-- Sienna Accessibility -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/sienna-accessibility/dist/sienna-accessibility.umd.js"
+      async
+    ></script>
+
     <style is:global>
       /* Improve Page speed */
       /* https://css-tricks.com/almanac/properties/c/content-visibility/ */
