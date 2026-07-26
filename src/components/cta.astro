@@ -1,17 +1,32 @@
 ---
 import Link from "./ui/link.astro";
+import { Icon } from "astro-icon/components";
 ---
 
 <div
-  class="bg-black p-8 md:px-20 md:py-20 mt-20 mx-auto max-w-5xl rounded-lg flex flex-col items-center text-center">
-  <h2 class="text-white text-4xl md:text-6xl tracking-tight">
-    Build faster websites.
+  class="bg-[#eeeeee] p-8 md:px-20 md:py-16 mt-20 mx-auto max-w-5xl rounded-lg flex flex-col items-center text-center"
+>
+
+  <h2 class="text-[#0A2C57] text-4xl md:text-5xl font-bold tracking-tight">
+    Explore os dados epidemiológicos
   </h2>
-  <p class="text-slate-400 mt-4 text-lg md:text-xl">
-    Pull content from anywhere and serve it fast with Astro's next-gen island
-    architecture.
+
+  <p class="text-slate-600 mt-4 text-lg md:text-xl max-w-4xl leading-relaxed">
+    Acesse o dashboard interativo e explore dados sobre acidentes 
+    com animais peçonhentos no Estado de São Paulo, analisando padrões
+    de ocorrência e distribuição dos registros.
   </p>
-  <div class="flex mt-5">
-    <Link href="#" style="inverted">Get Started</Link>
+
+  <div class="flex mt-6">
+    <Link
+      href="/dashboard"
+      class="!bg-[#0A2C57] hover:!bg-[#123b6d] !text-white flex gap-2 items-center justify-center">
+      <Icon
+        class="text-white w-5 h-5"
+        name="bx:bxs-bar-chart-alt-2"
+      />
+      Acessar Dashboard
+    </Link>
   </div>
+
 </div>

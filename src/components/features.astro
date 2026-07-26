@@ -1,68 +1,74 @@
 ---
 // @ts-ignore
 import { Icon } from "astro-icon/components";
+import Link from "@/components/ui/link.astro";
 
 const features = [
   {
-    title: "Bring Your Own Framework",
+    title: "Dashboard Interativo",
     description:
-      "Build your site using React, Svelte, Vue, Preact, web components, or just plain ol' HTML + JavaScript.",
-    icon: "bx:bxs-briefcase",
+      "Explore visualizações e indicadores sobre acidentes com animais peçonhentos no Estado de São Paulo.",
+    icon: "bx:bxs-bar-chart-alt-2",
+    link: "/dashboard",
+    button: "Acessar Dashboard",
   },
   {
-    title: "100% Static HTML, No JS",
+    title: "Guia Informativo",
     description:
-      "Astro renders your entire page to static HTML, removing all JavaScript from your final build by default.",
-    icon: "bx:bxs-window-alt",
+      "Consulte informações sobre os principais animais peçonhentos, prevenção e orientações relacionadas aos acidentes.",
+    icon: "bx:bxs-book-content",
+    link: "/guia",
+    button: "Acessar Guia",
   },
   {
-    title: "On-Demand Components",
+    title: "Equipe",
     description:
-      "Need some JS? Astro can automatically hydrate interactive components when they become visible on the page.  ",
-    icon: "bx:bxs-data",
-  },
-  {
-    title: "Broad Integration",
-    description:
-      "Astro supports TypeScript, Scoped CSS, CSS Modules, Sass, Tailwind, Markdown, MDX, and any other npm packages.",
-    icon: "bx:bxs-bot",
-  },
-  {
-    title: "SEO Enabled",
-    description:
-      "Automatic sitemaps, RSS feeds, pagination and collections take the pain out of SEO and syndication. It just works!",
-    icon: "bx:bxs-file-find",
-  },
-  {
-    title: "Community",
-    description:
-      "Astro is an open source project powered by hundreds of contributors making thousands of individual contributions.",
-    icon: "bx:bxs-user",
+      "Conheça a equipe responsável pelo desenvolvimento da plataforma e o Laboratório de Otimização (LOT).",
+    icon: "bx:bxs-group",
+    link: "/equipe",
+    button: "Conhecer Equipe",
   },
 ];
 ---
 
-<div class="mt-16 md:mt-0">
-  <h2 class="text-4xl lg:text-5xl font-bold lg:tracking-tight">
-    Everything you need to start a website
+<div class="mt-18">
+  <h2 class="text-4xl lg:text-5xl font-bold tracking-tight">
+    Principais Recursos
   </h2>
+
   <p class="text-lg mt-4 text-slate-600">
-    Astro comes batteries included. It takes the best parts of state-of-the-art
-    tools and adds its own innovations.
+    Explore as principais funcionalidades da plataforma para consulta, análise e
+    divulgação científica sobre acidentes com animais peçonhentos.
   </p>
 </div>
 
-<div class="grid sm:grid-cols-2 md:grid-cols-3 mt-16 gap-16">
+<div class="grid md:grid-cols-3 gap-8 mt-8">
   {
     features.map((item) => (
-      <div class="flex gap-4 items-start">
-        <div class="mt-1 bg-black rounded-full  p-2 w-8 h-8 shrink-0">
-          <Icon class="text-white" name={item.icon} />
+      <div
+        class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm hover:shadow-md transition flex flex-col items-center text-center">
+
+        <div class="bg-[#0A2C57] rounded-full w-14 h-14 flex items-center justify-center mb-6">
+          <Icon
+            class="text-white text-2xl"
+            name={item.icon}
+          />
         </div>
-        <div>
-          <h3 class="font-semibold text-lg">{item.title}</h3>{" "}
-          <p class="text-slate-500 mt-2 leading-relaxed">{item.description}</p>
+
+        <h3 class="text-2xl font-semibold text-[#0A2C57]">
+          {item.title}
+        </h3>
+
+        <p class="text-slate-600 mt-4 leading-relaxed flex-grow">
+          {item.description}
+        </p>
+
+        <div class="mt-8">
+          <Link href={item.link}>
+            {item.button}
+          </Link>
         </div>
+
       </div>
     ))
   }
