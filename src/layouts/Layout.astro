@@ -69,18 +69,18 @@ const makeTitle = title
     <Footer />
 
     <!-- VLibras -->
-    <div class="enabled" data-vw>
-      <div class="active" data-vw-access-button></div>
+    <!-- @ts-ignore -->
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
 
-      <div data-vw-plugin-wrapper>
-        <div data-vw-plugin-top-wrapper></div>
+      <div vw-plugin-wrapper>
+        <div vw-plugin-top-wrapper></div>
       </div>
     </div>
 
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script is:inline src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 
-    <script>
-      // @ts-ignore
+    <script is:inline>
       new window.VLibras.Widget("https://vlibras.gov.br/app");
     </script>
 
@@ -95,6 +95,22 @@ const makeTitle = title
       /* https://css-tricks.com/almanac/properties/c/content-visibility/ */
       img {
         content-visibility: auto;
+      }
+      /* Sienna Accessibility - canto inferior direito */
+      .asw-container {
+        left: auto !important;
+        right: 20px !important;
+        bottom: 20px !important;
+      }
+
+      .asw-widget {
+        left: auto !important;
+        right: 20px !important;
+      }
+
+      .asw-menu-btn {
+        left: auto !important;
+        right: 20px !important;
       }
     </style>
   </body>
