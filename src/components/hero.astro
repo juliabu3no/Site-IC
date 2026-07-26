@@ -1,53 +1,45 @@
 ---
-import { Picture } from "astro:assets";
-import heroImage from "@/assets/hero.png";
 import Link from "@/components/ui/link.astro";
 import { Icon } from "astro-icon/components";
 ---
 
-<main
-  class="grid lg:grid-cols-2 place-items-center pt-16 pb-8 md:pt-12 md:pb-24">
-  <div class="py-6 md:order-1 hidden md:block">
-    <Picture
-      src={heroImage}
-      alt="Astronaut in the air"
-      widths={[200, 400, 600]}
-      sizes="(max-width: 800px) 100vw, 620px"
-      loading="eager"
-      format="avif"
-    />
-  </div>
-  <div>
-    <h1
-      class="text-5xl lg:text-6xl xl:text-7xl font-bold lg:tracking-tight xl:tracking-tighter">
-      Marketing website done with Astro
-    </h1>
-    <p class="text-lg mt-4 text-slate-600 max-w-xl">
-      Astroship is a starter template for startups, marketing websites & landing
-      pages.<wbr /> Built with Astro.build and TailwindCSS. You can quickly create
-      any website with this starter.
-    </p>
-    <div class="mt-6 flex flex-col sm:flex-row gap-3">
-      <Link
-        href="#"
-        href="https://web3templates.com/templates/astroship-starter-website-template-for-astro"
-        target="_blank"
-        class="flex gap-1 items-center justify-center"
-        rel="noopener">
-        <Icon class="text-white w-5 h-5" name="bx:bxs-cloud-download" />
+<section class="bg-[#eeeeee]">
+  <main class="pt-14 pb-12 md:pt-16 md:pb-20">
+    <div class="mx-auto max-w-6xl text-center px-6">
 
-        Download for Free
-      </Link>
-      <Link
-        size="lg"
-        style="outline"
-        rel="noopener"
-        href="https://github.com/surjithctly/astroship"
-        class="flex gap-1 items-center justify-center"
-        target="_blank">
-        <Icon class="text-black w-4 h-4" name="bx:bxl-github" />
-        GitHub Repo
-      </Link>
+      <h1
+        class="text-54xl lg:text-5xl xl:text-6xl font-bold lg:tracking-tight xl:tracking-tighter">
+        Plataforma de Dados e Apoio à Gestão de Acidentes por Animais Peçonhentos
+      </h1>
+
+      <p class="text-lg mt-6 text-slate-600 max-w-4xl mx-auto">
+        Uma plataforma interativa para exploração e análise de dados epidemiológicos sobre 
+        acidentes com animais peçonhentos no Estado de São Paulo, oferecendo visualizações, 
+        indicadores e informações que apoiam a pesquisa, a gestão e a divulgação científica.
+      </p>
+
+      <!-- <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+
+        <Link
+          href="/dashboard"
+          class="flex gap-2 items-center justify-center">
+          <Icon
+            class="text-white w-5 h-5"
+            name="bx:bxs-bar-chart-alt-2"
+          />
+          Acessar Dashboard
+        </Link>
+
+        <Link
+          size="lg"
+          style="outline"
+          href="/guia"
+          class="flex gap-2 items-center justify-center">
+          Guia Informativo
+        </Link>
+
+      </div> -->
+
     </div>
-  </div>
-</main>
+  </main>
+</section>
