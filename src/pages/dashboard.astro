@@ -1,15 +1,221 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import Container from "@/components/container.astro";
 ---
 
 <Layout title="Dashboard">
-  <main class="max-w-5xl mx-auto py-20 px-6">
-    <h1 class="text-4xl font-bold text-[#0A2C57]">
-      Dashboard
-    </h1>
+  <Container>
 
-    <p class="mt-4 text-[#595959]">
-      Em desenvolvimento.
-    </p>
-  </main>
+    <div class="mt-12 text-center">
+      <p class="text-3xl font-semibold text-slate-700">
+        Explore os dados sobre acidentes com animais peçonhentos no estado de São Paulo
+      </p>
+    </div>
+
+
+    <!-- FILTROS -->
+    <section class="mx-auto max-w-5xl mt-12">
+
+      <div class="grid md:grid-cols-3 gap-4">
+
+        <!-- Ano -->
+        <div class="border border-gray-200 rounded-lg p-5">
+          <label
+            for="ano"
+            class="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Ano
+          </label>
+
+          <select
+            id="ano"
+            multiple
+            class="w-full border border-gray-300 rounded-md p-2 bg-white"
+          >
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+
+        <!-- Animal -->
+        <div class="border border-gray-200 rounded-lg p-5">
+          <label
+            for="animal"
+            class="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Animal peçonhento
+          </label>
+
+          <select
+            id="animal"
+            multiple
+            class="w-full border border-gray-300 rounded-md p-2 bg-white"
+          >
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+
+        <!-- Município -->
+        <div class="border border-gray-200 rounded-lg p-5">
+          <label
+            for="municipio"
+            class="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Município
+          </label>
+
+          <select
+            id="municipio"
+            multiple
+            class="w-full border border-gray-300 rounded-md p-2 bg-white"
+          >
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- INDICADORES -->
+    <section class="mx-auto max-w-5xl mt-8">
+
+      <div class="grid md:grid-cols-3 gap-4">
+
+        <div class="border border-gray-200 rounded-lg p-6">
+          <p class="text-sm text-slate-500">
+            Total de casos
+          </p>
+
+          <p
+            id="total-casos"
+            class="text-3xl font-bold text-[#0A2C57] mt-2"
+          >
+            —
+          </p>
+        </div>
+
+
+        <div class="border border-gray-200 rounded-lg p-6">
+          <p class="text-sm text-slate-500">
+            Taxa de óbitos
+          </p>
+
+          <p
+            id="taxa-obitos"
+            class="text-3xl font-bold text-[#0A2C57] mt-2"
+          >
+            —
+          </p>
+        </div>
+
+
+        <div class="border border-gray-200 rounded-lg p-6">
+          <p class="text-sm text-slate-500">
+            Tempo de atendimento
+          </p>
+
+          <p
+            id="tempo-atendimento"
+            class="text-2xl font-bold text-[#0A2C57] mt-2"
+          >
+            —
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- VISUALIZAÇÕES -->
+    <section class="mx-auto max-w-5xl mt-12 mb-20">
+
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">
+        Visualizações
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800">
+            Casos por tipo de animal
+          </h3>
+
+          <div
+            id="grafico-animal"
+            class="mt-4 min-h-64 flex items-center justify-center text-slate-400"
+          >
+            Carregando dados...
+          </div>
+        </div>
+
+
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800">
+            Classificação dos casos
+          </h3>
+
+          <div
+            id="grafico-gravidade"
+            class="mt-4 min-h-64 flex items-center justify-center text-slate-400"
+          >
+            Carregando dados...
+          </div>
+        </div>
+
+
+        <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
+          <h3 class="font-semibold text-gray-800">
+            Evolução dos casos ao longo dos anos
+          </h3>
+
+          <div
+            id="grafico-temporal"
+            class="mt-4 min-h-72 flex items-center justify-center text-slate-400"
+          >
+            Carregando dados...
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </Container>
+
+  <script>
+    async function carregarFiltros() {
+      try {
+        const resposta = await fetch("/data/filtros.json");
+        const filtros = await resposta.json();
+
+        const selectAno = document.querySelector("#ano");
+        const selectAnimal = document.querySelector("#animal");
+        const selectMunicipio = document.querySelector("#municipio");
+
+        function adicionarOpcoes(select, valores) {
+          if (!(select instanceof HTMLSelectElement)) return;
+
+          valores.forEach((valor) => {
+            const option = document.createElement("option");
+
+            option.value = String(valor);
+            option.textContent = String(valor);
+
+            select.appendChild(option);
+          });
+        }
+
+        adicionarOpcoes(selectAno, filtros.anos);
+        adicionarOpcoes(selectAnimal, filtros.animais);
+        adicionarOpcoes(selectMunicipio, filtros.municipios);
+
+      } catch (erro) {
+        console.error("Erro ao carregar os filtros:", erro);
+      }
+    }
+
+    carregarFiltros();
+  </script>
 </Layout>
