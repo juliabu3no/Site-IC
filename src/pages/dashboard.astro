@@ -15,63 +15,90 @@ import Container from "@/components/container.astro";
 
     <!-- FILTROS -->
     <section class="mx-auto max-w-5xl mt-12">
-
       <div class="grid md:grid-cols-3 gap-4">
 
-        <!-- Ano -->
+        <!-- ANO -->
         <div class="border border-gray-200 rounded-lg p-5">
-          <label
-            for="ano"
-            class="block text-sm font-semibold text-gray-700 mb-2"
-          >
+          <p class="block text-sm font-semibold text-gray-700 mb-2">
             Ano
-          </label>
+          </p>
 
-          <select
-            id="ano"
-            multiple
-            class="w-full border border-gray-300 rounded-md p-2 bg-white"
-          >
-            <option value="todos">Todos</option>
-          </select>
+          <details class="relative" id="dropdown-ano">
+            <summary
+              id="resumo-ano"
+              class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center"
+            >
+              <span>Todos</span>
+              <span class="text-slate-400">⌄</span>
+            </summary>
+
+            <div
+              id="ano-opcoes"
+              class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"
+            ></div>
+          </details>
         </div>
 
 
-        <!-- Animal -->
+        <!-- ANIMAL -->
         <div class="border border-gray-200 rounded-lg p-5">
-          <label
-            for="animal"
-            class="block text-sm font-semibold text-gray-700 mb-2"
-          >
+          <p class="block text-sm font-semibold text-gray-700 mb-2">
             Animal peçonhento
-          </label>
+          </p>
 
-          <select
-            id="animal"
-            multiple
-            class="w-full border border-gray-300 rounded-md p-2 bg-white"
-          >
-            <option value="todos">Todos</option>
-          </select>
+          <details class="relative" id="dropdown-animal">
+            <summary
+              id="resumo-animal"
+              class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center"
+            >
+              <span>Todos</span>
+              <span class="text-slate-400">⌄</span>
+            </summary>
+
+            <div
+              id="animal-opcoes"
+              class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"
+            ></div>
+          </details>
         </div>
 
 
-        <!-- Município -->
+        <!-- MUNICÍPIO -->
         <div class="border border-gray-200 rounded-lg p-5">
-          <label
-            for="municipio"
-            class="block text-sm font-semibold text-gray-700 mb-2"
-          >
+          <p class="block text-sm font-semibold text-gray-700 mb-2">
             Município
-          </label>
+          </p>
 
-          <select
-            id="municipio"
-            multiple
-            class="w-full border border-gray-300 rounded-md p-2 bg-white"
-          >
-            <option value="todos">Todos</option>
-          </select>
+          <details class="relative" id="dropdown-municipio">
+            <summary
+              id="resumo-municipio"
+              class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center"
+            >
+              <span>Todos</span>
+              <span class="text-slate-400">⌄</span>
+            </summary>
+
+            <div
+              class="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg"
+            >
+              <!-- BUSCA -->
+              <div class="p-2 border-b border-gray-100">
+                <input
+                  id="busca-municipio"
+                  type="text"
+                  placeholder="Buscar município..."
+                  autocomplete="off"
+                  class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#0A2C57]"
+                />
+              </div>
+
+              <!-- OPÇÕES -->
+              <div
+                id="municipio-opcoes"
+                class="max-h-56 overflow-y-auto p-2"
+              ></div>
+            </div>
+          </details>
         </div>
 
       </div>
@@ -185,37 +212,296 @@ import Container from "@/components/container.astro";
   </Container>
 
   <script>
-    async function carregarFiltros() {
+    let dadosBase = [];
+
+    async function carregarDashboard() {
       try {
-        const resposta = await fetch("/data/filtros.json");
-        const filtros = await resposta.json();
+        const [respostaFiltros, respostaBase] = await Promise.all([
+          fetch("/data/filtros.json"),
+          fetch("/data/base.json"),
+        ]);
 
-        const selectAno = document.querySelector("#ano");
-        const selectAnimal = document.querySelector("#animal");
-        const selectMunicipio = document.querySelector("#municipio");
+        const filtros = await respostaFiltros.json();
+        dadosBase = await respostaBase.json();
 
-        function adicionarOpcoes(select, valores) {
-          if (!(select instanceof HTMLSelectElement)) return;
 
-          valores.forEach((valor) => {
-            const option = document.createElement("option");
+        // -------------------------
+        // CRIA DROPDOWN
+        // -------------------------
 
-            option.value = String(valor);
-            option.textContent = String(valor);
+        function criarFiltro(nome, valores) {
+          const container = document.querySelector(`#${nome}-opcoes`);
+          const resumo = document.querySelector(`#resumo-${nome}`);
 
-            select.appendChild(option);
+          if (!container || !resumo) return;
+
+          container.innerHTML = "";
+
+
+          // opção TODOS
+          const todos = document.createElement("label");
+
+          todos.className =
+            "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
+
+          todos.innerHTML = `
+            <input
+              type="checkbox"
+              value="todos"
+              data-filtro="${nome}"
+              checked
+              class="accent-[#0A2C57]"
+            >
+            <span class="text-sm text-slate-700">Todos</span>
+          `;
+
+          container.appendChild(todos);
+
+
+          // outras opções
+          valores.forEach((valor, indice) => {
+            const item = document.createElement("label");
+
+            item.className =
+              "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
+
+            item.innerHTML = `
+              <input
+                type="checkbox"
+                value="${indice}"
+                data-filtro="${nome}"
+                class="accent-[#0A2C57]"
+              >
+              <span class="text-sm text-slate-700">
+                ${valor}
+              </span>
+            `;
+
+            container.appendChild(item);
+          });
+
+
+          // comportamento das caixas
+          container.addEventListener("change", (evento) => {
+            const alvo = evento.target;
+
+            if (!(alvo instanceof HTMLInputElement)) return;
+
+            const checkboxes = Array.from(
+              container.querySelectorAll('input[type="checkbox"]')
+            );
+
+            const checkboxTodos = checkboxes[0];
+
+
+            // marcou TODOS
+            if (alvo.value === "todos" && alvo.checked) {
+              checkboxes.slice(1).forEach((checkbox) => {
+                checkbox.checked = false;
+              });
+            }
+
+            // marcou opção específica
+            if (alvo.value !== "todos" && alvo.checked) {
+              checkboxTodos.checked = false;
+            }
+
+
+            // se nada estiver marcado → volta para Todos
+            const algumMarcado = checkboxes.some(
+              (checkbox) => checkbox.checked
+            );
+
+            if (!algumMarcado) {
+              checkboxTodos.checked = true;
+            }
+
+
+            atualizarResumo(nome, valores);
+            atualizarIndicadores();
           });
         }
 
-        adicionarOpcoes(selectAno, filtros.anos);
-        adicionarOpcoes(selectAnimal, filtros.animais);
-        adicionarOpcoes(selectMunicipio, filtros.municipios);
+
+        // -------------------------
+        // TEXTO DO DROPDOWN
+        // -------------------------
+
+        function atualizarResumo(nome, valores) {
+          const container = document.querySelector(`#${nome}-opcoes`);
+          const resumo = document.querySelector(`#resumo-${nome} span`);
+
+          if (!container || !resumo) return;
+
+          const selecionados = Array.from(
+            container.querySelectorAll('input[type="checkbox"]:checked')
+          );
+
+          if (
+            selecionados.length === 0 ||
+            selecionados.some((item) => item.value === "todos")
+          ) {
+            resumo.textContent = "Todos";
+            return;
+          }
+
+          if (selecionados.length === 1) {
+            const indice = Number(selecionados[0].value);
+
+            resumo.textContent = valores[indice];
+            return;
+          }
+
+          resumo.textContent =
+            `${selecionados.length} selecionados`;
+        }
+
+
+        // -------------------------
+        // VALORES SELECIONADOS
+        // -------------------------
+
+        function valoresSelecionados(nome) {
+          const container =
+            document.querySelector(`#${nome}-opcoes`);
+
+          if (!container) return ["todos"];
+
+          return Array.from(
+            container.querySelectorAll(
+              'input[type="checkbox"]:checked'
+            )
+          ).map((item) => item.value);
+        }
+
+
+        // -------------------------
+        // INDICADORES
+        // -------------------------
+
+        function atualizarIndicadores() {
+          const anos = valoresSelecionados("ano");
+          const animais = valoresSelecionados("animal");
+          const municipios = valoresSelecionados("municipio");
+
+
+          const todosAnos =
+            anos.includes("todos");
+
+          const todosAnimais =
+            animais.includes("todos");
+
+          const todosMunicipios =
+            municipios.includes("todos");
+
+
+          const dadosFiltrados = dadosBase.filter((linha) => {
+            const ano = String(linha[0]);
+            const animal = String(linha[1]);
+            const municipio = String(linha[2]);
+
+            return (
+              (todosAnos || anos.includes(ano)) &&
+              (todosAnimais || animais.includes(animal)) &&
+              (todosMunicipios || municipios.includes(municipio))
+            );
+          });
+
+
+          let totalCasos = 0;
+          let totalObitos = 0;
+
+          dadosFiltrados.forEach((linha) => {
+            totalCasos += linha[3];
+            totalObitos += linha[4];
+          });
+
+
+          const taxaObitos =
+            totalCasos > 0
+              ? (totalObitos / totalCasos) * 100
+              : 0;
+
+
+          const elementoCasos =
+            document.querySelector("#total-casos");
+
+          const elementoObitos =
+            document.querySelector("#taxa-obitos");
+
+
+          if (elementoCasos) {
+            elementoCasos.textContent =
+              totalCasos.toLocaleString("pt-BR");
+          }
+
+          if (elementoObitos) {
+            elementoObitos.textContent =
+              `${taxaObitos.toFixed(2).replace(".", ",")}%`;
+          }
+        }
+
+
+        // cria os três filtros
+        criarFiltro("ano", filtros.anos);
+        criarFiltro("animal", filtros.animais);
+        criarFiltro("municipio", filtros.municipios);
+
+        // -------------------------
+        // BUSCA DE MUNICÍPIO
+        // -------------------------
+
+        const buscaMunicipio =
+          document.querySelector("#busca-municipio");
+
+        const opcoesMunicipio =
+          document.querySelector("#municipio-opcoes");
+
+
+        buscaMunicipio?.addEventListener("input", () => {
+          if (!opcoesMunicipio) return;
+
+          const normalizar = (texto) =>
+            texto
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "");
+
+          const termo = normalizar(buscaMunicipio.value);
+
+          const opcoes =
+            opcoesMunicipio.querySelectorAll("label");
+
+          opcoes.forEach((opcao, indice) => {
+
+            // mantém "Todos" sempre aparecendo
+            if (indice === 0) {
+              opcao.style.display = "flex";
+              return;
+            }
+
+            const texto = normalizar(
+              opcao.textContent || ""
+            );
+
+            opcao.style.display =
+              texto.includes(termo)
+                ? "flex"
+                : "none";
+          });
+        });
+
+        // valores iniciais
+        atualizarIndicadores();
 
       } catch (erro) {
-        console.error("Erro ao carregar os filtros:", erro);
+        console.error(
+          "Erro ao carregar o dashboard:",
+          erro
+        );
       }
     }
 
-    carregarFiltros();
+    carregarDashboard();
   </script>
 </Layout>
