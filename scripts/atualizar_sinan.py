@@ -67,7 +67,7 @@ UF_SIGLAS = {
 # CAMINHOS
 # =========================
 RAIZ = Path(__file__).resolve().parent.parent
-PASTA_DADOS = RAIZ / "dados_raw"
+PASTA_DADOS = RAIZ / "dados_local"
 PASTA_DADOS.mkdir(parents=True, exist_ok=True)
 
 ARQUIVO_SAIDA = (PASTA_DADOS / "sinan_animais_peconhentos_sp.csv") # Base completa contendo apenas registros relacionados a SP
@@ -83,7 +83,7 @@ print("======================================")
 print("ATUALIZAÇÃO DOS DADOS DO SINAN")
 print("======================================")
 print(f"Agravo: {AGRAVO}")
-print("Filtro da base de SP: ANT_UF = 35 ou SG_UF_NOT = 35")
+print("Filtro da base de SP: ANT_UF = 35 e SG_UF_NOT = 35")
 print(f"Período: {ANO_INICIAL} a {ANO_FINAL}")
 print()
 
@@ -200,12 +200,12 @@ for ano in anos:
 
         # Mantém registros em que:
         # - o acidente ocorreu em SP
-        # OU
+        # E
         # - a notificação foi realizada em SP
 
         df_sp = df_ano[
             (df_ano["ANT_UF"] == CODIGO_UF_SP)
-            | (
+            & (
                 df_ano["SG_UF_NOT"]
                 == CODIGO_UF_SP
             )

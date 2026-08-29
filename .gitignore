@@ -24,6 +24,5 @@ pnpm-debug.log*
 dados.csv
 geojson_sp.json
 
-dados_raw/
-
 .venv/
+dados_local/
