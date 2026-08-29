@@ -5,24 +5,18 @@ import Container from "@/components/container.astro";
 
 <Layout title="Dashboard">
   <Container>
-
     <div class="mt-12 text-center">
       <p class="text-3xl font-semibold text-slate-700">
         Explore os dados sobre acidentes com animais peçonhentos no estado de São Paulo
       </p>
     </div>
 
-
     <!-- FILTROS -->
     <section class="mx-auto max-w-5xl mt-12">
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-
         <!-- ANO -->
         <div class="border border-gray-200 rounded-lg p-5">
-          <p class="block text-sm font-semibold text-gray-700 mb-2">
-            Ano
-          </p>
-
+          <p class="block text-sm font-semibold text-gray-700 mb-2">Ano</p>
           <details class="relative" id="dropdown-ano">
             <summary
               id="resumo-ano"
@@ -31,7 +25,6 @@ import Container from "@/components/container.astro";
               <span>Todos</span>
               <span class="text-slate-400">⌄</span>
             </summary>
-
             <div
               id="ano-opcoes"
               class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"
@@ -39,13 +32,9 @@ import Container from "@/components/container.astro";
           </details>
         </div>
 
-
         <!-- ANIMAL -->
         <div class="border border-gray-200 rounded-lg p-5">
-          <p class="block text-sm font-semibold text-gray-700 mb-2">
-            Animal peçonhento
-          </p>
-
+          <p class="block text-sm font-semibold text-gray-700 mb-2">Animal peçonhento</p>
           <details class="relative" id="dropdown-animal">
             <summary
               id="resumo-animal"
@@ -54,7 +43,6 @@ import Container from "@/components/container.astro";
               <span>Todos</span>
               <span class="text-slate-400">⌄</span>
             </summary>
-
             <div
               id="animal-opcoes"
               class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"
@@ -62,13 +50,9 @@ import Container from "@/components/container.astro";
           </details>
         </div>
 
-
         <!-- MUNICÍPIO -->
         <div class="border border-gray-200 rounded-lg p-5">
-          <p class="block text-sm font-semibold text-gray-700 mb-2">
-            Município
-          </p>
-
+          <p class="block text-sm font-semibold text-gray-700 mb-2">Município</p>
           <details class="relative" id="dropdown-municipio">
             <summary
               id="resumo-municipio"
@@ -77,11 +61,7 @@ import Container from "@/components/container.astro";
               <span>Todos</span>
               <span class="text-slate-400">⌄</span>
             </summary>
-
-            <div
-              class="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg"
-            >
-              <!-- BUSCA -->
+            <div class="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg">
               <div class="p-2 border-b border-gray-100">
                 <input
                   id="busca-municipio"
@@ -91,22 +71,14 @@ import Container from "@/components/container.astro";
                   class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#0A2C57]"
                 />
               </div>
-
-              <!-- OPÇÕES -->
-              <div
-                id="municipio-opcoes"
-                class="max-h-56 overflow-y-auto p-2"
-              ></div>
+              <div id="municipio-opcoes" class="max-h-56 overflow-y-auto p-2"></div>
             </div>
           </details>
         </div>
 
         <!-- GRAVIDADE -->
         <div class="border border-gray-200 rounded-lg p-5">
-          <p class="block text-sm font-semibold text-gray-700 mb-2">
-            Gravidade
-          </p>
-
+          <p class="block text-sm font-semibold text-gray-700 mb-2">Gravidade</p>
           <details class="relative" id="dropdown-gravidade">
             <summary
               id="resumo-gravidade"
@@ -115,17 +87,14 @@ import Container from "@/components/container.astro";
               <span>Todos</span>
               <span class="text-slate-400">⌄</span>
             </summary>
-
             <div
               id="gravidade-opcoes"
               class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"
             ></div>
           </details>
         </div>
-
       </div>
     </section>
-
 
     <!-- INDICADORES -->
     <section class="mx-auto max-w-6xl mt-8">
@@ -134,22 +103,18 @@ import Container from "@/components/container.astro";
           <p class="text-sm text-slate-500">Total de casos</p>
           <p id="total-casos" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
         </div>
-
         <div class="border border-gray-200 rounded-lg p-5">
           <p class="text-sm text-slate-500">Óbitos</p>
           <p id="total-obitos" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
         </div>
-
         <div class="border border-gray-200 rounded-lg p-5">
           <p class="text-sm text-slate-500">Taxa de letalidade</p>
           <p id="taxa-letalidade" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
         </div>
-
         <div class="border border-gray-200 rounded-lg p-5">
           <p class="text-sm text-slate-500">Com soroterapia</p>
           <p id="percentual-soroterapia" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
         </div>
-
         <div class="border border-gray-200 rounded-lg p-5">
           <p class="text-sm text-slate-500">Atendidos em até 3h</p>
           <p id="tempo-atendimento" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
@@ -157,417 +122,630 @@ import Container from "@/components/container.astro";
       </div>
     </section>
 
-
     <!-- VISUALIZAÇÕES -->
     <section class="mx-auto max-w-5xl mt-12 mb-20">
-
-      <h2 class="text-3xl font-bold text-gray-800 mb-6">
-        Visualizações
-      </h2>
-
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Visualizações</h2>
       <div class="grid md:grid-cols-2 gap-6">
-
-        <div class="border border-gray-200 rounded-lg p-6">
-          <h3 class="font-semibold text-gray-800">
-            Casos por tipo de animal
-          </h3>
-
-          <div
-            id="grafico-animal"
-            class="mt-4 min-h-64 flex items-center justify-center text-slate-400"
-          >
-            Carregando dados...
-          </div>
-        </div>
-
-
-        <div class="border border-gray-200 rounded-lg p-6">
-          <h3 class="font-semibold text-gray-800">
-            Classificação dos casos
-          </h3>
-
-          <div
-            id="grafico-gravidade"
-            class="mt-4 min-h-64 flex items-center justify-center text-slate-400"
-          >
-            Carregando dados...
-          </div>
-        </div>
-
-
+        <!-- EVOLUÇÃO TEMPORAL -->
         <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
           <h3 class="font-semibold text-gray-800">
-            Evolução dos casos ao longo dos anos
+            Evolução dos casos e óbitos ao longo dos anos
           </h3>
-
-          <div
-            id="grafico-temporal"
-            class="mt-4 min-h-72 flex items-center justify-center text-slate-400"
-          >
-            Carregando dados...
+          <div class="mt-4 h-72">
+            <canvas id="grafico-temporal"></canvas>
           </div>
         </div>
 
+        <!-- CASOS POR ANIMAL -->
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800">Casos por tipo de animal</h3>
+          <div class="mt-4 h-72">
+            <canvas id="grafico-animal"></canvas>
+          </div>
+        </div>
+
+        <!-- GRAVIDADE -->
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800">Classificação dos casos</h3>
+          <div class="mt-4 h-72">
+            <canvas id="grafico-gravidade"></canvas>
+          </div>
+        </div>
+
+        <!-- TEMPO DE ATENDIMENTO -->
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800">
+            Tempo até o atendimento
+          </h3>
+
+          <div class="mt-4 h-72">
+            <canvas id="grafico-tempo"></canvas>
+          </div>
+        </div>
       </div>
-
     </section>
-
   </Container>
 
   <script>
     import Chart from "chart.js/auto";
 
-    let dadosBase = [];
+    // =========================
+    // ESTADO DO DASHBOARD
+    // =========================
+    let filtros = {};
     let dadosCards = [];
+    let graficoTemporal = null;
+    let graficoAnimal = null;
+    let graficoGravidade = null;
 
+    // Posições das informações em cada linha de cards.json.
+    const INDICE = {
+      ano: 0,
+      animal: 1,
+      municipio: 2,
+      gravidade: 3,
+      casos: 4,
+      obitos: 5,
+      soroterapiaSim: 6,
+      soroterapiaConhecida: 7,
+      atendimentoAte3h: 8,
+      tempoConhecido: 9,
+    };
+
+    // =========================
+    // FUNÇÕES AUXILIARES
+    // =========================
+    function valoresSelecionados(nome) {
+      const container = document.querySelector(`#${nome}-opcoes`);
+      if (!container) return ["todos"];
+
+      return Array.from(
+        container.querySelectorAll('input[type="checkbox"]:checked')
+      ).map((item) => item.value);
+    }
+
+    function filtrarDadosCards() {
+      const selecao = {
+        ano: valoresSelecionados("ano"),
+        animal: valoresSelecionados("animal"),
+        municipio: valoresSelecionados("municipio"),
+        gravidade: valoresSelecionados("gravidade"),
+      };
+
+      const todos = {
+        ano: selecao.ano.includes("todos"),
+        animal: selecao.animal.includes("todos"),
+        municipio: selecao.municipio.includes("todos"),
+        gravidade: selecao.gravidade.includes("todos"),
+      };
+
+      return dadosCards.filter((linha) => {
+        const ano = String(linha[INDICE.ano]);
+        const animal = String(linha[INDICE.animal]);
+        const municipio = String(linha[INDICE.municipio]);
+        const gravidade = String(linha[INDICE.gravidade]);
+
+        return (
+          (todos.ano || selecao.ano.includes(ano)) &&
+          (todos.animal || selecao.animal.includes(animal)) &&
+          (todos.municipio || selecao.municipio.includes(municipio)) &&
+          (todos.gravidade || selecao.gravidade.includes(gravidade))
+        );
+      });
+    }
+
+    function formatarPercentual(valor, casas = 2) {
+      if (valor === null || !Number.isFinite(valor)) return "—";
+      return `${valor.toFixed(casas).replace(".", ",")}%`;
+    }
+
+    function formatarNumero(valor) {
+      return Number(valor).toLocaleString("pt-BR");
+    }
+
+    // =========================
+    // INDICADORES
+    // =========================
+    function atualizarIndicadores() {
+      const dadosFiltrados = filtrarDadosCards();
+
+      let totalCasos = 0;
+      let totalObitos = 0;
+      let soroterapiaSim = 0;
+      let soroterapiaConhecida = 0;
+      let atendimentoAte3h = 0;
+      let tempoConhecido = 0;
+
+      dadosFiltrados.forEach((linha) => {
+        totalCasos += linha[INDICE.casos];
+        totalObitos += linha[INDICE.obitos];
+        soroterapiaSim += linha[INDICE.soroterapiaSim];
+        soroterapiaConhecida += linha[INDICE.soroterapiaConhecida];
+        atendimentoAte3h += linha[INDICE.atendimentoAte3h];
+        tempoConhecido += linha[INDICE.tempoConhecido];
+      });
+
+      const taxaLetalidade =
+        totalCasos > 0 ? (totalObitos / totalCasos) * 100 : null;
+
+      const percentualSoroterapia =
+        soroterapiaConhecida > 0
+          ? (soroterapiaSim / soroterapiaConhecida) * 100
+          : null;
+
+      const percentualAte3h =
+        tempoConhecido > 0
+          ? (atendimentoAte3h / tempoConhecido) * 100
+          : null;
+
+      const elementos = {
+        casos: document.querySelector("#total-casos"),
+        obitos: document.querySelector("#total-obitos"),
+        letalidade: document.querySelector("#taxa-letalidade"),
+        soroterapia: document.querySelector("#percentual-soroterapia"),
+        tempo: document.querySelector("#tempo-atendimento"),
+      };
+
+      if (elementos.casos) elementos.casos.textContent = formatarNumero(totalCasos);
+      if (elementos.obitos) elementos.obitos.textContent = formatarNumero(totalObitos);
+      if (elementos.letalidade) {
+        elementos.letalidade.textContent = formatarPercentual(taxaLetalidade);
+      }
+      if (elementos.soroterapia) {
+        elementos.soroterapia.textContent = formatarPercentual(percentualSoroterapia);
+      }
+      if (elementos.tempo) {
+        elementos.tempo.textContent = formatarPercentual(percentualAte3h);
+      }
+    }
+
+    // =========================
+    // GRÁFICO TEMPORAL
+    // =========================
+    function atualizarGraficoTemporal() {
+      const dadosFiltrados = filtrarDadosCards();
+      const casosPorAno = {};
+      const obitosPorAno = {};
+
+      dadosFiltrados.forEach((linha) => {
+        const indiceAno = linha[INDICE.ano];
+        casosPorAno[indiceAno] =
+          (casosPorAno[indiceAno] || 0) + linha[INDICE.casos];
+        obitosPorAno[indiceAno] =
+          (obitosPorAno[indiceAno] || 0) + linha[INDICE.obitos];
+      });
+
+      const indicesAnos = Object.keys(casosPorAno)
+        .map(Number)
+        .sort((a, b) => a - b);
+
+      const labels = indicesAnos.map((indice) => filtros.anos[indice]);
+      const valoresCasos = indicesAnos.map((indice) => casosPorAno[indice]);
+      const valoresObitos = indicesAnos.map(
+        (indice) => obitosPorAno[indice] || 0
+      );
+
+      const canvas = document.querySelector("#grafico-temporal");
+      if (!(canvas instanceof HTMLCanvasElement)) return;
+
+      if (graficoTemporal) graficoTemporal.destroy();
+
+      graficoTemporal = new Chart(canvas, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Casos",
+              data: valoresCasos,
+              borderColor: "#0A2C57",
+              backgroundColor: "#0A2C57",
+              borderWidth: 2,
+              tension: 0.2,
+              yAxisID: "y",
+            },
+            {
+              label: "Óbitos",
+              data: valoresObitos,
+              borderColor: "#B91C1C",
+              backgroundColor: "#B91C1C",
+              borderWidth: 2,
+              tension: 0.2,
+              yAxisID: "yObitos",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: "index",
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              display: true,
+            },
+            tooltip: {
+              callbacks: {
+                label: (contexto) =>
+                  `${contexto.dataset.label}: ${formatarNumero(contexto.raw)}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Ano",
+              },
+            },
+            y: {
+              beginAtZero: true,
+              position: "left",
+              title: {
+                display: true,
+                text: "Número de casos",
+              },
+              ticks: {
+                callback: (valor) => formatarNumero(valor),
+              },
+            },
+            yObitos: {
+              beginAtZero: true,
+              position: "right",
+              title: {
+                display: true,
+                text: "Número de óbitos",
+              },
+              ticks: {
+                precision: 0,
+                callback: (valor) => formatarNumero(valor),
+              },
+              grid: {
+                drawOnChartArea: false,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // =========================
+    // GRÁFICO POR ANIMAL
+    // =========================
+    function atualizarGraficoAnimal() {
+      const dadosFiltrados = filtrarDadosCards();
+      const casosPorAnimal = {};
+
+      dadosFiltrados.forEach((linha) => {
+        const indiceAnimal = linha[INDICE.animal];
+        casosPorAnimal[indiceAnimal] =
+          (casosPorAnimal[indiceAnimal] || 0) + linha[INDICE.casos];
+      });
+
+      const indicesAnimais = Object.keys(casosPorAnimal)
+        .map(Number)
+        .sort((a, b) => casosPorAnimal[b] - casosPorAnimal[a]);
+
+      const labels = indicesAnimais.map((indice) => filtros.animais[indice]);
+      const valores = indicesAnimais.map((indice) => casosPorAnimal[indice]);
+
+      const canvas = document.querySelector("#grafico-animal");
+      if (!(canvas instanceof HTMLCanvasElement)) return;
+
+      if (graficoAnimal) graficoAnimal.destroy();
+
+      graficoAnimal = new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Casos",
+              data: valores,
+              backgroundColor: "#0A2C57",
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              callbacks: {
+                label: (contexto) => `Casos: ${formatarNumero(contexto.raw)}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Número de casos",
+              },
+              ticks: {
+                callback: (valor) => formatarNumero(valor),
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Tipo de animal",
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // =========================
+    // GRÁFICO DE GRAVIDADE
+    // =========================
+    function atualizarGraficoGravidade() {
+      const dadosFiltrados = filtrarDadosCards();
+      const casosPorGravidade = {};
+
+      dadosFiltrados.forEach((linha) => {
+        const indiceGravidade = linha[INDICE.gravidade];
+        casosPorGravidade[indiceGravidade] =
+          (casosPorGravidade[indiceGravidade] || 0) + linha[INDICE.casos];
+      });
+
+      const indicesGravidade = Object.keys(casosPorGravidade)
+        .map(Number)
+        .sort((a, b) => a - b);
+
+      const labels = indicesGravidade.map(
+        (indice) => filtros.gravidades[indice]
+      );
+      const valores = indicesGravidade.map(
+        (indice) => casosPorGravidade[indice]
+      );
+
+      const canvas = document.querySelector("#grafico-gravidade");
+      if (!(canvas instanceof HTMLCanvasElement)) return;
+
+      if (graficoGravidade) graficoGravidade.destroy();
+
+      graficoGravidade = new Chart(canvas, {
+        type: "pie",
+        data: {
+          labels,
+          datasets: [
+            {
+              data: valores,
+              backgroundColor: [
+                "#0A2C57",
+                "#4F86C6",
+                "#B91C1C",
+                "#94A3B8",
+              ],
+              borderColor: "#FFFFFF",
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+            },
+            tooltip: {
+              callbacks: {
+                label: (contexto) => {
+                  const valor = Number(contexto.raw);
+                  const total = contexto.dataset.data.reduce(
+                    (soma, numero) => soma + Number(numero),
+                    0
+                  );
+                  const percentual = total > 0 ? (valor / total) * 100 : 0;
+
+                  return `${contexto.label}: ${formatarNumero(
+                    valor
+                  )} (${formatarPercentual(percentual, 1)})`;
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // =========================
+    // ATUALIZAÇÃO GERAL
+    // =========================
+    function atualizarDashboard() {
+      atualizarIndicadores();
+      atualizarGraficoTemporal();
+      atualizarGraficoAnimal();
+      atualizarGraficoGravidade();
+    }
+
+    // =========================
+    // FILTROS
+    // =========================
+    function atualizarResumo(nome, valores) {
+      const container = document.querySelector(`#${nome}-opcoes`);
+      const resumo = document.querySelector(`#resumo-${nome} span`);
+      if (!container || !resumo) return;
+
+      const selecionados = Array.from(
+        container.querySelectorAll('input[type="checkbox"]:checked')
+      );
+
+      if (
+        selecionados.length === 0 ||
+        selecionados.some((item) => item.value === "todos")
+      ) {
+        resumo.textContent = "Todos";
+        return;
+      }
+
+      if (selecionados.length === 1) {
+        const indice = Number(selecionados[0].value);
+        resumo.textContent = valores[indice];
+        return;
+      }
+
+      resumo.textContent = `${selecionados.length} selecionados`;
+    }
+
+    function criarFiltro(nome, valores) {
+      const container = document.querySelector(`#${nome}-opcoes`);
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      const todos = document.createElement("label");
+      todos.className =
+        "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
+      todos.innerHTML = `
+        <input
+          type="checkbox"
+          value="todos"
+          data-filtro="${nome}"
+          checked
+          class="accent-[#0A2C57]"
+        >
+        <span class="text-sm text-slate-700">Todos</span>
+      `;
+      container.appendChild(todos);
+
+      valores.forEach((valor, indice) => {
+        const item = document.createElement("label");
+        item.className =
+          "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
+        item.innerHTML = `
+          <input
+            type="checkbox"
+            value="${indice}"
+            data-filtro="${nome}"
+            class="accent-[#0A2C57]"
+          >
+          <span class="text-sm text-slate-700">${valor}</span>
+        `;
+        container.appendChild(item);
+      });
+
+      container.addEventListener("change", (evento) => {
+        const alvo = evento.target;
+        if (!(alvo instanceof HTMLInputElement)) return;
+
+        const checkboxes = Array.from(
+          container.querySelectorAll('input[type="checkbox"]')
+        );
+        const checkboxTodos = checkboxes[0];
+
+        if (alvo.value === "todos" && alvo.checked) {
+          checkboxes.slice(1).forEach((checkbox) => {
+            checkbox.checked = false;
+          });
+        }
+
+        if (alvo.value !== "todos" && alvo.checked) {
+          checkboxTodos.checked = false;
+        }
+
+        const algumMarcado = checkboxes.some((checkbox) => checkbox.checked);
+        if (!algumMarcado) checkboxTodos.checked = true;
+
+        atualizarResumo(nome, valores);
+        atualizarDashboard();
+      });
+    }
+
+    function configurarDropdowns() {
+      const dropdowns = Array.from(
+        document.querySelectorAll('details[id^="dropdown-"]')
+      );
+
+      dropdowns.forEach((dropdown) => {
+        dropdown.addEventListener("toggle", () => {
+          if (!dropdown.open) return;
+
+          dropdowns.forEach((outroDropdown) => {
+            if (outroDropdown !== dropdown) {
+              outroDropdown.open = false;
+            }
+          });
+        });
+      });
+
+      document.addEventListener("click", (evento) => {
+        const alvo = evento.target;
+        if (!(alvo instanceof Node)) return;
+
+        dropdowns.forEach((dropdown) => {
+          if (!dropdown.contains(alvo)) {
+            dropdown.open = false;
+          }
+        });
+      });
+    }
+
+    function configurarBuscaMunicipio() {
+      const buscaMunicipio = document.querySelector("#busca-municipio");
+      const opcoesMunicipio = document.querySelector("#municipio-opcoes");
+      if (!(buscaMunicipio instanceof HTMLInputElement) || !opcoesMunicipio) return;
+
+      const normalizar = (texto) =>
+        texto
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+
+      buscaMunicipio.addEventListener("input", () => {
+        const termo = normalizar(buscaMunicipio.value);
+        const opcoes = opcoesMunicipio.querySelectorAll("label");
+
+        opcoes.forEach((opcao, indice) => {
+          if (indice === 0) {
+            opcao.style.display = "flex";
+            return;
+          }
+
+          const texto = normalizar(opcao.textContent || "");
+          opcao.style.display = texto.includes(termo) ? "flex" : "none";
+        });
+      });
+    }
+
+    // =========================
+    // CARREGAMENTO
+    // =========================
     async function carregarDashboard() {
       try {
-        const [respostaFiltros, respostaBase, respostaCards] = await Promise.all([
+        const [respostaFiltros, respostaCards] = await Promise.all([
           fetch("/data/filtros.json"),
-          fetch("/data/base.json"),
           fetch("/data/cards.json"),
         ]);
 
-        const filtros = await respostaFiltros.json();
-        dadosBase = await respostaBase.json();
+        if (!respostaFiltros.ok || !respostaCards.ok) {
+          throw new Error("Não foi possível carregar os arquivos do dashboard.");
+        }
+
+        filtros = await respostaFiltros.json();
         dadosCards = await respostaCards.json();
 
-
-        // -------------------------
-        // CRIA DROPDOWN
-        // -------------------------
-
-        function criarFiltro(nome, valores) {
-          const container = document.querySelector(`#${nome}-opcoes`);
-          const resumo = document.querySelector(`#resumo-${nome}`);
-
-          if (!container || !resumo) return;
-
-          container.innerHTML = "";
-
-
-          // opção TODOS
-          const todos = document.createElement("label");
-
-          todos.className =
-            "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
-
-          todos.innerHTML = `
-            <input
-              type="checkbox"
-              value="todos"
-              data-filtro="${nome}"
-              checked
-              class="accent-[#0A2C57]"
-            >
-            <span class="text-sm text-slate-700">Todos</span>
-          `;
-
-          container.appendChild(todos);
-
-
-          // outras opções
-          valores.forEach((valor, indice) => {
-            const item = document.createElement("label");
-
-            item.className =
-              "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
-
-            item.innerHTML = `
-              <input
-                type="checkbox"
-                value="${indice}"
-                data-filtro="${nome}"
-                class="accent-[#0A2C57]"
-              >
-              <span class="text-sm text-slate-700">
-                ${valor}
-              </span>
-            `;
-
-            container.appendChild(item);
-          });
-
-
-          // comportamento das caixas
-          container.addEventListener("change", (evento) => {
-            const alvo = evento.target;
-
-            if (!(alvo instanceof HTMLInputElement)) return;
-
-            const checkboxes = Array.from(
-              container.querySelectorAll('input[type="checkbox"]')
-            );
-
-            const checkboxTodos = checkboxes[0];
-
-
-            // marcou TODOS
-            if (alvo.value === "todos" && alvo.checked) {
-              checkboxes.slice(1).forEach((checkbox) => {
-                checkbox.checked = false;
-              });
-            }
-
-            // marcou opção específica
-            if (alvo.value !== "todos" && alvo.checked) {
-              checkboxTodos.checked = false;
-            }
-
-
-            // se nada estiver marcado → volta para Todos
-            const algumMarcado = checkboxes.some(
-              (checkbox) => checkbox.checked
-            );
-
-            if (!algumMarcado) {
-              checkboxTodos.checked = true;
-            }
-
-
-            atualizarResumo(nome, valores);
-            atualizarIndicadores();
-          });
-        }
-
-
-        // -------------------------
-        // TEXTO DO DROPDOWN
-        // -------------------------
-
-        function atualizarResumo(nome, valores) {
-          const container = document.querySelector(`#${nome}-opcoes`);
-          const resumo = document.querySelector(`#resumo-${nome} span`);
-
-          if (!container || !resumo) return;
-
-          const selecionados = Array.from(
-            container.querySelectorAll('input[type="checkbox"]:checked')
-          );
-
-          if (
-            selecionados.length === 0 ||
-            selecionados.some((item) => item.value === "todos")
-          ) {
-            resumo.textContent = "Todos";
-            return;
-          }
-
-          if (selecionados.length === 1) {
-            const indice = Number(selecionados[0].value);
-
-            resumo.textContent = valores[indice];
-            return;
-          }
-
-          resumo.textContent =
-            `${selecionados.length} selecionados`;
-        }
-
-
-        // -------------------------
-        // VALORES SELECIONADOS
-        // -------------------------
-
-        function valoresSelecionados(nome) {
-          const container =
-            document.querySelector(`#${nome}-opcoes`);
-
-          if (!container) return ["todos"];
-
-          return Array.from(
-            container.querySelectorAll(
-              'input[type="checkbox"]:checked'
-            )
-          ).map((item) => item.value);
-        }
-
-
-        // -------------------------
-        // INDICADORES
-        // -------------------------
-
-        function atualizarIndicadores() {
-          const anos = valoresSelecionados("ano");
-          const animais = valoresSelecionados("animal");
-          const municipios = valoresSelecionados("municipio");
-          const gravidades = valoresSelecionados("gravidade");
-
-          const todosAnos = anos.includes("todos");
-          const todosAnimais = animais.includes("todos");
-          const todosMunicipios = municipios.includes("todos");
-          const todasGravidades = gravidades.includes("todos");
-
-          const dadosFiltrados = dadosCards.filter((linha) => {
-            const ano = String(linha[0]);
-            const animal = String(linha[1]);
-            const municipio = String(linha[2]);
-            const gravidade = String(linha[3]);
-
-            return (
-              (todosAnos || anos.includes(ano)) &&
-              (todosAnimais || animais.includes(animal)) &&
-              (todosMunicipios || municipios.includes(municipio)) &&
-              (todasGravidades || gravidades.includes(gravidade))
-            );
-          });
-
-          let totalCasos = 0;
-          let totalObitos = 0;
-          let soroterapiaSim = 0;
-          let soroterapiaConhecida = 0;
-          let atendimentoAte3h = 0;
-          let tempoConhecido = 0;
-
-          dadosFiltrados.forEach((linha) => {
-            totalCasos += linha[4];
-            totalObitos += linha[5];
-            soroterapiaSim += linha[6];
-            soroterapiaConhecida += linha[7];
-            atendimentoAte3h += linha[8];
-            tempoConhecido += linha[9];
-          });
-
-          const taxaLetalidade =
-            totalCasos > 0
-              ? (totalObitos / totalCasos) * 100
-              : null;
-
-          const percentualSoroterapia =
-            soroterapiaConhecida > 0
-              ? (soroterapiaSim / soroterapiaConhecida) * 100
-              : null;
-
-          const percentualAte3h =
-            tempoConhecido > 0
-              ? (atendimentoAte3h / tempoConhecido) * 100
-              : null;
-
-          const formatarPercentual = (valor) =>
-            valor === null
-              ? "—"
-              : `${valor.toFixed(2).replace(".", ",")}%`;
-
-          const elementoCasos = document.querySelector("#total-casos");
-          const elementoObitos = document.querySelector("#total-obitos");
-          const elementoLetalidade = document.querySelector("#taxa-letalidade");
-          const elementoSoroterapia = document.querySelector("#percentual-soroterapia");
-          const elementoTempo = document.querySelector("#tempo-atendimento");
-
-          if (elementoCasos) {
-            elementoCasos.textContent = totalCasos.toLocaleString("pt-BR");
-          }
-
-          if (elementoObitos) {
-            elementoObitos.textContent = totalObitos.toLocaleString("pt-BR");
-          }
-
-          if (elementoLetalidade) {
-            elementoLetalidade.textContent = formatarPercentual(taxaLetalidade);
-          }
-
-          if (elementoSoroterapia) {
-            elementoSoroterapia.textContent = formatarPercentual(percentualSoroterapia);
-          }
-
-          if (elementoTempo) {
-            elementoTempo.textContent = formatarPercentual(percentualAte3h);
-          }
-        }
-
-
-        // cria os três filtros
         criarFiltro("ano", filtros.anos);
         criarFiltro("animal", filtros.animais);
         criarFiltro("municipio", filtros.municipios);
         criarFiltro("gravidade", filtros.gravidades);
 
-        // -------------------------
-        // FECHAMENTO DOS FILTROS
-        // -------------------------
-
-        const dropdowns = Array.from(
-          document.querySelectorAll('details[id^="dropdown-"]')
-        );
-
-        // Ao abrir um filtro, fecha os demais.
-        dropdowns.forEach((dropdown) => {
-          dropdown.addEventListener("toggle", () => {
-            if (!dropdown.open) return;
-
-            dropdowns.forEach((outroDropdown) => {
-              if (outroDropdown !== dropdown) {
-                outroDropdown.open = false;
-              }
-            });
-          });
-        });
-
-        // Ao clicar fora dos filtros, fecha qualquer dropdown aberto.
-        document.addEventListener("click", (evento) => {
-          const alvo = evento.target;
-
-          if (!(alvo instanceof Node)) return;
-
-          dropdowns.forEach((dropdown) => {
-            if (!dropdown.contains(alvo)) {
-              dropdown.open = false;
-            }
-          });
-        });
-
-        // -------------------------
-        // BUSCA DE MUNICÍPIO
-        // -------------------------
-
-        const buscaMunicipio =
-          document.querySelector("#busca-municipio");
-
-        const opcoesMunicipio =
-          document.querySelector("#municipio-opcoes");
-
-
-        buscaMunicipio?.addEventListener("input", () => {
-          if (!opcoesMunicipio) return;
-
-          const normalizar = (texto) =>
-            texto
-              .toLowerCase()
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "");
-
-          const termo = normalizar(buscaMunicipio.value);
-
-          const opcoes =
-            opcoesMunicipio.querySelectorAll("label");
-
-          opcoes.forEach((opcao, indice) => {
-
-            // mantém "Todos" sempre aparecendo
-            if (indice === 0) {
-              opcao.style.display = "flex";
-              return;
-            }
-
-            const texto = normalizar(
-              opcao.textContent || ""
-            );
-
-            opcao.style.display =
-              texto.includes(termo)
-                ? "flex"
-                : "none";
-          });
-        });
-
-        // valores iniciais
-        atualizarIndicadores();
-
+        configurarDropdowns();
+        configurarBuscaMunicipio();
+        atualizarDashboard();
       } catch (erro) {
-        console.error(
-          "Erro ao carregar o dashboard:",
-          erro
-        );
+        console.error("Erro ao carregar o dashboard:", erro);
       }
     }
 

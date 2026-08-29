@@ -373,7 +373,7 @@ mes = (
 tempo = (
     df_dashboard
     .groupby(
-        ["y", "a", "m", "tempo_codigo"],
+        ["y", "a", "m", "g", "tempo_codigo"],
         observed=True
     )
     .size()
@@ -444,11 +444,14 @@ dados_mes = [
     for r in mes.itertuples()
 ]
 
+# tempo.json:
+# [ano_idx, animal_idx, municipio_idx, gravidade_idx, tempo_codigo, casos]
 dados_tempo = [
     [
         int(r.y),
         int(r.a),
         int(r.m),
+        int(r.g),
         int(r.tempo_codigo),
         int(r.casos),
     ]
