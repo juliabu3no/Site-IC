@@ -41,6 +41,7 @@ colunas_necessarias = [
     "acidente_trabalho",
     "mes_acidente",
     "tempo_atendimento",
+    "soroterapia",
     "evolucao",
 ]
 
@@ -146,6 +147,37 @@ df_dashboard["mes_codigo"] = (
 df_dashboard["obito"] = (
     df_dashboard["evolucao"]
     == "Óbito por acidente por animais peçonhentos"
+).astype(int)
+
+# Variáveis auxiliares dos cards.
+# Percentuais usam apenas registros com informação conhecida no denominador.
+df_dashboard["soroterapia_sim"] = (
+    df_dashboard["soroterapia"] == "Sim"
+).astype(int)
+
+df_dashboard["soroterapia_conhecida"] = (
+    df_dashboard["soroterapia"].isin(["Sim", "Não"])
+).astype(int)
+
+categorias_tempo_conhecido = [
+    "0 a 1 hora",
+    "1 a 3 horas",
+    "3 a 6 horas",
+    "6 a 12 horas",
+    "12 a 24 horas",
+    "24 horas ou mais",
+]
+
+df_dashboard["atendimento_ate_3h"] = (
+    df_dashboard["tempo_atendimento"].isin(
+        ["0 a 1 hora", "1 a 3 horas"]
+    )
+).astype(int)
+
+df_dashboard["tempo_conhecido"] = (
+    df_dashboard["tempo_atendimento"].isin(
+        categorias_tempo_conhecido
+    )
 ).astype(int)
 
 # Conferências opcionais:
@@ -267,6 +299,20 @@ base = (
     .reset_index()
 )
 
+cards = (
+    df_dashboard
+    .groupby(["y", "a", "m"], observed=True)
+    .agg(
+        casos=("ano_notificacao", "size"),
+        obitos=("obito", "sum"),
+        soroterapia_sim=("soroterapia_sim", "sum"),
+        soroterapia_conhecida=("soroterapia_conhecida", "sum"),
+        atendimento_ate_3h=("atendimento_ate_3h", "sum"),
+        tempo_conhecido=("tempo_conhecido", "sum"),
+    )
+    .reset_index()
+)
+
 gravidade = (
     df_dashboard
     .groupby(
@@ -316,6 +362,25 @@ dados_base = [
         int(r.obitos),
     ]
     for r in base.itertuples()
+]
+
+# cards.json:
+# [ano_idx, animal_idx, municipio_idx, casos, obitos,
+#  soroterapia_sim, soroterapia_conhecida,
+#  atendimento_ate_3h, tempo_conhecido]
+dados_cards = [
+    [
+        int(r.y),
+        int(r.a),
+        int(r.m),
+        int(r.casos),
+        int(r.obitos),
+        int(r.soroterapia_sim),
+        int(r.soroterapia_conhecida),
+        int(r.atendimento_ate_3h),
+        int(r.tempo_conhecido),
+    ]
+    for r in cards.itertuples()
 ]
 
 dados_gravidade = [
@@ -376,6 +441,7 @@ print("\n[6/7] Gerando arquivos JSON...")
 arquivos_dashboard = {
     "filtros.json": filtros,
     "base.json": dados_base,
+    "cards.json": dados_cards,
     "gravidade.json": dados_gravidade,
     "trabalho.json": dados_trabalho,
     "mes.json": dados_mes,

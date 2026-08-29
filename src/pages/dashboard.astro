@@ -106,51 +106,32 @@ import Container from "@/components/container.astro";
 
 
     <!-- INDICADORES -->
-    <section class="mx-auto max-w-5xl mt-8">
-
-      <div class="grid md:grid-cols-3 gap-4">
-
-        <div class="border border-gray-200 rounded-lg p-6">
-          <p class="text-sm text-slate-500">
-            Total de casos
-          </p>
-
-          <p
-            id="total-casos"
-            class="text-3xl font-bold text-[#0A2C57] mt-2"
-          >
-            —
-          </p>
+    <section class="mx-auto max-w-6xl mt-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="border border-gray-200 rounded-lg p-5">
+          <p class="text-sm text-slate-500">Total de casos</p>
+          <p id="total-casos" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
         </div>
 
-
-        <div class="border border-gray-200 rounded-lg p-6">
-          <p class="text-sm text-slate-500">
-            Taxa de óbitos
-          </p>
-
-          <p
-            id="taxa-obitos"
-            class="text-3xl font-bold text-[#0A2C57] mt-2"
-          >
-            —
-          </p>
+        <div class="border border-gray-200 rounded-lg p-5">
+          <p class="text-sm text-slate-500">Óbitos</p>
+          <p id="total-obitos" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
         </div>
 
-
-        <div class="border border-gray-200 rounded-lg p-6">
-          <p class="text-sm text-slate-500">
-            Tempo de atendimento
-          </p>
-
-          <p
-            id="tempo-atendimento"
-            class="text-2xl font-bold text-[#0A2C57] mt-2"
-          >
-            —
-          </p>
+        <div class="border border-gray-200 rounded-lg p-5">
+          <p class="text-sm text-slate-500">Taxa de letalidade</p>
+          <p id="taxa-letalidade" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
         </div>
 
+        <div class="border border-gray-200 rounded-lg p-5">
+          <p class="text-sm text-slate-500">Com soroterapia</p>
+          <p id="percentual-soroterapia" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-5">
+          <p class="text-sm text-slate-500">Atendidos em até 3h</p>
+          <p id="tempo-atendimento" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
+        </div>
       </div>
     </section>
 
@@ -213,16 +194,19 @@ import Container from "@/components/container.astro";
 
   <script>
     let dadosBase = [];
+    let dadosCards = [];
 
     async function carregarDashboard() {
       try {
-        const [respostaFiltros, respostaBase] = await Promise.all([
+        const [respostaFiltros, respostaBase, respostaCards] = await Promise.all([
           fetch("/data/filtros.json"),
           fetch("/data/base.json"),
+          fetch("/data/cards.json"),
         ]);
 
         const filtros = await respostaFiltros.json();
         dadosBase = await respostaBase.json();
+        dadosCards = await respostaCards.json();
 
 
         // -------------------------
@@ -384,18 +368,11 @@ import Container from "@/components/container.astro";
           const animais = valoresSelecionados("animal");
           const municipios = valoresSelecionados("municipio");
 
+          const todosAnos = anos.includes("todos");
+          const todosAnimais = animais.includes("todos");
+          const todosMunicipios = municipios.includes("todos");
 
-          const todosAnos =
-            anos.includes("todos");
-
-          const todosAnimais =
-            animais.includes("todos");
-
-          const todosMunicipios =
-            municipios.includes("todos");
-
-
-          const dadosFiltrados = dadosBase.filter((linha) => {
+          const dadosFiltrados = dadosCards.filter((linha) => {
             const ano = String(linha[0]);
             const animal = String(linha[1]);
             const municipio = String(linha[2]);
@@ -407,37 +384,66 @@ import Container from "@/components/container.astro";
             );
           });
 
-
           let totalCasos = 0;
           let totalObitos = 0;
+          let soroterapiaSim = 0;
+          let soroterapiaConhecida = 0;
+          let atendimentoAte3h = 0;
+          let tempoConhecido = 0;
 
           dadosFiltrados.forEach((linha) => {
             totalCasos += linha[3];
             totalObitos += linha[4];
+            soroterapiaSim += linha[5];
+            soroterapiaConhecida += linha[6];
+            atendimentoAte3h += linha[7];
+            tempoConhecido += linha[8];
           });
 
-
-          const taxaObitos =
+          const taxaLetalidade =
             totalCasos > 0
               ? (totalObitos / totalCasos) * 100
-              : 0;
+              : null;
 
+          const percentualSoroterapia =
+            soroterapiaConhecida > 0
+              ? (soroterapiaSim / soroterapiaConhecida) * 100
+              : null;
 
-          const elementoCasos =
-            document.querySelector("#total-casos");
+          const percentualAte3h =
+            tempoConhecido > 0
+              ? (atendimentoAte3h / tempoConhecido) * 100
+              : null;
 
-          const elementoObitos =
-            document.querySelector("#taxa-obitos");
+          const formatarPercentual = (valor) =>
+            valor === null
+              ? "—"
+              : `${valor.toFixed(2).replace(".", ",")}%`;
 
+          const elementoCasos = document.querySelector("#total-casos");
+          const elementoObitos = document.querySelector("#total-obitos");
+          const elementoLetalidade = document.querySelector("#taxa-letalidade");
+          const elementoSoroterapia = document.querySelector("#percentual-soroterapia");
+          const elementoTempo = document.querySelector("#tempo-atendimento");
 
           if (elementoCasos) {
-            elementoCasos.textContent =
-              totalCasos.toLocaleString("pt-BR");
+            elementoCasos.textContent = totalCasos.toLocaleString("pt-BR");
           }
 
           if (elementoObitos) {
-            elementoObitos.textContent =
-              `${taxaObitos.toFixed(2).replace(".", ",")}%`;
+            elementoObitos.textContent = totalObitos.toLocaleString("pt-BR");
+          }
+
+          if (elementoLetalidade) {
+            elementoLetalidade.textContent = formatarPercentual(taxaLetalidade);
+          }
+
+          if (elementoSoroterapia) {
+            elementoSoroterapia.textContent = formatarPercentual(percentualSoroterapia);
+          }
+
+          if (elementoTempo) {
+            elementoTempo.textContent = formatarPercentual(percentualAte3h);
           }
         }
 
