@@ -1,201 +1,210 @@
 from pathlib import Path
 import json
 import pandas as pd
-import geopandas as gpd
-import gdown
 
-
-# -------------------------
+# =========================
 # CAMINHOS
-# -------------------------
-
+# =========================
 RAIZ = Path(__file__).resolve().parent.parent
+PASTA_DADOS = RAIZ / "dados_local"
 PASTA_DATA = RAIZ / "public" / "data"
-
 PASTA_DATA.mkdir(parents=True, exist_ok=True)
 
-arquivo_dados = RAIZ / "dados.csv"
-arquivo_geojson = RAIZ / "geojson_sp.json"
+ARQUIVO_ENTRADA = PASTA_DADOS / "sinan_sp_tratado.csv"
 
+# =========================
+# LEITURA DA BASE TRATADA
+# =========================
+print("======================================")
+print("PREPARAÇÃO DOS DADOS DO DASHBOARD")
+print("======================================")
+print("\n[1/7] Lendo base tratada...")
 
-# -------------------------
-# DOWNLOAD DOS DADOS
-# -------------------------
+df = pd.read_csv(ARQUIVO_ENTRADA, low_memory=False)
 
-if not arquivo_dados.exists():
-    print("Baixando dados...")
-    gdown.download(
-        "https://drive.google.com/uc?export=download&id=1UGrPGCw_wgOjoVPVHorx4KxumrCaD9UQ",
-        str(arquivo_dados),
-        quiet=False,
+print(
+    f"Base carregada: {len(df):,} registros e "
+    f"{len(df.columns)} colunas."
+    .replace(",", ".")
+)
+
+# =========================
+# VALIDAÇÃO DAS COLUNAS
+# =========================
+print("\n[2/7] Validando colunas necessárias...")
+
+colunas_necessarias = [
+    "ano_notificacao",
+    "tipo_acidente",
+    "municipio_ocorrencia",
+    "gravidade",
+    "acidente_trabalho",
+    "mes_acidente",
+    "tempo_atendimento",
+    "evolucao",
+]
+
+colunas_ausentes = [
+    coluna
+    for coluna in colunas_necessarias
+    if coluna not in df.columns
+]
+
+if colunas_ausentes:
+    raise ValueError(
+        "Colunas necessárias ausentes na base tratada: "
+        + ", ".join(colunas_ausentes)
     )
 
-if not arquivo_geojson.exists():
-    print("Baixando municípios...")
-    gdown.download(
-        "https://drive.google.com/uc?export=download&id=1V6konvrDhrE02h8IPeOFVkItt6qJWphR",
-        str(arquivo_geojson),
-        quiet=False,
-    )
+print("Colunas necessárias encontradas.")
 
-
-# -------------------------
-# LEITURA
-# -------------------------
-
-df = pd.read_csv(arquivo_dados)
-
-gdf_municipios = gpd.read_file(arquivo_geojson)
-
-gdf_municipios["id"] = (
-    gdf_municipios["id"]
-    .astype(str)
-    .str[:-1]
-)
-
-mapa_municipios = (
-    gdf_municipios
-    .set_index("id")["name"]
-    .to_dict()
-)
-
-df["NOME_MUNICIP"] = (
-    df["ID_MUNICIP"]
-    .astype(str)
-    .map(mapa_municipios)
-)
-
-
-# -------------------------
-# ANIMAIS
-# -------------------------
-
-mapa_acidente = {
-    1: "Serpente",
-    2: "Aranha",
-    3: "Escorpião",
-    4: "Lagarta",
-    5: "Abelha",
-    6: "Outros",
-    9: "Ignorado",
-}
-
-df["TP_ACIDENT"] = (
-    df["TP_ACIDENT"]
-    .map(mapa_acidente)
-    .fillna("Ignorado")
-)
-
-
-# -------------------------
-# CRIA OS FILTROS
-# -------------------------
-
-filtros = {
-    "anos": sorted(
-        df["NU_ANO"]
-        .dropna()
-        .astype(int)
-        .unique()
-        .tolist()
-    ),
-
-    "animais": sorted(
-        df["TP_ACIDENT"]
-        .dropna()
-        .unique()
-        .tolist()
-    ),
-
-    "municipios": sorted(
-        df["NOME_MUNICIP"]
-        .dropna()
-        .unique()
-        .tolist()
-    ),
-}
-
-
-# -------------------------
-# SALVA JSON
-# -------------------------
-
-saida = PASTA_DATA / "filtros.json"
-
-with open(saida, "w", encoding="utf-8") as arquivo:
-    json.dump(
-        filtros,
-        arquivo,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-
-print(f"Arquivo criado: {saida}")
-
-# -------------------------
-# DASHBOARD COMPACTO
-# -------------------------
+# =========================
+# PREPARAÇÃO DAS VARIÁVEIS
+# =========================
+print("\n[3/7] Preparando variáveis utilizadas pelo dashboard...")
 
 df_dashboard = df.dropna(
-    subset=["NU_ANO", "NOME_MUNICIP"]
+    subset=[
+        "ano_notificacao",
+        "tipo_acidente",
+        "municipio_ocorrencia",
+    ]
 ).copy()
 
-# Garante tipos numéricos
-df_dashboard["NU_ANO"] = pd.to_numeric(
-    df_dashboard["NU_ANO"],
+df_dashboard["ano_notificacao"] = pd.to_numeric(
+    df_dashboard["ano_notificacao"],
     errors="coerce"
-).astype(int)
+).astype("Int64")
 
-df_dashboard["TRA_CLASSI"] = (
-    pd.to_numeric(
-        df_dashboard["TRA_CLASSI"],
-        errors="coerce"
-    )
+mapa_gravidade = {
+    "Leve": 1,
+    "Moderado": 2,
+    "Grave": 3,
+    "Ignorado": 9,
+}
+
+mapa_trabalho = {
+    "Sim": 1,
+    "Não": 2,
+    "Ignorado": 9,
+}
+
+mapa_tempo = {
+    "0 a 1 hora": 1,
+    "1 a 3 horas": 2,
+    "3 a 6 horas": 3,
+    "6 a 12 horas": 4,
+    "12 a 24 horas": 5,
+    "24 horas ou mais": 6,
+    "Ignorado": 9,
+}
+
+mapa_meses = {
+    "Janeiro": 1,
+    "Fevereiro": 2,
+    "Março": 3,
+    "Abril": 4,
+    "Maio": 5,
+    "Junho": 6,
+    "Julho": 7,
+    "Agosto": 8,
+    "Setembro": 9,
+    "Outubro": 10,
+    "Novembro": 11,
+    "Dezembro": 12,
+    "Ignorado": 0,
+}
+
+df_dashboard["gravidade_codigo"] = (
+    df_dashboard["gravidade"]
+    .map(mapa_gravidade)
     .fillna(9)
     .astype(int)
 )
 
-df_dashboard["DOENCA_TRA"] = (
-    pd.to_numeric(
-        df_dashboard["DOENCA_TRA"],
-        errors="coerce"
-    )
+df_dashboard["trabalho_codigo"] = (
+    df_dashboard["acidente_trabalho"]
+    .map(mapa_trabalho)
     .fillna(9)
     .astype(int)
 )
 
-df_dashboard["ANT_TEMPO_"] = (
-    pd.to_numeric(
-        df_dashboard["ANT_TEMPO_"],
-        errors="coerce"
-    )
+df_dashboard["tempo_codigo"] = (
+    df_dashboard["tempo_atendimento"]
+    .map(mapa_tempo)
     .fillna(9)
     .astype(int)
 )
 
-# Mês da notificação
-df_dashboard["MES"] = (
-    pd.to_datetime(
-        df_dashboard["DT_NOTIFIC"],
-        errors="coerce"
-    )
-    .dt.month
+df_dashboard["mes_codigo"] = (
+    df_dashboard["mes_acidente"]
+    .map(mapa_meses)
     .fillna(0)
     .astype(int)
 )
 
-# Óbito
-df_dashboard["OBITO"] = (
-    pd.to_numeric(
-        df_dashboard["EVOLUCAO"],
-        errors="coerce"
-    ) == 2
+df_dashboard["obito"] = (
+    df_dashboard["evolucao"]
+    == "Óbito por acidente por animais peçonhentos"
 ).astype(int)
 
+# Conferências opcionais:
+# print(df_dashboard["gravidade_codigo"].value_counts(dropna=False).sort_index())
+# print(df_dashboard["trabalho_codigo"].value_counts(dropna=False).sort_index())
+# print(df_dashboard["tempo_codigo"].value_counts(dropna=False).sort_index())
+# print(df_dashboard["mes_codigo"].value_counts(dropna=False).sort_index())
 
-# -------------------------
-# TRANSFORMA NOMES EM ÍNDICES
-# -------------------------
+# =========================
+# FILTROS E ÍNDICES
+# =========================
+print("\n[4/7] Criando filtros e índices compactos...")
+
+anos = sorted(
+    df_dashboard["ano_notificacao"]
+    .dropna()
+    .astype(int)
+    .unique()
+    .tolist()
+)
+
+animais = sorted(
+    df_dashboard["tipo_acidente"]
+    .dropna()
+    .astype(str)
+    .unique()
+    .tolist()
+)
+
+municipios = sorted(
+    df_dashboard["municipio_ocorrencia"]
+    .dropna()
+    .astype(str)
+    .unique()
+    .tolist()
+)
+
+filtros = {
+    "anos": anos,
+    "animais": animais,
+    "municipios": municipios,
+}
+
+# Variáveis territoriais adicionais já disponíveis para futuras
+# expansões dos filtros do dashboard.
+for chave, coluna in {
+    "regioes_saude": "regiao_saude_ocorrencia",
+    "rras": "rras_ocorrencia",
+    "drs": "drs_ocorrencia",
+    "gve": "gve_ocorrencia",
+}.items():
+    if coluna in df_dashboard.columns:
+        filtros[chave] = sorted(
+            df_dashboard[coluna]
+            .dropna()
+            .astype(str)
+            .unique()
+            .tolist()
+        )
 
 mapa_anos = {
     ano: i
@@ -213,36 +222,89 @@ mapa_municipios = {
 }
 
 df_dashboard["y"] = (
-    df_dashboard["NU_ANO"]
-    .map(mapa_anos)
+    df_dashboard["ano_notificacao"]
     .astype(int)
+    .map(mapa_anos)
 )
 
 df_dashboard["a"] = (
-    df_dashboard["TP_ACIDENT"]
+    df_dashboard["tipo_acidente"]
     .map(mapa_animais)
-    .astype(int)
 )
 
 df_dashboard["m"] = (
-    df_dashboard["NOME_MUNICIP"]
+    df_dashboard["municipio_ocorrencia"]
     .map(mapa_municipios)
+)
+
+df_dashboard = df_dashboard.dropna(
+    subset=["y", "a", "m"]
+).copy()
+
+df_dashboard[["y", "a", "m"]] = (
+    df_dashboard[["y", "a", "m"]]
     .astype(int)
 )
 
+print(
+    f"Filtros preparados: {len(anos)} anos | "
+    f"{len(animais)} animais | "
+    f"{len(municipios)} municípios."
+)
 
-# -------------------------
-# CASOS E ÓBITOS
-# -------------------------
+# =========================
+# AGREGAÇÕES
+# =========================
+print("\n[5/7] Agregando indicadores do dashboard...")
 
 base = (
     df_dashboard
-    .groupby(["y", "a", "m"])
+    .groupby(["y", "a", "m"], observed=True)
     .agg(
-        casos=("NU_ANO", "size"),
-        obitos=("OBITO", "sum")
+        casos=("ano_notificacao", "size"),
+        obitos=("obito", "sum"),
     )
     .reset_index()
+)
+
+gravidade = (
+    df_dashboard
+    .groupby(
+        ["y", "a", "m", "gravidade_codigo"],
+        observed=True
+    )
+    .size()
+    .reset_index(name="casos")
+)
+
+trabalho = (
+    df_dashboard
+    .groupby(
+        ["y", "a", "m", "trabalho_codigo"],
+        observed=True
+    )
+    .size()
+    .reset_index(name="casos")
+)
+
+mes = (
+    df_dashboard
+    .groupby(
+        ["y", "a", "m", "mes_codigo"],
+        observed=True
+    )
+    .size()
+    .reset_index(name="casos")
+)
+
+tempo = (
+    df_dashboard
+    .groupby(
+        ["y", "a", "m", "tempo_codigo"],
+        observed=True
+    )
+    .size()
+    .reset_index(name="casos")
 )
 
 dados_base = [
@@ -251,109 +313,68 @@ dados_base = [
         int(r.a),
         int(r.m),
         int(r.casos),
-        int(r.obitos)
+        int(r.obitos),
     ]
     for r in base.itertuples()
 ]
-
-
-# -------------------------
-# GRAVIDADE
-# -------------------------
-
-gravidade = (
-    df_dashboard
-    .groupby(["y", "a", "m", "TRA_CLASSI"])
-    .size()
-    .reset_index(name="casos")
-)
 
 dados_gravidade = [
     [
         int(r.y),
         int(r.a),
         int(r.m),
-        int(r.TRA_CLASSI),
-        int(r.casos)
+        int(r.gravidade_codigo),
+        int(r.casos),
     ]
     for r in gravidade.itertuples()
 ]
-
-
-# -------------------------
-# ACIDENTE DE TRABALHO
-# -------------------------
-
-trabalho = (
-    df_dashboard
-    .groupby(["y", "a", "m", "DOENCA_TRA"])
-    .size()
-    .reset_index(name="casos")
-)
 
 dados_trabalho = [
     [
         int(r.y),
         int(r.a),
         int(r.m),
-        int(r.DOENCA_TRA),
-        int(r.casos)
+        int(r.trabalho_codigo),
+        int(r.casos),
     ]
     for r in trabalho.itertuples()
 ]
-
-
-# -------------------------
-# CASOS POR MÊS
-# -------------------------
-
-mes = (
-    df_dashboard
-    .groupby(["y", "a", "m", "MES"])
-    .size()
-    .reset_index(name="casos")
-)
 
 dados_mes = [
     [
         int(r.y),
         int(r.a),
         int(r.m),
-        int(r.MES),
-        int(r.casos)
+        int(r.mes_codigo),
+        int(r.casos),
     ]
     for r in mes.itertuples()
 ]
-
-
-# -------------------------
-# TEMPO DE ATENDIMENTO
-# -------------------------
-
-tempo = (
-    df_dashboard
-    .groupby(["y", "a", "m", "ANT_TEMPO_"])
-    .size()
-    .reset_index(name="casos")
-)
 
 dados_tempo = [
     [
         int(r.y),
         int(r.a),
         int(r.m),
-        int(r.ANT_TEMPO_),
-        int(r.casos)
+        int(r.tempo_codigo),
+        int(r.casos),
     ]
     for r in tempo.itertuples()
 ]
 
+print(
+    f"Agregações concluídas: "
+    f"{len(dados_base):,} combinações principais."
+    .replace(",", ".")
+)
 
-# -------------------------
-# SALVA ARQUIVOS DO DASHBOARD
-# -------------------------
+# =========================
+# GERAÇÃO DOS JSON
+# =========================
+print("\n[6/7] Gerando arquivos JSON...")
 
 arquivos_dashboard = {
+    "filtros.json": filtros,
     "base.json": dados_base,
     "gravidade.json": dados_gravidade,
     "trabalho.json": dados_trabalho,
@@ -361,8 +382,7 @@ arquivos_dashboard = {
     "tempo.json": dados_tempo,
 }
 
-for nome_arquivo, dados in arquivos_dashboard.items():
-
+for nome_arquivo, conteudo in arquivos_dashboard.items():
     caminho = PASTA_DATA / nome_arquivo
 
     with open(
@@ -370,12 +390,22 @@ for nome_arquivo, dados in arquivos_dashboard.items():
         "w",
         encoding="utf-8"
     ) as arquivo:
-
         json.dump(
-            dados,
+            conteudo,
             arquivo,
             ensure_ascii=False,
             separators=(",", ":"),
         )
 
-    print(f"Arquivo criado: {caminho}")
+    print(f"Arquivo criado: {nome_arquivo}")
+
+# =========================
+# FINALIZAÇÃO
+# =========================
+print("\n[7/7] Finalizando preparação do dashboard...")
+
+print(
+    f"Preparação concluída com sucesso. "
+    f"{len(arquivos_dashboard)} arquivos foram gerados em "
+    f"{PASTA_DATA}."
+)
