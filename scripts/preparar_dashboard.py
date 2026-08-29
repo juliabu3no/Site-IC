@@ -215,10 +215,26 @@ municipios = sorted(
     .tolist()
 )
 
+ordem_gravidade = ["Leve", "Moderado", "Grave", "Ignorado"]
+gravidades_presentes = set(
+    df_dashboard["gravidade"]
+    .dropna()
+    .astype(str)
+    .unique()
+    .tolist()
+)
+
+gravidades = [
+    gravidade
+    for gravidade in ordem_gravidade
+    if gravidade in gravidades_presentes
+]
+
 filtros = {
     "anos": anos,
     "animais": animais,
     "municipios": municipios,
+    "gravidades": gravidades,
 }
 
 # Variáveis territoriais adicionais já disponíveis para futuras
@@ -253,6 +269,11 @@ mapa_municipios = {
     for i, municipio in enumerate(filtros["municipios"])
 }
 
+mapa_gravidades = {
+    gravidade: i
+    for i, gravidade in enumerate(filtros["gravidades"])
+}
+
 df_dashboard["y"] = (
     df_dashboard["ano_notificacao"]
     .astype(int)
@@ -269,19 +290,25 @@ df_dashboard["m"] = (
     .map(mapa_municipios)
 )
 
+df_dashboard["g"] = (
+    df_dashboard["gravidade"]
+    .map(mapa_gravidades)
+)
+
 df_dashboard = df_dashboard.dropna(
-    subset=["y", "a", "m"]
+    subset=["y", "a", "m", "g"]
 ).copy()
 
-df_dashboard[["y", "a", "m"]] = (
-    df_dashboard[["y", "a", "m"]]
+df_dashboard[["y", "a", "m", "g"]] = (
+    df_dashboard[["y", "a", "m", "g"]]
     .astype(int)
 )
 
 print(
     f"Filtros preparados: {len(anos)} anos | "
     f"{len(animais)} animais | "
-    f"{len(municipios)} municípios."
+    f"{len(municipios)} municípios | "
+    f"{len(gravidades)} gravidades."
 )
 
 # =========================
@@ -301,7 +328,7 @@ base = (
 
 cards = (
     df_dashboard
-    .groupby(["y", "a", "m"], observed=True)
+    .groupby(["y", "a", "m", "g"], observed=True)
     .agg(
         casos=("ano_notificacao", "size"),
         obitos=("obito", "sum"),
@@ -365,7 +392,7 @@ dados_base = [
 ]
 
 # cards.json:
-# [ano_idx, animal_idx, municipio_idx, casos, obitos,
+# [ano_idx, animal_idx, municipio_idx, gravidade_idx, casos, obitos,
 #  soroterapia_sim, soroterapia_conhecida,
 #  atendimento_ate_3h, tempo_conhecido]
 dados_cards = [
@@ -373,6 +400,7 @@ dados_cards = [
         int(r.y),
         int(r.a),
         int(r.m),
+        int(r.g),
         int(r.casos),
         int(r.obitos),
         int(r.soroterapia_sim),

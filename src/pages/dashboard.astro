@@ -15,7 +15,7 @@ import Container from "@/components/container.astro";
 
     <!-- FILTROS -->
     <section class="mx-auto max-w-5xl mt-12">
-      <div class="grid md:grid-cols-3 gap-4">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
         <!-- ANO -->
         <div class="border border-gray-200 rounded-lg p-5">
@@ -98,6 +98,28 @@ import Container from "@/components/container.astro";
                 class="max-h-56 overflow-y-auto p-2"
               ></div>
             </div>
+          </details>
+        </div>
+
+        <!-- GRAVIDADE -->
+        <div class="border border-gray-200 rounded-lg p-5">
+          <p class="block text-sm font-semibold text-gray-700 mb-2">
+            Gravidade
+          </p>
+
+          <details class="relative" id="dropdown-gravidade">
+            <summary
+              id="resumo-gravidade"
+              class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center"
+            >
+              <span>Todos</span>
+              <span class="text-slate-400">⌄</span>
+            </summary>
+
+            <div
+              id="gravidade-opcoes"
+              class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"
+            ></div>
           </details>
         </div>
 
@@ -367,20 +389,24 @@ import Container from "@/components/container.astro";
           const anos = valoresSelecionados("ano");
           const animais = valoresSelecionados("animal");
           const municipios = valoresSelecionados("municipio");
+          const gravidades = valoresSelecionados("gravidade");
 
           const todosAnos = anos.includes("todos");
           const todosAnimais = animais.includes("todos");
           const todosMunicipios = municipios.includes("todos");
+          const todasGravidades = gravidades.includes("todos");
 
           const dadosFiltrados = dadosCards.filter((linha) => {
             const ano = String(linha[0]);
             const animal = String(linha[1]);
             const municipio = String(linha[2]);
+            const gravidade = String(linha[3]);
 
             return (
               (todosAnos || anos.includes(ano)) &&
               (todosAnimais || animais.includes(animal)) &&
-              (todosMunicipios || municipios.includes(municipio))
+              (todosMunicipios || municipios.includes(municipio)) &&
+              (todasGravidades || gravidades.includes(gravidade))
             );
           });
 
@@ -392,12 +418,12 @@ import Container from "@/components/container.astro";
           let tempoConhecido = 0;
 
           dadosFiltrados.forEach((linha) => {
-            totalCasos += linha[3];
-            totalObitos += linha[4];
-            soroterapiaSim += linha[5];
-            soroterapiaConhecida += linha[6];
-            atendimentoAte3h += linha[7];
-            tempoConhecido += linha[8];
+            totalCasos += linha[4];
+            totalObitos += linha[5];
+            soroterapiaSim += linha[6];
+            soroterapiaConhecida += linha[7];
+            atendimentoAte3h += linha[8];
+            tempoConhecido += linha[9];
           });
 
           const taxaLetalidade =
@@ -452,6 +478,41 @@ import Container from "@/components/container.astro";
         criarFiltro("ano", filtros.anos);
         criarFiltro("animal", filtros.animais);
         criarFiltro("municipio", filtros.municipios);
+        criarFiltro("gravidade", filtros.gravidades);
+
+        // -------------------------
+        // FECHAMENTO DOS FILTROS
+        // -------------------------
+
+        const dropdowns = Array.from(
+          document.querySelectorAll('details[id^="dropdown-"]')
+        );
+
+        // Ao abrir um filtro, fecha os demais.
+        dropdowns.forEach((dropdown) => {
+          dropdown.addEventListener("toggle", () => {
+            if (!dropdown.open) return;
+
+            dropdowns.forEach((outroDropdown) => {
+              if (outroDropdown !== dropdown) {
+                outroDropdown.open = false;
+              }
+            });
+          });
+        });
+
+        // Ao clicar fora dos filtros, fecha qualquer dropdown aberto.
+        document.addEventListener("click", (evento) => {
+          const alvo = evento.target;
+
+          if (!(alvo instanceof Node)) return;
+
+          dropdowns.forEach((dropdown) => {
+            if (!dropdown.contains(alvo)) {
+              dropdown.open = false;
+            }
+          });
+        });
 
         // -------------------------
         // BUSCA DE MUNICÍPIO
