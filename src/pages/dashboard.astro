@@ -18,17 +18,11 @@ import Container from "@/components/container.astro";
         <div class="border border-gray-200 rounded-lg p-5">
           <p class="block text-sm font-semibold text-gray-700 mb-2">Ano</p>
           <details class="relative" id="dropdown-ano">
-            <summary
-              id="resumo-ano"
-              class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center"
-            >
+            <summary id="resumo-ano" class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center">
               <span>Todos</span>
               <span class="text-slate-400">⌄</span>
             </summary>
-            <div
-              id="ano-opcoes"
-              class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"
-            ></div>
+            <div id="ano-opcoes" class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"></div>
           </details>
         </div>
 
@@ -36,17 +30,11 @@ import Container from "@/components/container.astro";
         <div class="border border-gray-200 rounded-lg p-5">
           <p class="block text-sm font-semibold text-gray-700 mb-2">Animal peçonhento</p>
           <details class="relative" id="dropdown-animal">
-            <summary
-              id="resumo-animal"
-              class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center"
-            >
+            <summary id="resumo-animal" class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center">
               <span>Todos</span>
               <span class="text-slate-400">⌄</span>
             </summary>
-            <div
-              id="animal-opcoes"
-              class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"
-            ></div>
+            <div id="animal-opcoes" class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"></div>
           </details>
         </div>
 
@@ -54,22 +42,13 @@ import Container from "@/components/container.astro";
         <div class="border border-gray-200 rounded-lg p-5">
           <p class="block text-sm font-semibold text-gray-700 mb-2">Município</p>
           <details class="relative" id="dropdown-municipio">
-            <summary
-              id="resumo-municipio"
-              class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center"
-            >
+            <summary id="resumo-municipio" class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center">
               <span>Todos</span>
               <span class="text-slate-400">⌄</span>
             </summary>
             <div class="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg">
               <div class="p-2 border-b border-gray-100">
-                <input
-                  id="busca-municipio"
-                  type="text"
-                  placeholder="Buscar município..."
-                  autocomplete="off"
-                  class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#0A2C57]"
-                />
+                <input id="busca-municipio" type="text" placeholder="Buscar município..." autocomplete="off" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#0A2C57]" />
               </div>
               <div id="municipio-opcoes" class="max-h-56 overflow-y-auto p-2"></div>
             </div>
@@ -80,17 +59,11 @@ import Container from "@/components/container.astro";
         <div class="border border-gray-200 rounded-lg p-5">
           <p class="block text-sm font-semibold text-gray-700 mb-2">Gravidade</p>
           <details class="relative" id="dropdown-gravidade">
-            <summary
-              id="resumo-gravidade"
-              class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center"
-            >
+            <summary id="resumo-gravidade" class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center">
               <span>Todos</span>
               <span class="text-slate-400">⌄</span>
             </summary>
-            <div
-              id="gravidade-opcoes"
-              class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"
-            ></div>
+            <div id="gravidade-opcoes" class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"></div>
           </details>
         </div>
       </div>
@@ -128,9 +101,7 @@ import Container from "@/components/container.astro";
       <div class="grid md:grid-cols-2 gap-6">
         <!-- EVOLUÇÃO TEMPORAL -->
         <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
-          <h3 class="font-semibold text-gray-800">
-            Evolução dos casos e óbitos ao longo dos anos
-          </h3>
+          <h3 class="font-semibold text-gray-800">Evolução dos casos e óbitos ao longo dos anos</h3>
           <div class="mt-4 h-72">
             <canvas id="grafico-temporal"></canvas>
           </div>
@@ -154,10 +125,7 @@ import Container from "@/components/container.astro";
 
         <!-- TEMPO DE ATENDIMENTO -->
         <div class="border border-gray-200 rounded-lg p-6">
-          <h3 class="font-semibold text-gray-800">
-            Tempo até o atendimento
-          </h3>
-
+          <h3 class="font-semibold text-gray-800">Tempo até o atendimento</h3>
           <div class="mt-4 h-72">
             <canvas id="grafico-tempo"></canvas>
           </div>
@@ -174,12 +142,15 @@ import Container from "@/components/container.astro";
     // =========================
     let filtros = {};
     let dadosCards = [];
+    let dadosTempo = [];
+
     let graficoTemporal = null;
     let graficoAnimal = null;
     let graficoGravidade = null;
+    let graficoTempo = null;
 
-    // Posições das informações em cada linha de cards.json.
-    const INDICE = {
+    // Posições das informações em cards.json.
+    const INDICE_CARDS = {
       ano: 0,
       animal: 1,
       municipio: 2,
@@ -190,6 +161,27 @@ import Container from "@/components/container.astro";
       soroterapiaConhecida: 7,
       atendimentoAte3h: 8,
       tempoConhecido: 9,
+    };
+
+    // Posições das informações em tempo.json.
+    const INDICE_TEMPO = {
+      ano: 0,
+      animal: 1,
+      municipio: 2,
+      gravidade: 3,
+      tempo: 4,
+      casos: 5,
+    };
+
+    const ORDEM_TEMPOS = [1, 2, 3, 4, 5, 6, 9];
+    const MAPA_TEMPOS = {
+      1: "0 a 1 hora",
+      2: "1 a 3 horas",
+      3: "3 a 6 horas",
+      4: "6 a 12 horas",
+      5: "12 a 24 horas",
+      6: "24 horas ou mais",
+      9: "Ignorado",
     };
 
     // =========================
@@ -204,32 +196,27 @@ import Container from "@/components/container.astro";
       ).map((item) => item.value);
     }
 
-    function filtrarDadosCards() {
-      const selecao = {
+    function obterSelecaoAtual() {
+      return {
         ano: valoresSelecionados("ano"),
         animal: valoresSelecionados("animal"),
         municipio: valoresSelecionados("municipio"),
         gravidade: valoresSelecionados("gravidade"),
       };
+    }
 
-      const todos = {
-        ano: selecao.ano.includes("todos"),
-        animal: selecao.animal.includes("todos"),
-        municipio: selecao.municipio.includes("todos"),
-        gravidade: selecao.gravidade.includes("todos"),
-      };
-
-      return dadosCards.filter((linha) => {
-        const ano = String(linha[INDICE.ano]);
-        const animal = String(linha[INDICE.animal]);
-        const municipio = String(linha[INDICE.municipio]);
-        const gravidade = String(linha[INDICE.gravidade]);
+    function filtrarDados(dados, selecao) {
+      return dados.filter((linha) => {
+        const ano = String(linha[0]);
+        const animal = String(linha[1]);
+        const municipio = String(linha[2]);
+        const gravidade = String(linha[3]);
 
         return (
-          (todos.ano || selecao.ano.includes(ano)) &&
-          (todos.animal || selecao.animal.includes(animal)) &&
-          (todos.municipio || selecao.municipio.includes(municipio)) &&
-          (todos.gravidade || selecao.gravidade.includes(gravidade))
+          (selecao.ano.includes("todos") || selecao.ano.includes(ano)) &&
+          (selecao.animal.includes("todos") || selecao.animal.includes(animal)) &&
+          (selecao.municipio.includes("todos") || selecao.municipio.includes(municipio)) &&
+          (selecao.gravidade.includes("todos") || selecao.gravidade.includes(gravidade))
         );
       });
     }
@@ -246,9 +233,7 @@ import Container from "@/components/container.astro";
     // =========================
     // INDICADORES
     // =========================
-    function atualizarIndicadores() {
-      const dadosFiltrados = filtrarDadosCards();
-
+    function atualizarIndicadores(dadosFiltrados) {
       let totalCasos = 0;
       let totalObitos = 0;
       let soroterapiaSim = 0;
@@ -257,12 +242,12 @@ import Container from "@/components/container.astro";
       let tempoConhecido = 0;
 
       dadosFiltrados.forEach((linha) => {
-        totalCasos += linha[INDICE.casos];
-        totalObitos += linha[INDICE.obitos];
-        soroterapiaSim += linha[INDICE.soroterapiaSim];
-        soroterapiaConhecida += linha[INDICE.soroterapiaConhecida];
-        atendimentoAte3h += linha[INDICE.atendimentoAte3h];
-        tempoConhecido += linha[INDICE.tempoConhecido];
+        totalCasos += linha[INDICE_CARDS.casos];
+        totalObitos += linha[INDICE_CARDS.obitos];
+        soroterapiaSim += linha[INDICE_CARDS.soroterapiaSim];
+        soroterapiaConhecida += linha[INDICE_CARDS.soroterapiaConhecida];
+        atendimentoAte3h += linha[INDICE_CARDS.atendimentoAte3h];
+        tempoConhecido += linha[INDICE_CARDS.tempoConhecido];
       });
 
       const taxaLetalidade =
@@ -288,31 +273,24 @@ import Container from "@/components/container.astro";
 
       if (elementos.casos) elementos.casos.textContent = formatarNumero(totalCasos);
       if (elementos.obitos) elementos.obitos.textContent = formatarNumero(totalObitos);
-      if (elementos.letalidade) {
-        elementos.letalidade.textContent = formatarPercentual(taxaLetalidade);
-      }
-      if (elementos.soroterapia) {
-        elementos.soroterapia.textContent = formatarPercentual(percentualSoroterapia);
-      }
-      if (elementos.tempo) {
-        elementos.tempo.textContent = formatarPercentual(percentualAte3h);
-      }
+      if (elementos.letalidade) elementos.letalidade.textContent = formatarPercentual(taxaLetalidade);
+      if (elementos.soroterapia) elementos.soroterapia.textContent = formatarPercentual(percentualSoroterapia);
+      if (elementos.tempo) elementos.tempo.textContent = formatarPercentual(percentualAte3h);
     }
 
     // =========================
     // GRÁFICO TEMPORAL
     // =========================
-    function atualizarGraficoTemporal() {
-      const dadosFiltrados = filtrarDadosCards();
+    function atualizarGraficoTemporal(dadosFiltrados) {
       const casosPorAno = {};
       const obitosPorAno = {};
 
       dadosFiltrados.forEach((linha) => {
-        const indiceAno = linha[INDICE.ano];
+        const indiceAno = linha[INDICE_CARDS.ano];
         casosPorAno[indiceAno] =
-          (casosPorAno[indiceAno] || 0) + linha[INDICE.casos];
+          (casosPorAno[indiceAno] || 0) + linha[INDICE_CARDS.casos];
         obitosPorAno[indiceAno] =
-          (obitosPorAno[indiceAno] || 0) + linha[INDICE.obitos];
+          (obitosPorAno[indiceAno] || 0) + linha[INDICE_CARDS.obitos];
       });
 
       const indicesAnos = Object.keys(casosPorAno)
@@ -321,9 +299,7 @@ import Container from "@/components/container.astro";
 
       const labels = indicesAnos.map((indice) => filtros.anos[indice]);
       const valoresCasos = indicesAnos.map((indice) => casosPorAno[indice]);
-      const valoresObitos = indicesAnos.map(
-        (indice) => obitosPorAno[indice] || 0
-      );
+      const valoresObitos = indicesAnos.map((indice) => obitosPorAno[indice] || 0);
 
       const canvas = document.querySelector("#grafico-temporal");
       if (!(canvas instanceof HTMLCanvasElement)) return;
@@ -414,14 +390,13 @@ import Container from "@/components/container.astro";
     // =========================
     // GRÁFICO POR ANIMAL
     // =========================
-    function atualizarGraficoAnimal() {
-      const dadosFiltrados = filtrarDadosCards();
+    function atualizarGraficoAnimal(dadosFiltrados) {
       const casosPorAnimal = {};
 
       dadosFiltrados.forEach((linha) => {
-        const indiceAnimal = linha[INDICE.animal];
+        const indiceAnimal = linha[INDICE_CARDS.animal];
         casosPorAnimal[indiceAnimal] =
-          (casosPorAnimal[indiceAnimal] || 0) + linha[INDICE.casos];
+          (casosPorAnimal[indiceAnimal] || 0) + linha[INDICE_CARDS.casos];
       });
 
       const indicesAnimais = Object.keys(casosPorAnimal)
@@ -488,26 +463,21 @@ import Container from "@/components/container.astro";
     // =========================
     // GRÁFICO DE GRAVIDADE
     // =========================
-    function atualizarGraficoGravidade() {
-      const dadosFiltrados = filtrarDadosCards();
+    function atualizarGraficoGravidade(dadosFiltrados) {
       const casosPorGravidade = {};
 
       dadosFiltrados.forEach((linha) => {
-        const indiceGravidade = linha[INDICE.gravidade];
+        const indiceGravidade = linha[INDICE_CARDS.gravidade];
         casosPorGravidade[indiceGravidade] =
-          (casosPorGravidade[indiceGravidade] || 0) + linha[INDICE.casos];
+          (casosPorGravidade[indiceGravidade] || 0) + linha[INDICE_CARDS.casos];
       });
 
       const indicesGravidade = Object.keys(casosPorGravidade)
         .map(Number)
         .sort((a, b) => a - b);
 
-      const labels = indicesGravidade.map(
-        (indice) => filtros.gravidades[indice]
-      );
-      const valores = indicesGravidade.map(
-        (indice) => casosPorGravidade[indice]
-      );
+      const labels = indicesGravidade.map((indice) => filtros.gravidades[indice]);
+      const valores = indicesGravidade.map((indice) => casosPorGravidade[indice]);
 
       const canvas = document.querySelector("#grafico-gravidade");
       if (!(canvas instanceof HTMLCanvasElement)) return;
@@ -561,13 +531,91 @@ import Container from "@/components/container.astro";
     }
 
     // =========================
+    // GRÁFICO DE TEMPO
+    // =========================
+    function atualizarGraficoTempo(dadosFiltrados) {
+      const casosPorTempo = {};
+
+      dadosFiltrados.forEach((linha) => {
+        const tempo = linha[INDICE_TEMPO.tempo];
+        casosPorTempo[tempo] =
+          (casosPorTempo[tempo] || 0) + linha[INDICE_TEMPO.casos];
+      });
+
+      const temposPresentes = ORDEM_TEMPOS.filter(
+        (tempo) => casosPorTempo[tempo] !== undefined
+      );
+
+      const labels = temposPresentes.map((tempo) => MAPA_TEMPOS[tempo]);
+      const valores = temposPresentes.map((tempo) => casosPorTempo[tempo]);
+
+      const canvas = document.querySelector("#grafico-tempo");
+      if (!(canvas instanceof HTMLCanvasElement)) return;
+
+      if (graficoTempo) graficoTempo.destroy();
+
+      graficoTempo = new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Casos",
+              data: valores,
+              backgroundColor: "#0A2C57",
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              callbacks: {
+                label: (contexto) => `Casos: ${formatarNumero(contexto.raw)}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Número de casos",
+              },
+              ticks: {
+                callback: (valor) => formatarNumero(valor),
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Tempo até o atendimento",
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // =========================
     // ATUALIZAÇÃO GERAL
     // =========================
     function atualizarDashboard() {
-      atualizarIndicadores();
-      atualizarGraficoTemporal();
-      atualizarGraficoAnimal();
-      atualizarGraficoGravidade();
+      const selecao = obterSelecaoAtual();
+      const cardsFiltrados = filtrarDados(dadosCards, selecao);
+      const tempoFiltrado = filtrarDados(dadosTempo, selecao);
+
+      atualizarIndicadores(cardsFiltrados);
+      atualizarGraficoTemporal(cardsFiltrados);
+      atualizarGraficoAnimal(cardsFiltrados);
+      atualizarGraficoGravidade(cardsFiltrados);
+      atualizarGraficoTempo(tempoFiltrado);
     }
 
     // =========================
@@ -591,8 +639,7 @@ import Container from "@/components/container.astro";
       }
 
       if (selecionados.length === 1) {
-        const indice = Number(selecionados[0].value);
-        resumo.textContent = valores[indice];
+        resumo.textContent = valores[Number(selecionados[0].value)];
         return;
       }
 
@@ -609,13 +656,7 @@ import Container from "@/components/container.astro";
       todos.className =
         "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
       todos.innerHTML = `
-        <input
-          type="checkbox"
-          value="todos"
-          data-filtro="${nome}"
-          checked
-          class="accent-[#0A2C57]"
-        >
+        <input type="checkbox" value="todos" data-filtro="${nome}" checked class="accent-[#0A2C57]">
         <span class="text-sm text-slate-700">Todos</span>
       `;
       container.appendChild(todos);
@@ -625,12 +666,7 @@ import Container from "@/components/container.astro";
         item.className =
           "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
         item.innerHTML = `
-          <input
-            type="checkbox"
-            value="${indice}"
-            data-filtro="${nome}"
-            class="accent-[#0A2C57]"
-          >
+          <input type="checkbox" value="${indice}" data-filtro="${nome}" class="accent-[#0A2C57]">
           <span class="text-sm text-slate-700">${valor}</span>
         `;
         container.appendChild(item);
@@ -655,8 +691,9 @@ import Container from "@/components/container.astro";
           checkboxTodos.checked = false;
         }
 
-        const algumMarcado = checkboxes.some((checkbox) => checkbox.checked);
-        if (!algumMarcado) checkboxTodos.checked = true;
+        if (!checkboxes.some((checkbox) => checkbox.checked)) {
+          checkboxTodos.checked = true;
+        }
 
         atualizarResumo(nome, valores);
         atualizarDashboard();
@@ -695,7 +732,10 @@ import Container from "@/components/container.astro";
     function configurarBuscaMunicipio() {
       const buscaMunicipio = document.querySelector("#busca-municipio");
       const opcoesMunicipio = document.querySelector("#municipio-opcoes");
-      if (!(buscaMunicipio instanceof HTMLInputElement) || !opcoesMunicipio) return;
+
+      if (!(buscaMunicipio instanceof HTMLInputElement) || !opcoesMunicipio) {
+        return;
+      }
 
       const normalizar = (texto) =>
         texto
@@ -724,17 +764,29 @@ import Container from "@/components/container.astro";
     // =========================
     async function carregarDashboard() {
       try {
-        const [respostaFiltros, respostaCards] = await Promise.all([
+        const [
+          respostaFiltros,
+          respostaCards,
+          respostaTempo,
+        ] = await Promise.all([
           fetch("/data/filtros.json"),
           fetch("/data/cards.json"),
+          fetch("/data/tempo.json"),
         ]);
 
-        if (!respostaFiltros.ok || !respostaCards.ok) {
-          throw new Error("Não foi possível carregar os arquivos do dashboard.");
+        if (
+          !respostaFiltros.ok ||
+          !respostaCards.ok ||
+          !respostaTempo.ok
+        ) {
+          throw new Error(
+            "Não foi possível carregar os arquivos do dashboard."
+          );
         }
 
         filtros = await respostaFiltros.json();
         dadosCards = await respostaCards.json();
+        dadosTempo = await respostaTempo.json();
 
         criarFiltro("ano", filtros.anos);
         criarFiltro("animal", filtros.animais);
