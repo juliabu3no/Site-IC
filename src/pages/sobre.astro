@@ -26,44 +26,43 @@ const publications = [
     title:
         "Caracterização da Rede de Soro Antiveneno de São Paulo: Uma Análise a Partir de Dados Públicos",
     authors:
-        "Júlia Campos Bueno Paz Perez, Julia Graziosi Ortiz, Cibele M. Russo, Oilson Alberto Gonzatto Junior, Maristela Santos e Hellen Geremias Gatica Santos",
+        "Júlia Campos Bueno Paz Perez, Julia Graziosi Ortiz, Cibele M. Russo, Oilson A. G. Junior, Maristela O. Santos e Hellen G. G. Santos",
     event:
         "Data Science for Social Good Brazilian Workshop (DS4SG) — 41º Simpósio Brasileiro de Banco de Dados (SBBD)",
     type: "Artigo",
     year: "2026",
     link: "https://sol.sbc.org.br/index.php/sbbd_estendido/article/view/44174",
     },
-];
-
-// Eventos relacionados ao projeto
-const events = [
   {
-    name:
-      "XLV Congresso Nacional de Matemática Aplicada e Computacional — CNMAC 2026",
-    work:
-      "Localização de Unidades para Atendimento Soroterápico no Estado de São Paulo",
-    participation: "Pôster",
-    location: "UNESP — Presidente Prudente, SP",
+    title:
+        "Localização de Unidades para Atendimento Soroterápico no Estado de São Paulo",
+   authors:
+        "Júlia Campos Bueno Paz Perez, Julia Graziosi Ortiz, Cibele M. Russo, Oilson A. G. Junior, Maristela O. Santos e Hellen G. G. Santos",
+    event:
+        "XLV Congresso Nacional de Matemática Aplicada e Computacional — CNMAC 2026",
+    type: "Pôster",
     year: "2026",
     link: "https://eventos.galoa.com.br/cnmac-2026/calendar/activity/22842?tz=device",
   },
   {
-    name:
-      "33º Simpósio Internacional de Iniciação Científica e Tecnológica da USP — SIICUSP",
-    work:
-      "Localização de Unidades para Atendimento Soroterápico no Estado de São Paulo",
-    participation: "Pôster",
-    location: "ICMC-USP — São Carlos, SP",
+    title:
+        "Localização de Unidades para Atendimento Soroterápico no Estado de São Paulo",
+    authors:
+        "Júlia Campos Bueno Paz Perez, Cibele M. Russo, Oilson A. G. Junior, Maristela O. Santos e Hellen G. G. Santos",
+    event:
+        "33º Simpósio Internacional de Iniciação Científica e Tecnológica da USP — SIICUSP",
+    type: "Pôster",
     year: "2025",
     link: "",
   },
   {
-    name:
-      "XXVIII Simpósio de Matemática para a Graduação — SiM",
-    work:
-      "Localização de Unidades para Atendimento Soroterápico no Estado de São Paulo",
-    participation: "Apresentação oral",
-    location: "ICMC-USP — São Carlos, SP",
+    title:
+        "Localização de Unidades para Atendimento Soroterápico no Estado de São Paulo",
+    authors:
+        "Júlia Campos Bueno Paz Perez, Cibele M. Russo, Oilson A. G. Junior, Maristela O. Santos e Hellen G. G. Santos",
+    event:
+        "XXVIII Simpósio de Matemática para a Graduação — SiM",
+    type: "Apresentação Oral",
     year: "2025",
     link: "https://sites.google.com/usp.br/sim2025/eventos-e-programacao/trabalhos/apresenta%C3%A7%C3%B5es-orais?authuser=0",
   },
@@ -78,18 +77,19 @@ const events = [
       <Fragment slot="title">Sobre</Fragment>
 
       <Fragment slot="desc">
-        Conheça as publicações, participações em eventos e pesquisadores envolvidos no projeto.
+        Conheça a produção científica, a participação em eventos, os pesquisadores envolvidos 
+        e as agências de fomento que apoiam o projeto.
         <br/>
         Desenvolvido no Laboratório de Otimização (LOT) do Instituto de Ciências
         Matemáticas e de Computação (ICMC-USP).
       </Fragment>
     </Sectionhead>
 
-    <!-- PUBLICAÇÕES -->
+    <!-- PRODUÇÃO CIENTÍFICA -->
     <section class="mx-auto max-w-4xl mt-14">
 
       <h2 class="text-3xl font-bold text-gray-800 mb-8">
-        Publicações
+        Produção Científica
       </h2>
 
       <div class="flex flex-col gap-5">
@@ -132,7 +132,7 @@ const events = [
                     rel="noopener noreferrer"
                     class="inline-block mt-4 text-blue-600 hover:underline text-sm"
                   >
-                    Ver publicação
+                    Acessar conteúdo
                   </a>
                 )
               }
@@ -144,63 +144,6 @@ const events = [
       </div>
     </section>
 
-
-    <!-- EVENTOS -->
-    <section class="mx-auto max-w-4xl mt-20 mb-20">
-
-      <h2 class="text-3xl font-bold text-gray-800 mb-8">
-        Participação em eventos
-      </h2>
-
-      <div class="grid md:grid-cols-2 gap-5">
-
-        {
-          events.map((event) => (
-            <div
-              class="border border-gray-200 rounded-lg p-6 transition hover:shadow-md"
-            >
-
-              <span
-                class="text-xs font-medium bg-gray-100 text-gray-600 px-3 py-1 rounded-full"
-              >
-                {event.year}
-              </span>
-
-              <h3 class="text-lg font-semibold text-gray-800 mt-4">
-                {event.name}
-              </h3>
-
-              <p class="text-sm font-medium text-slate-600 mt-3">
-                {event.work}
-              </p>
-
-              <p class="text-sm text-slate-500 mt-3">
-                {event.participation}
-              </p>
-
-              <p class="text-sm text-slate-500">
-                {event.location}
-              </p>
-
-              {
-                event.link && (
-                  <a
-                    href={event.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-block mt-4 text-blue-600 hover:underline text-sm"
-                  >
-                    Saiba mais
-                  </a>
-                )
-              }
-
-            </div>
-          ))
-        }
-
-      </div>
-    </section>
     
     <!-- EQUIPE -->
     <h2 class="text-3xl font-bold text-gray-800 mx-auto max-w-4xl mt-20 mb-8">
