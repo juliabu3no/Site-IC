@@ -1,166 +1,746 @@
-# Astroship - Astro SAAS Starter Website Template
+# Rede de Soro Antiveneno no Estado de São Paulo
 
-Astroship is a free starter astro website template for saas, startups, marketing websites, landing pages & blogs. Built with Astro & TailwindCSS.
+Plataforma web desenvolvida para reunir, explorar e comunicar resultados de um projeto de Iniciação Científica sobre acidentes com animais peçonhentos e a organização da rede de atendimento soroterápico no estado de São Paulo.
 
-This Free Template is sponsored by [Web3Templates](https://web3templates.com)
+O projeto utiliza dados públicos do **Sistema de Informação de Agravos de Notificação (SINAN)** para analisar características dos acidentes, evolução temporal, gravidade, soroterapia, tempo de atendimento, distribuição espacial e fluxos de pacientes. A plataforma também prevê uma página específica para localização de unidades de atendimento soroterápico.
 
-## Live Demo
+## Autores
 
-**[https://astroship.web3templates.com/](https://astroship.web3templates.com/)**
+- **Júlia Campos Bueno Paz Perez** — aluna de Iniciação Científica, Bacharelado em Matemática Aplicada e Computação Científica — USP.
+- **Julia Graziosi Ortiz** — aluna de Iniciação Científica, Bacharelado em Matemática Aplicada e Computação Científica — USP.
+- **Prof.ª Dr.ª Maristela Oliveira dos Santos** — professora orientadora.
 
-**[Download Astroship Template](https://web3templates.com/templates/astroship-starter-website-template-for-astro)**
+Projeto desenvolvido no **Laboratório de Otimização (LOT)** do **Instituto de Ciências Matemáticas e de Computação da Universidade de São Paulo (ICMC-USP)**.
 
-## Upgrade to Astroship Pro Version
+---
 
-**[https://astroship-pro.web3templates.com/](https://astroship-pro.web3templates.com/)**
+## Funcionalidades da plataforma
 
-**[Purchase Astroship Pro — $49](https://web3templates.com/templates/astroship-pro-astro-saas-website-template)**
+A plataforma está sendo organizada em diferentes áreas:
 
+- **Página inicial:** apresentação geral do projeto.
+- **Dashboard:** exploração interativa dos dados epidemiológicos e territoriais.
+- **Guia Informativo:** informações de apoio sobre acidentes com animais peçonhentos e soroterapia.
+- **Encontrar soro:** localização de unidades de atendimento soroterápico.
+- **Sobre:** produção científica, participações em eventos, equipe e instituições de fomento.
 
-<!-- prettier-ignore -->
-| Feature | Free Version | Pro Version |
-| --- | ------ | --- |
-| Astro v3 | ✅  | ✅ |
-| Content Collections | ✅  | ✅ |
-| Tailwind CSS   | ✅  | ✅ |
-| Mobile Responsive | ✅  | ✅ |
-| Working Contact Page | ✅  | ✅ |
-| Pro Layouts & Features | ❌  | ✅ |
-| Blog with Pagination | ❌ | ✅ |
-| View Transitions | ❌ | ✅ |
-| Advanced Homepage Design | ❌  | ✅ |
-| Features Page | ❌  | ✅ |
-| Integrations Page | ❌  | ✅ |
-| Elegant 404 Page | ❌  | ✅ |
-| 6 Months Support| ❌  | ✅  |
-| Free Updates    | ✅  | ✅  |
-| License         | GPL-2.0 | Commercial |
-| &nbsp; | &nbsp;| &nbsp;|
-| Pricing| Free|**$49**|
-| &nbsp; | [Deploy for free](https://vercel.com/new/surjithctly/clone?demo-description=Starter%20template%20for%20startups%2C%20marketing%20websites%20%26%20blogs%20built%20with%20Astro%20and%20TailwindCSS.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F5dB0dDqBr1BfvIoNOmffVB%2F784984a8d3fe5e3db123e7c655166046%2Fastroship_-_Tony_Sullivan.jpg&demo-title=Astroship&demo-url=https%3A%2F%2Fastroship.web3templates.com%2F&from=templates&project-name=Astroship&repository-name=astroship&repository-url=https%3A%2F%2Fgithub.com%2Fsurjithctly%2Fastroship&skippable-integrations=1) | [Purchase Pro](https://web3templates.com/templates/astroship-pro-astro-saas-website-template) |
+---
 
-<a href="https://web3templates.com/templates/astroship-pro-astro-saas-website-template">
-<img width="160" alt="Upgrade to Pro" src="https://user-images.githubusercontent.com/1884712/199181300-37c2128e-d033-4145-a906-16fa5263a53b.png">
-</a>
+# Tecnologias utilizadas
 
-## Deploy this template
+## Aplicação web
 
-You can instantly clone this to your GitHub and deploy the site by clicking the below buttons to deploy to your chosen providers!
+- [Astro](https://astro.build/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- JavaScript
+- HTML/CSS
+- Vercel para hospedagem e implantação
 
-Click here to deploy on Vercel:
+As dependências da aplicação web são gerenciadas pelo **npm** e estão declaradas em:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsurjithctly%2Fastroship&project-name=astroship&repository-name=astroship&demo-title=Astroship%20-%20Astro%20Starter%20Template&demo-description=Astroship%20is%20a%20starter%20template%20for%20startups%2C%20marketing%20websites%20%26%20landing%20pages.%20Built%20with%20Astro%2C%20TailwindCSS&demo-url=https%3A%2F%2Fastroship.web3templates.com%2F&demo-image=https%3A%2F%2Fuser-images.githubusercontent.com%2F1884712%2F200831799-10ef2456-a02e-4068-b580-4b5326f0b33b.png)
-
-Click here to deploy on Netlify:
-
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/surjithctly/astroship)
-
-## Preview
-
-![image](https://user-images.githubusercontent.com/1884712/200831799-10ef2456-a02e-4068-b580-4b5326f0b33b.png)
-
-
-## Pro Version Preview
-
-![preview](https://github.com/surjithctly/astroship/assets/1884712/25665c02-d2a7-43dc-89b2-34a8ae37ade9)
-
-
-### Pagespeed Score
-
-[![pagespeed](https://user-images.githubusercontent.com/1884712/210250214-7aa98167-7993-4b90-8138-326b8fa0c223.png)](https://pagespeed.web.dev/report?url=https%3A%2F%2Fastroship.web3templates.com%2F)
-
-
-## Installation
-
-If you are reading this on github, you can click on the "Use this template" button above to create a new repository from astroship to your account. Then you can do a `git clone` to clone it to your local system.
-
-Alternatively, you can clone the project directly from this repo to your local system.
-
-### 1. Clone the repo
-
-```bash
-git clone https://github.com/surjithctly/astroship.git myProjectName
-# or
-git clone https://github.com/surjithctly/astroship.git .
+```text
+package.json
 ```
 
-The `.` will clone it to the current directory so make sure you are inside your project folder first.
+## Processamento de dados
 
-### 2. Install Dependencies
+Os scripts auxiliares de atualização e preparação dos dados utilizam Python.
+
+Principais bibliotecas previstas/utilizadas:
+
+- pandas
+- GeoPandas
+- gdown
+- PySUS
+
+As dependências Python devem ser registradas em:
+
+```text
+requirements.txt
+```
+
+---
+
+# Estrutura geral do projeto
+
+```text
+Site-IC/
+│
+├── public/
+│   ├── data/
+│   │   ├── filtros.json
+│   │   ├── base.json
+│   │   ├── gravidade.json
+│   │   ├── trabalho.json
+│   │   ├── mes.json
+│   │   └── tempo.json
+│   └── ...
+│
+├── scripts/
+│   ├── atualizar_sinan.py
+│   └── preparar_dashboard.py
+│
+├── src/
+│   ├── components/
+│   ├── content/
+│   ├── layouts/
+│   ├── pages/
+│   └── styles/
+│
+├── .gitignore
+├── astro.config.mjs
+├── package.json
+├── package-lock.json
+├── requirements.txt
+└── README.md
+```
+
+> Alguns arquivos mostrados acima fazem parte da estrutura planejada do pipeline de dados e podem ainda estar em implementação.
+
+---
+
+# Como executar o site localmente
+
+Esta seção é destinada a quem deseja baixar o projeto do GitHub, fazer alterações ou executar a aplicação no próprio computador.
+
+## 1. Pré-requisitos
+
+Para executar e modificar o site, é necessário instalar:
+
+- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/), preferencialmente uma versão LTS
+- npm, instalado juntamente com o Node.js
+
+O [Visual Studio Code](https://code.visualstudio.com/) é recomendado, mas não obrigatório.
+
+Para trabalhar também com a atualização e preparação dos dados, será necessário instalar adicionalmente:
+
+- [Python 3.13](https://www.python.org/)
+- pip, instalado juntamente com o Python
+
+> **Importante:** o pipeline de dados utiliza a biblioteca PySUS, que atualmente requer uma versão do Python entre 3.11 e 3.13. Por esse motivo, recomenda-se utilizar **Python 3.13** neste projeto. Python 3.14 não deve ser utilizado para os scripts de atualização dos dados.
+
+Também é recomendado utilizar um ambiente virtual Python específico para o projeto, conforme descrito nas etapas de instalação.
+
+---
+
+## 2. Clonar o repositório
+
+Abra um terminal e execute:
+
+```bash
+git clone https://github.com/juliabu3no/Site-IC.git
+```
+
+Entre na pasta do projeto:
+
+```bash
+cd Site-IC
+```
+
+Caso utilize o VS Code:
+
+```bash
+code .
+```
+
+---
+
+## 3. Instalar as dependências do site
+
+Na raiz do projeto, execute:
 
 ```bash
 npm install
-# or
-yarn install
-# or (recommended)
-pnpm install
 ```
 
-### 3. Start development Server
+Esse comando lê os arquivos `package.json` e `package-lock.json` e instala automaticamente as dependências necessárias.
+
+Será criada localmente a pasta:
+
+```text
+node_modules/
+```
+
+Essa pasta não deve ser adicionada manualmente ao GitHub.
+
+---
+
+## 4. Executar o servidor de desenvolvimento
+
+Execute:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or (recommended)
-pnpm dev
 ```
 
-### Preview & Build
+O Astro iniciará um servidor local. Por padrão, o endereço será semelhante a:
+
+```text
+http://localhost:4321/
+```
+
+Abra esse endereço no navegador.
+
+Enquanto o servidor estiver ativo, alterações nos arquivos do projeto normalmente serão atualizadas automaticamente no navegador.
+
+Para encerrar o servidor:
+
+```text
+Ctrl + C
+```
+
+---
+
+# Como fazer alterações no site
+
+## 1. Atualizar o repositório local
+
+Antes de começar uma nova alteração, é recomendado garantir que a cópia local esteja atualizada:
+
+```bash
+git pull
+```
+
+---
+
+## 2. Iniciar o site
+
+```bash
+npm run dev
+```
+
+---
+
+## 3. Localizar os arquivos
+
+As páginas principais ficam em:
+
+```text
+src/pages/
+```
+
+Por exemplo:
+
+```text
+src/pages/index.astro
+src/pages/dashboard.astro
+src/pages/guia.astro
+src/pages/encontrar-soro.astro
+src/pages/sobre.astro
+```
+
+Componentes reutilizáveis ficam em:
+
+```text
+src/components/
+```
+
+Conteúdos estruturados, como informações da equipe, ficam em:
+
+```text
+src/content/
+```
+
+Arquivos estáticos e arquivos de dados usados diretamente pelo navegador ficam em:
+
+```text
+public/
+```
+
+---
+
+## 4. Testar as alterações
+
+Com o servidor ativo:
+
+```bash
+npm run dev
+```
+
+verifique as páginas localmente antes de enviar as mudanças ao GitHub.
+
+Também é recomendado testar a compilação da aplicação:
+
+```bash
+npm run build
+```
+
+Se o comando terminar sem erros, a aplicação foi compilada corretamente.
+
+Para visualizar localmente a versão compilada:
 
 ```bash
 npm run preview
-npm run build
-# or
-yarn preview
-yarn build
-# or (recommended)
-pnpm preview
-pnpm build
 ```
 
-We recommend using [pnpm](https://pnpm.io/) to save disk space on your computer.
+---
 
-### Other Commands
+## 5. Conferir os arquivos alterados
 
 ```bash
-pnpm astro ...
-pnpm astro add
-pnpm astro --help
+git status
 ```
 
-## Project Structure
+---
 
-Inside of your Astro project, you'll see the following folders and files:
+## 6. Adicionar as alterações
 
-```
-/
-├── public/
-│   └── ...
-├── src/
-│   ├── components/
-│   │   └── ...
-│   ├── layouts/
-│   │   └── ...
-│   └── pages/
-│       └── ...
-└── package.json
+Para adicionar todos os arquivos modificados:
+
+```bash
+git add .
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Ou, para adicionar um arquivo específico:
 
-Any static assets, like images, can be placed in the `public/` directory.
+```bash
+git add caminho/do/arquivo
+```
 
-## TailwindCSS
+---
 
-TailwindCSS is already configured in this repo, so you can start using it without any installation.
+## 7. Criar um commit
 
-## Credits
+```bash
+git commit -m "Descrição da alteração"
+```
 
-[Hero Illustration](https://www.figma.com/community/file/1108400791662599811) by [Streamline](https://www.streamlinehq.com/)
+Exemplo:
 
-## 👀 Want to learn more?
+```bash
+git commit -m "Atualiza dashboard"
+```
 
-Feel free to check out [Astro Docs](https://docs.astro.build) or jump into our [Discord Chat](https://web3templates.com/discord).
+---
 
-[![Built with Astro](https://astro.badg.es/v1/built-with-astro.svg)](https://astro.build)
+## 8. Enviar para o GitHub
+
+```bash
+git push
+```
+
+A versão hospedada no Vercel pode ser atualizada automaticamente a partir do repositório conectado ao projeto.
+
+---
+
+# Fluxo dos dados
+
+A aplicação foi planejada para separar completamente:
+
+1. **obtenção dos dados brutos**;
+2. **limpeza e preparação**;
+3. **dados leves utilizados pelo site**.
+
+Isso permite atualizar a base epidemiológica sem alterar manualmente o código do dashboard.
+
+O fluxo desejado é:
+
+```text
+SINAN / PySUS
+      │
+      ▼
+atualizar_sinan.py
+      │
+      ▼
+CSV bruto
+      │
+      ▼
+preparar_dashboard.py
+      │
+      ├── limpeza
+      ├── padronização
+      ├── criação de variáveis
+      ├── agregações
+      └── compactação
+      │
+      ▼
+public/data/*.json
+      │
+      ▼
+Dashboard Astro
+```
+
+O navegador **não deve receber a base completa do SINAN**. Ele recebe apenas arquivos agregados e compactos necessários às visualizações.
+
+Isso reduz o tamanho dos arquivos transferidos e melhora o desempenho do site.
+
+---
+
+# Atualização dos dados do SINAN
+
+A atualização dos dados deve ser uma tarefa separada da execução normal do site.
+
+O objetivo do script:
+
+```text
+scripts/atualizar_sinan.py
+```
+
+é:
+
+1. consultar os dados de acidentes com animais peçonhentos no SINAN utilizando o PySUS;
+2. obter os anos definidos para o projeto;
+3. restringir os dados ao estado de São Paulo;
+4. reunir os anos em uma única base;
+5. salvar um CSV bruto.
+
+Esse script **não deve realizar a limpeza analítica dos dados**.
+
+A ideia é que, sempre que uma nova versão da base estiver disponível, seja necessário apenas executar novamente o processo de atualização.
+
+---
+
+## Instalar as dependências Python
+
+Para trabalhar com os scripts de atualização e preparação dos dados, utilize Python 3.13.
+
+Na raiz do projeto, crie e ative um ambiente virtual e instale as dependências:
+
+```bash
+py -3.13 -m venv .venv
+.venv\Scripts\activate
+python -m pip install -r requirements.txt
+```
+
+---
+
+## Executar a atualização do SINAN
+
+Quando o script estiver finalizado:
+
+```bash
+python scripts/atualizar_sinan.py
+```
+
+O resultado será um arquivo bruto local.
+
+Arquivos brutos grandes **não devem ser adicionados ao GitHub**.
+
+A pasta ou os arquivos de dados brutos devem permanecer no `.gitignore`.
+
+---
+
+# Preparação dos dados do dashboard
+
+O script:
+
+```text
+scripts/preparar_dashboard.py
+```
+
+é responsável pela transformação da base para o formato utilizado pela aplicação.
+
+A versão atual do script realiza, entre outras etapas:
+
+- leitura da base epidemiológica;
+- leitura dos dados geográficos dos municípios;
+- associação entre código e nome do município;
+- recodificação do tipo de animal;
+- criação das opções dos filtros;
+- tratamento das variáveis utilizadas pelo dashboard;
+- identificação de óbitos;
+- obtenção do mês da notificação;
+- agregações por ano, animal e município;
+- compactação das informações;
+- geração dos arquivos JSON.
+
+Atualmente são gerados arquivos como:
+
+```text
+public/data/filtros.json
+public/data/base.json
+public/data/gravidade.json
+public/data/trabalho.json
+public/data/mes.json
+public/data/tempo.json
+```
+
+Esses são os arquivos que devem ser utilizados pelo código do dashboard.
+
+---
+
+## Executar a preparação do dashboard
+
+Depois de atualizar/substituir a base bruta:
+
+```bash
+python scripts/preparar_dashboard.py
+```
+
+Após a execução, os arquivos em:
+
+```text
+public/data/
+```
+
+serão atualizados.
+
+Em seguida, execute:
+
+```bash
+npm run dev
+```
+
+e confira se o dashboard está funcionando corretamente com a nova base.
+
+Antes de enviar ao GitHub:
+
+```bash
+npm run build
+```
+
+---
+
+# Processo completo para atualizar os dados
+
+De forma resumida:
+
+```bash
+git pull
+```
+
+Instalar as dependências Python, caso ainda não estejam instaladas:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Baixar novamente os dados do SINAN:
+
+```bash
+python scripts/atualizar_sinan.py
+```
+
+Preparar os dados utilizados pelo dashboard:
+
+```bash
+python scripts/preparar_dashboard.py
+```
+
+Executar o site:
+
+```bash
+npm run dev
+```
+
+Validar a compilação:
+
+```bash
+npm run build
+```
+
+Conferir as mudanças:
+
+```bash
+git status
+```
+
+Adicionar somente os arquivos necessários ao repositório:
+
+```bash
+git add .
+```
+
+Criar o commit:
+
+```bash
+git commit -m "Atualiza dados do dashboard"
+```
+
+Enviar:
+
+```bash
+git push
+```
+
+> Antes do commit, é importante confirmar que nenhum CSV bruto ou arquivo excessivamente grande foi incluído acidentalmente.
+
+---
+
+# Dados brutos e Git
+
+Bases completas do SINAN podem ser grandes e não são necessárias para a execução pública da aplicação.
+
+Por isso:
+
+- arquivos CSV brutos não devem ser versionados;
+- dados geográficos originais grandes também podem permanecer fora do Git;
+- os arquivos compactos de `public/data/` podem ser versionados quando forem necessários para o funcionamento da versão pública do site.
+
+Antes de qualquer commit, utilize:
+
+```bash
+git status
+```
+
+para verificar exatamente o que será enviado.
+
+---
+
+# Implantação no Vercel
+
+O Vercel é utilizado para hospedar a aplicação Astro.
+
+A implantação utiliza a aplicação web e suas dependências Node.js.
+
+O pipeline Python **não precisa ser executado pelo Vercel**.
+
+O fluxo é:
+
+```text
+scripts Python executados localmente
+              │
+              ▼
+     public/data/*.json
+              │
+              ▼
+            GitHub
+              │
+              ▼
+            Vercel
+              │
+              ▼
+        Aplicação pública
+```
+
+Assim, bibliotecas como pandas, GeoPandas e PySUS não precisam ser instaladas no ambiente de execução do site.
+
+---
+
+# Separação entre Dashboard e “Encontrar soro”
+
+O **Dashboard** tem finalidade analítica e apresenta dados históricos e agregados sobre os acidentes e a rede de atendimento.
+
+A página **Encontrar soro** tem finalidade operacional e será responsável por auxiliar na localização de unidades de atendimento soroterápico.
+
+Informações de localização, disponibilidade de soros, distância e rota até uma unidade devem ser tratadas separadamente das análises epidemiológicas do dashboard.
+
+---
+
+# Fontes de dados
+
+A principal fonte epidemiológica utilizada pelo projeto é o:
+
+**Sistema de Informação de Agravos de Notificação (SINAN)**.
+
+A atualização automatizada da base está sendo estruturada com a biblioteca **PySUS**.
+
+Também são utilizados dados geográficos para a associação e representação dos municípios do estado de São Paulo.
+
+---
+
+# Créditos do desenvolvimento web
+
+Este projeto foi construído com o framework open source **[Astro](https://astro.build/)**.
+
+A estrutura inicial da interface foi baseada no template gratuito **[Astroship](https://github.com/surjithctly/astroship)**, desenvolvido por **Surjith S M** e disponibilizado pela **[Web3Templates](https://web3templates.com/)**.
+
+O template original utiliza Astro e Tailwind CSS e foi adaptado para as necessidades específicas deste projeto acadêmico.
+
+Os créditos aos projetos originais são mantidos em reconhecimento às ferramentas e recursos utilizados no desenvolvimento da plataforma.
+
+---
+
+# Uso de Inteligência Artificial
+
+Ferramentas de Inteligência Artificial foram utilizadas como apoio durante o desenvolvimento deste projeto.
+
+Em particular, o **ChatGPT, da OpenAI**, foi utilizado para auxiliar em tarefas como:
+
+- discussão da arquitetura da aplicação;
+- apoio na escrita e revisão de trechos de código;
+- sugestões de organização dos componentes;
+- auxílio na migração e adaptação de análises para a aplicação web;
+- identificação e resolução de erros;
+- organização do pipeline de dados;
+- documentação do projeto.
+
+A Inteligência Artificial foi utilizada como **ferramenta de assistência ao desenvolvimento**. As decisões metodológicas, científicas e de implementação, bem como a revisão e validação dos códigos e resultados, permanecem sob responsabilidade dos autores do projeto.
+
+O uso do ChatGPT não substitui as fontes científicas, bases de dados ou documentação oficial das tecnologias utilizadas.
+
+---
+
+# Desenvolvimento e manutenção
+
+Para alterações comuns no site:
+
+```text
+git pull
+   ↓
+npm install          (quando necessário)
+   ↓
+npm run dev
+   ↓
+editar arquivos
+   ↓
+npm run build
+   ↓
+git status
+   ↓
+git add .
+   ↓
+git commit
+   ↓
+git push
+   ↓
+Vercel
+```
+
+Para atualização dos dados:
+
+```text
+PySUS / SINAN
+   ↓
+atualizar_sinan.py
+   ↓
+CSV bruto
+   ↓
+preparar_dashboard.py
+   ↓
+public/data/*.json
+   ↓
+npm run dev
+   ↓
+validação
+   ↓
+npm run build
+   ↓
+git commit / git push
+   ↓
+Vercel
+```
+
+---
+
+# Status do projeto
+
+A plataforma está em desenvolvimento.
+
+Atualmente estão sendo consolidados:
+
+- estrutura e conteúdo institucional do site;
+- dashboard epidemiológico;
+- pipeline automatizado de atualização e preparação dos dados;
+- visualizações temporais, clínicas e espaciais;
+- análise de fluxos de pacientes;
+- página para localização de atendimento soroterápico.
+
+---
+
+# Licença
+
+Consulte o arquivo [`LICENSE`](LICENSE) deste repositório para as condições de uso e distribuição.
+
+---
+
+# Links úteis
+
+- [Astro](https://astro.build/)
+- [Documentação do Astro](https://docs.astro.build/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [PySUS](https://github.com/AlertaDengue/PySUS)
+- [Astroship](https://github.com/surjithctly/astroship)
+- [Web3Templates](https://web3templates.com/)
+- [Vercel](https://vercel.com/)
