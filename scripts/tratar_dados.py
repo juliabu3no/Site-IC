@@ -25,7 +25,25 @@ print("======================================")
 print("\n[1/11] Lendo base bruta...")
 
 dados = pd.read_csv(ARQUIVO_ENTRADA, low_memory=False)
-print(f"Base carregada: {len(dados):,} registros e {len(dados.columns)} colunas".replace(",", "."))
+
+print(
+    f"Base carregada: {len(dados):,} registros e "
+    f"{len(dados.columns)} colunas".replace(",", ".")
+)
+
+# Verificação de duplicidades na base bruta
+n_duplicados = int(dados.duplicated().sum())
+
+print(
+    f"Registros exatamente duplicados: "
+    f"{n_duplicados:,}".replace(",", ".")
+)
+
+# dados = dados.drop_duplicates().copy()
+
+# Conferência opcional:
+# if n_duplicados > 0:
+#     print(dados[dados.duplicated(keep=False)].head(20))
 
 # =========================
 # DIAGNÓSTICO DAS COLUNAS
@@ -170,6 +188,24 @@ colunas_codigos_numericos = [
 for coluna in colunas_codigos_numericos:
     dados[coluna] = pd.to_numeric(dados[coluna], errors="coerce").astype("Int64")
 
+colunas_ampolas = [
+    "ampolas_antibotropico",
+    "ampolas_anticrotalico",
+    "ampolas_antiaracnidico",
+    "ampolas_antibotropico_laquetico",
+    "ampolas_antielapidico",
+    "ampolas_antiloxoscelico",
+    "ampolas_antibotropico_crotalico",
+    "ampolas_antiescorpionico",
+    "ampolas_antilonomico",
+]
+
+for coluna in colunas_ampolas:
+    dados[coluna] = pd.to_numeric(
+        dados[coluna],
+        errors="coerce"
+    )
+
 # =========================
 # DICIONÁRIOS DE DECODIFICAÇÃO
 # =========================
@@ -272,6 +308,39 @@ dados[colunas_decodificadas] = dados[colunas_decodificadas].fillna("Ignorado")
 #     print(dados[coluna].value_counts(dropna=False))
 
 # =========================
+# CONSISTÊNCIA DA SOROTERAPIA
+# =========================
+
+dados["total_ampolas"] = (
+    dados[colunas_ampolas]
+    .sum(axis=1, min_count=1)
+)
+
+erro_soroterapia = (
+    (dados["soroterapia"] == "Não")
+    & (dados["total_ampolas"] > 0)
+)
+
+n_erro_soroterapia = int(erro_soroterapia.sum())
+
+print(
+    f"Casos sem soroterapia, mas com ampolas registradas: "
+    f"{n_erro_soroterapia:,}".replace(",", ".")
+)
+
+dados = dados.loc[~erro_soroterapia].copy()
+
+# Conferência opcional:
+# if inconsistencia_soro > 0:
+#     print(
+#         dados.loc[
+#             (dados["soroterapia"] == "Não")
+#             & (dados["total_ampolas"] > 0),
+#             ["soroterapia", "total_ampolas"] + colunas_ampolas
+#         ].head(20)
+#     )
+
+# =========================
 # TRATAMENTO DA IDADE
 # =========================
 print("\n[6/11] Tratando idade e variáveis temporais...")
@@ -309,6 +378,23 @@ dados["idade_anos"] = (
     dados["idade_valor"]
     * dados["idade_unidade_codigo"].map(fatores_idade)
 )
+
+erro_idade = (
+    dados["idade_anos"].notna()
+    & (
+        (dados["idade_anos"] < 0)
+        | (dados["idade_anos"] > 120)
+    )
+)
+
+n_erro_idade = int(erro_idade.sum())
+
+print(
+    f"Registros com idade fora de 0–120 anos: "
+    f"{n_erro_idade:,}".replace(",", ".")
+)
+
+dados = dados.loc[~erro_idade].copy()
 
 # Conferência opcional da idade:
 # print(dados[
@@ -349,11 +435,36 @@ mapa_meses = {
     5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
     9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro",
 }
+
 dados["mes_acidente"] = (
     dados["mes_acidente_codigo"]
     .map(mapa_meses)
     .fillna("Ignorado")
 )
+
+erro_semana = (
+    dados["semana_epidemiologica"].notna()
+    & ~dados["semana_epidemiologica"].between(1, 53)
+)
+
+erro_mes = (
+    dados["mes_acidente"] == "Ignorado"
+)
+
+erro_temporal = erro_semana | erro_mes
+
+n_erro_semana = int(erro_semana.sum())
+n_erro_mes = int(erro_mes.sum())
+n_erro_temporal = int(erro_temporal.sum())
+
+print(
+    f"Semanas inválidas: {n_erro_semana:,} | "
+    f"Meses ignorados: {n_erro_mes:,} | "
+    f"Total excluído: {n_erro_temporal:,}"
+    .replace(",", ".")
+)
+
+dados = dados.loc[~erro_temporal].copy()
 
 # Conferência opcional do tratamento temporal:
 # print(dados[
@@ -402,6 +513,7 @@ colunas_base_tratada = [
     # Gravidade, tratamento e desfecho
     "gravidade",
     "soroterapia",
+    "total_ampolas",
     "ampolas_antibotropico",
     "ampolas_anticrotalico",
     "ampolas_antiaracnidico",
