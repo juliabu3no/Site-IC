@@ -12,8 +12,8 @@ import Container from "@/components/container.astro";
     </div>
 
     <!-- FILTROS -->
-    <section class="mx-auto max-w-5xl mt-12">
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <section class="mx-auto max-w-6xl mt-12">
+      <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- ANO -->
         <div class="border border-gray-200 rounded-lg p-5">
           <p class="block text-sm font-semibold text-gray-700 mb-2">Ano</p>
@@ -48,7 +48,13 @@ import Container from "@/components/container.astro";
             </summary>
             <div class="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg">
               <div class="p-2 border-b border-gray-100">
-                <input id="busca-municipio" type="text" placeholder="Buscar município..." autocomplete="off" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#0A2C57]" />
+                <input
+                  id="busca-municipio"
+                  type="text"
+                  placeholder="Buscar município..."
+                  autocomplete="off"
+                  class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#0A2C57]"
+                />
               </div>
               <div id="municipio-opcoes" class="max-h-56 overflow-y-auto p-2"></div>
             </div>
@@ -66,48 +72,78 @@ import Container from "@/components/container.astro";
             <div id="gravidade-opcoes" class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"></div>
           </details>
         </div>
-      </div>
-    </section>
 
-    <!-- INDICADORES -->
-    <section class="mx-auto max-w-6xl mt-8">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <!-- EVOLUÇÃO -->
         <div class="border border-gray-200 rounded-lg p-5">
-          <p class="text-sm text-slate-500">Total de casos</p>
-          <p id="total-casos" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
-        </div>
-        <div class="border border-gray-200 rounded-lg p-5">
-          <p class="text-sm text-slate-500">Óbitos</p>
-          <p id="total-obitos" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
-        </div>
-        <div class="border border-gray-200 rounded-lg p-5">
-          <p class="text-sm text-slate-500">Taxa de letalidade</p>
-          <p id="taxa-letalidade" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
-        </div>
-        <div class="border border-gray-200 rounded-lg p-5">
-          <p class="text-sm text-slate-500">Com soroterapia</p>
-          <p id="percentual-soroterapia" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
-        </div>
-        <div class="border border-gray-200 rounded-lg p-5">
-          <p class="text-sm text-slate-500">Atendidos em até 3h</p>
-          <p id="tempo-atendimento" class="text-3xl font-bold text-[#0A2C57] mt-2">—</p>
+          <p class="block text-sm font-semibold text-gray-700 mb-2">Desfecho</p>
+          <details class="relative" id="dropdown-evolucao">
+            <summary id="resumo-evolucao" class="list-none cursor-pointer w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex justify-between items-center">
+              <span>Todos</span>
+              <span class="text-slate-400">⌄</span>
+            </summary>
+            <div id="evolucao-opcoes" class="absolute z-20 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg p-2"></div>
+          </details>
         </div>
       </div>
     </section>
 
-    <!-- VISUALIZAÇÕES -->
-    <section class="mx-auto max-w-5xl mt-12 mb-20">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6">Visualizações</h2>
+    <!-- VISÃO GERAL -->
+    <section class="mx-auto max-w-6xl mt-12">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-[#0A2C57]">Visão geral</h2>
+        <p class="mt-1 text-sm text-slate-500">
+          Síntese dos casos selecionados e evolução ao longo do período.
+        </p>
+      </div>
+
+      <!-- INDICADORES -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <p class="text-sm font-medium text-slate-500">Total de casos</p>
+          <p id="total-casos" class="mt-2 text-2xl font-bold text-[#0A2C57]">—</p>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <p class="text-sm font-medium text-slate-500">Óbitos pelo acidente</p>
+          <p id="total-obitos" class="mt-2 text-2xl font-bold text-[#0A2C57]">—</p>
+          <p id="percentual-obitos" class="mt-1 text-xs leading-tight text-slate-500">—</p>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <p class="text-sm font-medium text-slate-500">Com soroterapia</p>
+          <p id="total-soroterapia" class="mt-2 text-2xl font-bold text-[#0A2C57]">—</p>
+          <p id="percentual-soroterapia" class="mt-1 text-xs leading-tight text-slate-500">—</p>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <p class="text-sm font-medium text-slate-500">Atendidos em até 3h</p>
+          <p id="total-ate3h" class="mt-2 text-2xl font-bold text-[#0A2C57]">—</p>
+          <p id="percentual-ate3h" class="mt-1 text-xs leading-tight text-slate-500">—</p>
+        </div>
+      </div>
+
+      <!-- EVOLUÇÃO ANUAL -->
+      <div class="mt-6 border border-gray-200 rounded-lg p-6">
+        <h3 class="font-semibold text-gray-800">
+          Evolução dos casos e óbitos ao longo dos anos
+        </h3>
+        <div class="mt-4 h-72">
+          <canvas id="grafico-temporal"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERFIL DOS ACIDENTES -->
+    <section class="mx-auto max-w-6xl mt-16">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-[#0A2C57]">Perfil dos acidentes</h2>
+        <p class="mt-1 text-sm text-slate-500">
+          Distribuição dos casos por animal, gravidade e período de ocorrência.
+        </p>
+      </div>
+
       <div class="grid md:grid-cols-2 gap-6">
-        <!-- EVOLUÇÃO TEMPORAL -->
-        <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
-          <h3 class="font-semibold text-gray-800">Evolução dos casos e óbitos ao longo dos anos</h3>
-          <div class="mt-4 h-72">
-            <canvas id="grafico-temporal"></canvas>
-          </div>
-        </div>
-
-        <!-- CASOS POR ANIMAL -->
+        <!-- ANIMAL -->
         <div class="border border-gray-200 rounded-lg p-6">
           <h3 class="font-semibold text-gray-800">Casos por tipo de animal</h3>
           <div class="mt-4 h-72">
@@ -123,11 +159,219 @@ import Container from "@/components/container.astro";
           </div>
         </div>
 
-        <!-- TEMPO DE ATENDIMENTO -->
+        <!-- SUBTIPO DO ANIMAL -->
+        <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
+          <h3 class="font-semibold text-gray-800">Subtipo do animal envolvido</h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Informação disponível para acidentes por serpentes, aranhas e lagartas.
+          </p>
+          <div class="mt-4 h-[420px]">
+            <canvas id="grafico-subtipo-animal"></canvas>
+          </div>
+        </div>
+
+        <!-- GRAVIDADE POR ANIMAL -->
+        <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
+          <h3 class="font-semibold text-gray-800">Gravidade por tipo de animal</h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Distribuição percentual da gravidade dentro de cada tipo de acidente.
+          </p>
+          <div class="mt-4 h-80">
+            <canvas id="grafico-gravidade-animal"></canvas>
+          </div>
+        </div>
+
+        <!-- MÊS -->
+        <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
+          <h3 class="font-semibold text-gray-800">Distribuição mensal dos casos</h3>
+          <div class="mt-4 h-80">
+            <canvas id="grafico-mes"></canvas>
+          </div>
+        </div>
+
+        <!-- SEMANA EPIDEMIOLÓGICA -->
+        <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
+          <h3 class="font-semibold text-gray-800">
+            Casos por semana epidemiológica
+          </h3>
+          <div class="mt-4 h-96">
+            <canvas id="grafico-semana"></canvas>
+          </div>
+        </div>
+
+        <!-- OUTRAS CARACTERÍSTICAS DO ACIDENTE -->
+        <div class="md:col-span-2 grid lg:grid-cols-3 gap-6">
+          <div class="border border-gray-200 rounded-lg p-6 lg:col-span-2">
+            <h3 class="font-semibold text-gray-800">Local da picada</h3>
+            <div class="mt-4 h-96">
+              <canvas id="grafico-local-picada"></canvas>
+            </div>
+          </div>
+
+          <div class="border border-gray-200 rounded-lg p-6">
+            <h3 class="font-semibold text-gray-800">
+              Acidente relacionado ao trabalho
+            </h3>
+            <div class="mt-4 h-72">
+              <canvas id="grafico-trabalho"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERFIL DAS VÍTIMAS -->
+    <section class="mx-auto max-w-6xl mt-16">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-[#0A2C57]">Perfil das vítimas</h2>
+        <p class="mt-1 text-sm text-slate-500">
+          Distribuição dos casos segundo faixa etária e sexo registrado.
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="border border-gray-200 rounded-lg p-6 lg:col-span-2">
+          <h3 class="font-semibold text-gray-800">Casos por faixa etária</h3>
+          <div class="mt-4 h-80">
+            <canvas id="grafico-faixa-etaria"></canvas>
+          </div>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800">Casos por sexo</h3>
+          <div class="mt-4 h-80">
+            <canvas id="grafico-sexo"></canvas>
+          </div>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800">Raça/cor autodeclarada</h3>
+          <div class="mt-4 h-80">
+            <canvas id="grafico-raca-cor"></canvas>
+          </div>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-6 lg:col-span-2">
+          <h3 class="font-semibold text-gray-800">Escolaridade</h3>
+          <div class="mt-4 h-96">
+            <canvas id="grafico-escolaridade"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATENDIMENTO E DESFECHO -->
+    <section class="mx-auto max-w-6xl mt-16">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-[#0A2C57]">Atendimento e desfecho</h2>
+        <p class="mt-1 text-sm text-slate-500">
+          Tempo até o atendimento e evolução dos casos registrados.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- TEMPO -->
         <div class="border border-gray-200 rounded-lg p-6">
           <h3 class="font-semibold text-gray-800">Tempo até o atendimento</h3>
           <div class="mt-4 h-72">
             <canvas id="grafico-tempo"></canvas>
+          </div>
+        </div>
+
+        <!-- DESFECHO -->
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800">Desfecho dos casos</h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Número e percentual de casos em cada categoria de evolução.
+          </p>
+          <div id="painel-evolucao" class="mt-5 grid sm:grid-cols-2 gap-3"></div>
+        </div>
+
+        <!-- TEMPO POR GRAVIDADE -->
+        <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
+          <h3 class="font-semibold text-gray-800">Tempo de atendimento por gravidade</h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Distribuição percentual do tempo até o atendimento dentro de cada classificação de gravidade.
+          </p>
+          <div class="mt-4 h-80">
+            <canvas id="grafico-tempo-gravidade"></canvas>
+          </div>
+        </div>
+
+        <!-- ÓBITOS POR ANIMAL -->
+        <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
+          <h3 class="font-semibold text-gray-800">Óbitos por tipo de animal</h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Número de óbitos pelo acidente; a letalidade aparece no detalhamento.
+          </p>
+          <div class="mt-4 h-80">
+            <canvas id="grafico-obitos-animal"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOROTERAPIA -->
+    <section class="mx-auto max-w-6xl mt-16 mb-20">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-[#0A2C57]">Soroterapia</h2>
+        <p class="mt-1 text-sm text-slate-500">
+          Uso de antivenenos e distribuição das ampolas administradas.
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <!-- USO DE SOROTERAPIA -->
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800">Uso de soroterapia</h3>
+          <div class="mt-4 h-72">
+            <canvas id="grafico-soroterapia"></canvas>
+          </div>
+        </div>
+
+        <!-- TIPO DE SORO -->
+        <div class="border border-gray-200 rounded-lg p-6 lg:col-span-2">
+          <h3 class="font-semibold text-gray-800">Tipo de soro utilizado</h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Casos com uso registrado de cada soro, independentemente do número de ampolas.
+          </p>
+          <div class="mt-4 h-96">
+            <canvas id="grafico-soros"></canvas>
+          </div>
+        </div>
+
+        <!-- SOROTERAPIA POR GRAVIDADE -->
+        <div class="border border-gray-200 rounded-lg p-6 lg:col-span-3">
+          <h3 class="font-semibold text-gray-800">Soroterapia por gravidade</h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Distribuição percentual do uso de soroterapia em cada classificação de gravidade.
+          </p>
+          <div class="mt-4 h-80">
+            <canvas id="grafico-soroterapia-gravidade"></canvas>
+          </div>
+        </div>
+
+        <!-- TOTAL DE AMPOLAS -->
+        <div class="border border-gray-200 rounded-lg p-6 lg:col-span-3">
+          <h3 class="font-semibold text-gray-800">Total de ampolas por tipo de soro</h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Soma das ampolas registradas nos casos com uso de cada tipo de soro.
+          </p>
+          <div class="mt-4 h-96">
+            <canvas id="grafico-ampolas-totais"></canvas>
+          </div>
+        </div>
+
+        <!-- DISTRIBUIÇÃO DE AMPOLAS -->
+        <div class="border border-gray-200 rounded-lg p-6 lg:col-span-3">
+          <h3 class="font-semibold text-gray-800">
+            Distribuição do número de ampolas por caso
+          </h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Percentual de casos em cada faixa de ampolas, entre os registros com uso do respectivo soro.
+          </p>
+          <div class="mt-4 h-[30rem]">
+            <canvas id="grafico-ampolas"></canvas>
           </div>
         </div>
       </div>
@@ -138,39 +382,110 @@ import Container from "@/components/container.astro";
     import Chart from "chart.js/auto";
 
     // =========================
-    // ESTADO DO DASHBOARD
+    // ESTADO E CONSTANTES
     // =========================
     let filtros = {};
     let dadosCards = [];
     let dadosTempo = [];
+    let dadosMes = [];
+    let dadosSemana = [];
+    let dadosFaixaEtaria = [];
+    let dadosSexo = [];
+    let dadosLocalPicada = [];
+    let dadosAcidenteTrabalho = [];
+    let dadosRacaCor = [];
+    let dadosEscolaridade = [];
+    let dadosSubtipoAnimal = [];
+    let dadosSoros = [];
+    let dadosAmpolasTotais = [];
+    let dadosAmpolas = [];
 
-    let graficoTemporal = null;
-    let graficoAnimal = null;
-    let graficoGravidade = null;
-    let graficoTempo = null;
+    // Guarda as instâncias para destruí-las antes de redesenhar.
+    const graficos = new Map();
 
-    // Posições das informações em cards.json.
-    const INDICE_CARDS = {
-      ano: 0,
-      animal: 1,
-      municipio: 2,
-      gravidade: 3,
-      casos: 4,
-      obitos: 5,
-      soroterapiaSim: 6,
-      soroterapiaConhecida: 7,
-      atendimentoAte3h: 8,
-      tempoConhecido: 9,
+    const COR_PRIMARIA = "#0A2C57";
+    const COR_OBITOS = "#B91C1C";
+    const CORES_GRAVIDADE = ["#0A2C57", "#4F86C6", "#B91C1C", "#94A3B8"];
+
+    // Paleta acessível e coerente com a identidade visual do site.
+    const CORES_ANIMAIS = {
+      "Serpente": "#C47A00",
+      "Aranha": "#6D4C8E",
+      "Escorpião": "#4F86C6",
+      "Lagarta": "#0F766E",
+      "Abelha": "#0A2C57",
+      "Outros": "#64748B",
+      "Outro": "#64748B",
+      "Ignorado": "#CBD5E1",
     };
 
-    // Posições das informações em tempo.json.
-    const INDICE_TEMPO = {
+    const CORES_SOROTERAPIA = {
+      sim: "#0A2C57",
+      nao: "#6D4C8E",
+      ignorado: "#94A3B8",
+    };
+
+    const CORES_EVOLUCAO = {
+      "Cura": "#0F766E",
+      "Óbito por acidente por animais peçonhentos": "#B91C1C",
+      "Óbito por outras causas": "#6D4C8E",
+      "Ignorado": "#94A3B8",
+      "Sem informação": "#CBD5E1",
+    };
+
+    const CORES_FAIXAS_AMPOLAS = [
+      "#4F86C6",
+      "#0F766E",
+      "#6D4C8E",
+      "#C47A00",
+      "#64748B",
+      "#0A2C57",
+    ];
+
+    const CORES_CATEGORIAS = {
+      principal: "#0A2C57",
+      secundaria: "#4F86C6",
+      destaque: "#C47A00",
+      ignorado: "#94A3B8",
+    };
+
+    // Os cinco primeiros campos são iguais em todos os JSONs agregados.
+    const INDICE_COMUM = {
       ano: 0,
       animal: 1,
       municipio: 2,
       gravidade: 3,
-      tempo: 4,
+      evolucao: 4,
+    };
+
+    const INDICE_CARDS = {
+      ...INDICE_COMUM,
       casos: 5,
+      obitos: 6,
+      soroterapiaSim: 7,
+      soroterapiaConhecida: 8,
+      atendimentoAte3h: 9,
+      tempoConhecido: 10,
+    };
+
+    // mes.json, tempo.json, semana.json e soros.json:
+    // [y, a, m, g, e, categoria, casos]
+    const INDICE_SERIE = {
+      categoria: 5,
+      casos: 6,
+    };
+
+    const INDICE_AMPOLAS = {
+      soro: 5,
+      faixa: 6,
+      casos: 7,
+    };
+
+    // ampolas_totais.json: [y, a, m, g, e, soro, ampolas, casos]
+    const INDICE_AMPOLAS_TOTAIS = {
+      soro: 5,
+      ampolas: 6,
+      casos: 7,
     };
 
     const ORDEM_TEMPOS = [1, 2, 3, 4, 5, 6, 9];
@@ -183,6 +498,34 @@ import Container from "@/components/container.astro";
       6: "24 horas ou mais",
       9: "Ignorado",
     };
+
+    const CORES_TEMPO = {
+      1: "#0A2C57",
+      2: "#4F86C6",
+      3: "#0F766E",
+      4: "#6D4C8E",
+      5: "#C47A00",
+      6: "#64748B",
+      9: "#CBD5E1",
+    };
+
+    const ORDEM_MESES = Array.from({ length: 12 }, (_, indice) => indice + 1);
+    const MAPA_MESES = {
+      1: "Jan",
+      2: "Fev",
+      3: "Mar",
+      4: "Abr",
+      5: "Mai",
+      6: "Jun",
+      7: "Jul",
+      8: "Ago",
+      9: "Set",
+      10: "Out",
+      11: "Nov",
+      12: "Dez",
+    };
+
+    const ORDEM_SEMANAS = Array.from({ length: 53 }, (_, indice) => indice + 1);
 
     // =========================
     // FUNÇÕES AUXILIARES
@@ -202,23 +545,25 @@ import Container from "@/components/container.astro";
         animal: valoresSelecionados("animal"),
         municipio: valoresSelecionados("municipio"),
         gravidade: valoresSelecionados("gravidade"),
+        evolucao: valoresSelecionados("evolucao"),
       };
     }
 
-    function filtrarDados(dados, selecao) {
-      return dados.filter((linha) => {
-        const ano = String(linha[0]);
-        const animal = String(linha[1]);
-        const municipio = String(linha[2]);
-        const gravidade = String(linha[3]);
+    function atendeFiltro(valor, selecionados) {
+      return (
+        selecionados.includes("todos") ||
+        selecionados.includes(String(valor))
+      );
+    }
 
-        return (
-          (selecao.ano.includes("todos") || selecao.ano.includes(ano)) &&
-          (selecao.animal.includes("todos") || selecao.animal.includes(animal)) &&
-          (selecao.municipio.includes("todos") || selecao.municipio.includes(municipio)) &&
-          (selecao.gravidade.includes("todos") || selecao.gravidade.includes(gravidade))
-        );
-      });
+    function filtrarDados(dados, selecao) {
+      return dados.filter((linha) =>
+        atendeFiltro(linha[INDICE_COMUM.ano], selecao.ano) &&
+        atendeFiltro(linha[INDICE_COMUM.animal], selecao.animal) &&
+        atendeFiltro(linha[INDICE_COMUM.municipio], selecao.municipio) &&
+        atendeFiltro(linha[INDICE_COMUM.gravidade], selecao.gravidade) &&
+        atendeFiltro(linha[INDICE_COMUM.evolucao], selecao.evolucao)
+      );
     }
 
     function formatarPercentual(valor, casas = 2) {
@@ -230,101 +575,609 @@ import Container from "@/components/container.astro";
       return Number(valor).toLocaleString("pt-BR");
     }
 
-    // =========================
-    // INDICADORES
-    // =========================
-    function atualizarIndicadores(dadosFiltrados) {
-      let totalCasos = 0;
-      let totalObitos = 0;
-      let soroterapiaSim = 0;
-      let soroterapiaConhecida = 0;
-      let atendimentoAte3h = 0;
-      let tempoConhecido = 0;
+    function somarPor(dados, indiceChave, indiceValor) {
+      const totais = new Map();
 
-      dadosFiltrados.forEach((linha) => {
-        totalCasos += linha[INDICE_CARDS.casos];
-        totalObitos += linha[INDICE_CARDS.obitos];
-        soroterapiaSim += linha[INDICE_CARDS.soroterapiaSim];
-        soroterapiaConhecida += linha[INDICE_CARDS.soroterapiaConhecida];
-        atendimentoAte3h += linha[INDICE_CARDS.atendimentoAte3h];
-        tempoConhecido += linha[INDICE_CARDS.tempoConhecido];
+      dados.forEach((linha) => {
+        const chave = Number(linha[indiceChave]);
+        const valor = Number(linha[indiceValor]);
+        totais.set(chave, (totais.get(chave) || 0) + valor);
       });
 
-      const taxaLetalidade =
-        totalCasos > 0 ? (totalObitos / totalCasos) * 100 : null;
-
-      const percentualSoroterapia =
-        soroterapiaConhecida > 0
-          ? (soroterapiaSim / soroterapiaConhecida) * 100
-          : null;
-
-      const percentualAte3h =
-        tempoConhecido > 0
-          ? (atendimentoAte3h / tempoConhecido) * 100
-          : null;
-
-      const elementos = {
-        casos: document.querySelector("#total-casos"),
-        obitos: document.querySelector("#total-obitos"),
-        letalidade: document.querySelector("#taxa-letalidade"),
-        soroterapia: document.querySelector("#percentual-soroterapia"),
-        tempo: document.querySelector("#tempo-atendimento"),
-      };
-
-      if (elementos.casos) elementos.casos.textContent = formatarNumero(totalCasos);
-      if (elementos.obitos) elementos.obitos.textContent = formatarNumero(totalObitos);
-      if (elementos.letalidade) elementos.letalidade.textContent = formatarPercentual(taxaLetalidade);
-      if (elementos.soroterapia) elementos.soroterapia.textContent = formatarPercentual(percentualSoroterapia);
-      if (elementos.tempo) elementos.tempo.textContent = formatarPercentual(percentualAte3h);
+      return totais;
     }
 
-    // =========================
-    // GRÁFICO TEMPORAL
-    // =========================
-    function atualizarGraficoTemporal(dadosFiltrados) {
-      const casosPorAno = {};
-      const obitosPorAno = {};
+    function agruparDuasCategorias(
+      dados,
+      indiceLinha,
+      indiceColuna,
+      indiceValor
+    ) {
+      const matriz = new Map();
+      const totais = new Map();
+      const linhas = new Set();
 
-      dadosFiltrados.forEach((linha) => {
-        const indiceAno = linha[INDICE_CARDS.ano];
-        casosPorAno[indiceAno] =
-          (casosPorAno[indiceAno] || 0) + linha[INDICE_CARDS.casos];
-        obitosPorAno[indiceAno] =
-          (obitosPorAno[indiceAno] || 0) + linha[INDICE_CARDS.obitos];
+      dados.forEach((linha) => {
+        const categoriaLinha = Number(linha[indiceLinha]);
+        const categoriaColuna = Number(linha[indiceColuna]);
+        const valor = Number(linha[indiceValor]);
+        const chave = `${categoriaLinha}-${categoriaColuna}`;
+
+        linhas.add(categoriaLinha);
+        matriz.set(chave, (matriz.get(chave) || 0) + valor);
+        totais.set(
+          categoriaLinha,
+          (totais.get(categoriaLinha) || 0) + valor
+        );
       });
 
-      const indicesAnos = Object.keys(casosPorAno)
-        .map(Number)
-        .sort((a, b) => a - b);
+      return { matriz, totais, linhas: [...linhas] };
+    }
 
-      const labels = indicesAnos.map((indice) => filtros.anos[indice]);
-      const valoresCasos = indicesAnos.map((indice) => casosPorAno[indice]);
-      const valoresObitos = indicesAnos.map((indice) => obitosPorAno[indice] || 0);
+    function criarDatasetsPercentuais(
+      indicesLinhas,
+      categorias,
+      matriz,
+      totais,
+      obterRotulo,
+      obterCor
+    ) {
+      return categorias.map((categoria) => {
+        const casosAbsolutos = indicesLinhas.map(
+          (linha) => matriz.get(`${linha}-${categoria}`) || 0
+        );
 
-      const canvas = document.querySelector("#grafico-temporal");
+        return {
+          label: obterRotulo(categoria),
+          data: indicesLinhas.map((linha, indice) => {
+            const total = totais.get(linha) || 0;
+            return total > 0
+              ? (casosAbsolutos[indice] / total) * 100
+              : 0;
+          }),
+          casosAbsolutos,
+          backgroundColor: obterCor(categoria),
+          borderColor: "#FFFFFF",
+          borderWidth: 1,
+        };
+      });
+    }
+
+    function prepararSerieOrdenada(
+      dados,
+      ordem,
+      mapaRotulos = null,
+      preencherZeros = false
+    ) {
+      const totais = somarPor(
+        dados,
+        INDICE_SERIE.categoria,
+        INDICE_SERIE.casos
+      );
+
+      // Em séries temporais, mantém meses/semanas sem casos como zero
+      // para preservar a continuidade do eixo.
+      const categorias = preencherZeros
+        ? ordem
+        : ordem.filter((categoria) => totais.has(categoria));
+
+      return {
+        labels: categorias.map((categoria) =>
+          mapaRotulos ? mapaRotulos[categoria] : String(categoria)
+        ),
+        valores: categorias.map((categoria) => totais.get(categoria) || 0),
+      };
+    }
+
+    function obterCorAnimal(nomeAnimal) {
+      return CORES_ANIMAIS[nomeAnimal] || "#94A3B8";
+    }
+
+    function prepararSeriesPorAnimal(dados, ordemCategorias, mapaRotulos = null) {
+      const animaisPresentes = [
+        ...new Set(dados.map((linha) => Number(linha[INDICE_COMUM.animal])))
+      ].sort((a, b) => a - b);
+
+      const totais = new Map();
+
+      dados.forEach((linha) => {
+        const animal = Number(linha[INDICE_COMUM.animal]);
+        const categoria = Number(linha[INDICE_SERIE.categoria]);
+        const casos = Number(linha[INDICE_SERIE.casos]);
+        const chave = `${animal}-${categoria}`;
+
+        totais.set(chave, (totais.get(chave) || 0) + casos);
+      });
+
+      const labels = ordemCategorias.map((categoria) =>
+        mapaRotulos ? mapaRotulos[categoria] : String(categoria)
+      );
+
+      const datasets = animaisPresentes.map((animal) => {
+        const nomeAnimal = filtros.animais[animal];
+
+        return {
+          label: nomeAnimal,
+          data: ordemCategorias.map(
+            (categoria) => totais.get(`${animal}-${categoria}`) || 0
+          ),
+          backgroundColor: obterCorAnimal(nomeAnimal),
+          borderColor: "#FFFFFF",
+          borderWidth: 1,
+        };
+      });
+
+      return { labels, datasets };
+    }
+
+    function renderizarGrafico(nome, seletor, configuracao) {
+      const canvas = document.querySelector(seletor);
       if (!(canvas instanceof HTMLCanvasElement)) return;
 
-      if (graficoTemporal) graficoTemporal.destroy();
+      const graficoAnterior = graficos.get(nome);
+      if (graficoAnterior) graficoAnterior.destroy();
 
-      graficoTemporal = new Chart(canvas, {
+      graficos.set(nome, new Chart(canvas, configuracao));
+    }
+
+    function configuracaoPizza(labels, valores, cores) {
+      return {
+        type: "pie",
+        data: {
+          labels,
+          datasets: [
+            {
+              data: valores,
+              backgroundColor: cores,
+              borderColor: "#FFFFFF",
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                usePointStyle: true,
+                boxWidth: 10,
+                padding: 14,
+              },
+            },
+            tooltip: {
+              callbacks: {
+                label: (contexto) => {
+                  const valor = Number(contexto.raw);
+                  const total = contexto.dataset.data.reduce(
+                    (soma, numero) => soma + Number(numero),
+                    0
+                  );
+                  const percentual = total > 0 ? (valor / total) * 100 : 0;
+
+                  return `${contexto.label}: ${formatarNumero(
+                    valor
+                  )} (${formatarPercentual(percentual, 1)})`;
+                },
+              },
+            },
+          },
+        },
+      };
+    }
+
+    function configuracaoBarrasCategorias(
+      labels,
+      valores,
+      cores,
+      horizontal = false,
+      tituloCategoria = ""
+    ) {
+      return {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Casos",
+              data: valores,
+              backgroundColor: cores,
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          indexAxis: horizontal ? "y" : "x",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (contexto) =>
+                  `Casos: ${formatarNumero(contexto.raw)}`,
+              },
+            },
+          },
+          scales: horizontal
+            ? {
+                x: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: "Número de casos",
+                  },
+                  ticks: {
+                    callback: (valor) => formatarNumero(valor),
+                  },
+                },
+                y: {
+                  title: {
+                    display: Boolean(tituloCategoria),
+                    text: tituloCategoria,
+                  },
+                },
+              }
+            : {
+                x: {
+                  title: {
+                    display: Boolean(tituloCategoria),
+                    text: tituloCategoria,
+                  },
+                },
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: "Número de casos",
+                  },
+                  ticks: {
+                    callback: (valor) => formatarNumero(valor),
+                  },
+                },
+              },
+        },
+      };
+    }
+
+    function configuracaoBarrasHorizontais(labels, valores, tituloEixoY) {
+      return {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Casos",
+              data: valores,
+              backgroundColor: COR_PRIMARIA,
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (contexto) =>
+                  `Casos: ${formatarNumero(contexto.raw)}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Número de casos",
+              },
+              ticks: {
+                callback: (valor) => formatarNumero(valor),
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: tituloEixoY,
+              },
+            },
+          },
+        },
+      };
+    }
+
+    function configuracaoBarrasEmpilhadas(labels, datasets, tituloEixoX) {
+      return {
+        type: "bar",
+        data: {
+          labels,
+          datasets,
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: "index",
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: "bottom",
+            },
+            tooltip: {
+              callbacks: {
+                label: (contexto) =>
+                  `${contexto.dataset.label}: ${formatarNumero(contexto.raw)}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              stacked: true,
+              title: {
+                display: true,
+                text: tituloEixoX,
+              },
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Número de casos",
+              },
+              ticks: {
+                callback: (valor) => formatarNumero(valor),
+              },
+            },
+          },
+        },
+      };
+    }
+
+    function configuracaoBarras100Empilhadas(
+      labels,
+      datasets,
+      tituloEixoY
+    ) {
+      return {
+        type: "bar",
+        data: { labels, datasets },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: "index",
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: "bottom",
+            },
+            tooltip: {
+              callbacks: {
+                label: (contexto) => {
+                  const casos =
+                    contexto.dataset.casosAbsolutos?.[contexto.dataIndex] || 0;
+                  return `${contexto.dataset.label}: ${formatarNumero(
+                    casos
+                  )} casos (${formatarPercentual(Number(contexto.raw), 1)})`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              stacked: true,
+              beginAtZero: true,
+              max: 100,
+              title: {
+                display: true,
+                text: "Distribuição dos casos (%)",
+              },
+              ticks: {
+                callback: (valor) => `${valor}%`,
+              },
+            },
+            y: {
+              stacked: true,
+              title: {
+                display: true,
+                text: tituloEixoY,
+              },
+            },
+          },
+        },
+      };
+    }
+
+    function configuracaoLinhaSimples(
+      labels,
+      valores,
+      tituloEixoX,
+      maxTicksLimit = 12,
+      pointRadius = 2
+    ) {
+      return {
         type: "line",
         data: {
           labels,
           datasets: [
             {
               label: "Casos",
-              data: valoresCasos,
-              borderColor: "#0A2C57",
-              backgroundColor: "#0A2C57",
+              data: valores,
+              borderColor: COR_PRIMARIA,
+              backgroundColor: COR_PRIMARIA,
+              borderWidth: 2,
+              tension: 0.2,
+              pointRadius,
+              pointHoverRadius: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: "index",
+            intersect: false,
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (contexto) =>
+                  `Casos: ${formatarNumero(contexto.raw)}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: tituloEixoX,
+              },
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit,
+              },
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Número de casos",
+              },
+              ticks: {
+                callback: (valor) => formatarNumero(valor),
+              },
+            },
+          },
+        },
+      };
+    }
+
+    async function carregarJson(caminho) {
+      const resposta = await fetch(caminho);
+
+      if (!resposta.ok) {
+        throw new Error(`Erro ao carregar ${caminho}: ${resposta.status}`);
+      }
+
+      return resposta.json();
+    }
+
+    function resumirCards(dados) {
+      return dados.reduce(
+        (total, linha) => {
+          total.casos += linha[INDICE_CARDS.casos];
+          total.obitos += linha[INDICE_CARDS.obitos];
+          total.soroterapiaSim += linha[INDICE_CARDS.soroterapiaSim];
+          total.soroterapiaConhecida += linha[INDICE_CARDS.soroterapiaConhecida];
+          total.atendimentoAte3h += linha[INDICE_CARDS.atendimentoAte3h];
+          total.tempoConhecido += linha[INDICE_CARDS.tempoConhecido];
+          return total;
+        },
+        {
+          casos: 0,
+          obitos: 0,
+          soroterapiaSim: 0,
+          soroterapiaConhecida: 0,
+          atendimentoAte3h: 0,
+          tempoConhecido: 0,
+        }
+      );
+    }
+
+    // =========================
+    // INDICADORES
+    // =========================
+    function atualizarIndicadores(totais) {
+      const percentualObitos =
+        totais.casos > 0
+          ? (totais.obitos / totais.casos) * 100
+          : null;
+
+      const percentualSoroterapia =
+        totais.soroterapiaConhecida > 0
+          ? (totais.soroterapiaSim / totais.soroterapiaConhecida) * 100
+          : null;
+
+      const percentualAte3h =
+        totais.tempoConhecido > 0
+          ? (totais.atendimentoAte3h / totais.tempoConhecido) * 100
+          : null;
+
+      const valores = {
+        "#total-casos": formatarNumero(totais.casos),
+        "#total-obitos": formatarNumero(totais.obitos),
+        "#percentual-obitos":
+          percentualObitos === null
+            ? "—"
+            : `${formatarPercentual(percentualObitos)} dos casos`,
+        "#total-soroterapia": formatarNumero(totais.soroterapiaSim),
+        "#percentual-soroterapia":
+          percentualSoroterapia === null
+            ? "—"
+            : `${formatarPercentual(percentualSoroterapia)} dos casos com informação`,
+        "#total-ate3h": formatarNumero(totais.atendimentoAte3h),
+        "#percentual-ate3h":
+          percentualAte3h === null
+            ? "—"
+            : `${formatarPercentual(percentualAte3h)} dos casos com tempo conhecido`,
+      };
+
+      Object.entries(valores).forEach(([seletor, valor]) => {
+        const elemento = document.querySelector(seletor);
+        if (elemento) elemento.textContent = valor;
+      });
+    }
+
+    // =========================
+    // GRÁFICOS
+    // =========================
+    function atualizarGraficoTemporal(dadosFiltrados) {
+      const casosPorAno = somarPor(
+        dadosFiltrados,
+        INDICE_CARDS.ano,
+        INDICE_CARDS.casos
+      );
+
+      const obitosPorAno = somarPor(
+        dadosFiltrados,
+        INDICE_CARDS.ano,
+        INDICE_CARDS.obitos
+      );
+
+      const indicesAnos = [...casosPorAno.keys()].sort((a, b) => a - b);
+      const labels = indicesAnos.map((indice) => filtros.anos[indice]);
+
+      renderizarGrafico("temporal", "#grafico-temporal", {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Casos",
+              data: indicesAnos.map((indice) => casosPorAno.get(indice) || 0),
+              borderColor: COR_PRIMARIA,
+              backgroundColor: COR_PRIMARIA,
               borderWidth: 2,
               tension: 0.2,
               yAxisID: "y",
             },
             {
               label: "Óbitos",
-              data: valoresObitos,
-              borderColor: "#B91C1C",
-              backgroundColor: "#B91C1C",
+              data: indicesAnos.map((indice) => obitosPorAno.get(indice) || 0),
+              borderColor: COR_OBITOS,
+              backgroundColor: COR_OBITOS,
               borderWidth: 2,
               tension: 0.2,
               yAxisID: "yObitos",
@@ -339,9 +1192,7 @@ import Container from "@/components/container.astro";
             intersect: false,
           },
           plugins: {
-            legend: {
-              display: true,
-            },
+            legend: { display: true },
             tooltip: {
               callbacks: {
                 label: (contexto) =>
@@ -387,142 +1238,284 @@ import Container from "@/components/container.astro";
       });
     }
 
-    // =========================
-    // GRÁFICO POR ANIMAL
-    // =========================
     function atualizarGraficoAnimal(dadosFiltrados) {
-      const casosPorAnimal = {};
+      const casosPorAnimal = somarPor(
+        dadosFiltrados,
+        INDICE_CARDS.animal,
+        INDICE_CARDS.casos
+      );
 
-      dadosFiltrados.forEach((linha) => {
-        const indiceAnimal = linha[INDICE_CARDS.animal];
-        casosPorAnimal[indiceAnimal] =
-          (casosPorAnimal[indiceAnimal] || 0) + linha[INDICE_CARDS.casos];
-      });
-
-      const indicesAnimais = Object.keys(casosPorAnimal)
-        .map(Number)
-        .sort((a, b) => casosPorAnimal[b] - casosPorAnimal[a]);
+      const indicesAnimais = [...casosPorAnimal.keys()]
+        .sort((a, b) => casosPorAnimal.get(b) - casosPorAnimal.get(a));
 
       const labels = indicesAnimais.map((indice) => filtros.animais[indice]);
-      const valores = indicesAnimais.map((indice) => casosPorAnimal[indice]);
+      const valores = indicesAnimais.map((indice) => casosPorAnimal.get(indice));
 
-      const canvas = document.querySelector("#grafico-animal");
-      if (!(canvas instanceof HTMLCanvasElement)) return;
+      renderizarGrafico(
+        "animal",
+        "#grafico-animal",
+        configuracaoBarrasHorizontais(
+          labels,
+          valores,
+          "Tipo de animal"
+        )
+      );
+    }
 
-      if (graficoAnimal) graficoAnimal.destroy();
+    function atualizarGraficoGravidade(dadosFiltrados) {
+      const casosPorGravidade = somarPor(
+        dadosFiltrados,
+        INDICE_CARDS.gravidade,
+        INDICE_CARDS.casos
+      );
 
-      graficoAnimal = new Chart(canvas, {
+      const indices = [...casosPorGravidade.keys()].sort((a, b) => a - b);
+      const labels = indices.map((indice) => filtros.gravidades[indice]);
+      const valores = indices.map((indice) => casosPorGravidade.get(indice));
+
+      renderizarGrafico(
+        "gravidade",
+        "#grafico-gravidade",
+        configuracaoPizza(labels, valores, CORES_GRAVIDADE)
+      );
+    }
+
+    function atualizarGraficoTempo(dadosFiltrados) {
+      const { labels, valores } = prepararSerieOrdenada(
+        dadosFiltrados,
+        ORDEM_TEMPOS,
+        MAPA_TEMPOS
+      );
+
+      renderizarGrafico(
+        "tempo",
+        "#grafico-tempo",
+        configuracaoBarrasHorizontais(
+          labels,
+          valores,
+          "Tempo até o atendimento"
+        )
+      );
+    }
+
+    function atualizarGraficoSoroterapia(totais) {
+      const sim = totais.soroterapiaSim;
+      const nao = Math.max(
+        totais.soroterapiaConhecida - totais.soroterapiaSim,
+        0
+      );
+      const ignorado = Math.max(
+        totais.casos - totais.soroterapiaConhecida,
+        0
+      );
+
+      renderizarGrafico(
+        "soroterapia",
+        "#grafico-soroterapia",
+        configuracaoPizza(
+          ["Sim", "Não", "Ignorado"],
+          [sim, nao, ignorado],
+          [
+            CORES_SOROTERAPIA.sim,
+            CORES_SOROTERAPIA.nao,
+            CORES_SOROTERAPIA.ignorado,
+          ]
+        )
+      );
+    }
+
+    function atualizarPainelEvolucao(dadosFiltrados) {
+      const container = document.querySelector("#painel-evolucao");
+      if (!container) return;
+
+      const casosPorEvolucao = somarPor(
+        dadosFiltrados,
+        INDICE_CARDS.evolucao,
+        INDICE_CARDS.casos
+      );
+
+      const total = [...casosPorEvolucao.values()]
+        .reduce((soma, valor) => soma + valor, 0);
+
+      const indices = [...casosPorEvolucao.keys()]
+        .sort((a, b) => casosPorEvolucao.get(b) - casosPorEvolucao.get(a));
+
+      container.innerHTML = "";
+
+      indices.forEach((indice) => {
+        const nome = filtros.evolucoes[indice];
+        const casos = casosPorEvolucao.get(indice) || 0;
+        const percentual = total > 0 ? (casos / total) * 100 : 0;
+
+        const item = document.createElement("div");
+        item.className =
+          "flex min-h-36 flex-col justify-between rounded-lg border border-slate-200 bg-white p-4";
+
+        const topo = document.createElement("div");
+        topo.className = "flex min-w-0 items-start gap-2";
+
+        const marcador = document.createElement("span");
+        marcador.className = "mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full";
+        marcador.style.backgroundColor =
+          CORES_EVOLUCAO[nome] || "#64748B";
+
+        const titulo = document.createElement("p");
+        titulo.className =
+          "min-w-0 text-sm font-medium leading-5 text-slate-600";
+        titulo.textContent = nome;
+
+        topo.append(marcador, titulo);
+
+        const numeros = document.createElement("div");
+        numeros.className = "mt-4";
+
+        const valor = document.createElement("p");
+        valor.className =
+          "text-2xl font-bold leading-none text-[#0A2C57]";
+        valor.textContent = formatarNumero(casos);
+
+        const proporcao = document.createElement("p");
+        proporcao.className =
+          "mt-2 text-sm leading-5 text-slate-500";
+        proporcao.textContent =
+          `${formatarPercentual(percentual, 2)} dos casos`;
+
+        numeros.append(valor, proporcao);
+        item.append(topo, numeros);
+        container.appendChild(item);
+      });
+    }
+
+    function atualizarGraficoSoros(dadosFiltrados) {
+      const casosPorSoro = somarPor(
+        dadosFiltrados,
+        INDICE_SERIE.categoria,
+        INDICE_SERIE.casos
+      );
+
+      const indicesSoros = [...casosPorSoro.keys()]
+        .sort((a, b) => casosPorSoro.get(b) - casosPorSoro.get(a));
+
+      const labels = indicesSoros.map(
+        (indice) => filtros.soros[indice]
+      );
+
+      const valores = indicesSoros.map(
+        (indice) => casosPorSoro.get(indice)
+      );
+
+      renderizarGrafico(
+        "soros",
+        "#grafico-soros",
+        configuracaoBarrasHorizontais(
+          labels,
+          valores,
+          "Tipo de soro"
+        )
+      );
+    }
+
+    function atualizarGraficoAmpolas(dadosFiltrados) {
+      const contagens = new Map();
+      const totaisPorSoro = new Map();
+
+      dadosFiltrados.forEach((linha) => {
+        const soro = Number(linha[INDICE_AMPOLAS.soro]);
+        const faixa = Number(linha[INDICE_AMPOLAS.faixa]);
+        const casos = Number(linha[INDICE_AMPOLAS.casos]);
+        const chave = `${soro}-${faixa}`;
+
+        contagens.set(chave, (contagens.get(chave) || 0) + casos);
+        totaisPorSoro.set(
+          soro,
+          (totaisPorSoro.get(soro) || 0) + casos
+        );
+      });
+
+      // Ordena pelos soros com maior número de casos na seleção atual.
+      const indicesSoros = [...totaisPorSoro.keys()]
+        .sort((a, b) => totaisPorSoro.get(b) - totaisPorSoro.get(a));
+
+      const labels = indicesSoros.map(
+        (indice) => filtros.soros[indice]
+      );
+
+      const datasets = filtros.faixas_ampolas.map((faixa, indiceFaixa) => {
+        const casosAbsolutos = indicesSoros.map(
+          (soro) => contagens.get(`${soro}-${indiceFaixa}`) || 0
+        );
+
+        const percentuais = indicesSoros.map((soro, indice) => {
+          const total = totaisPorSoro.get(soro) || 0;
+          return total > 0
+            ? (casosAbsolutos[indice] / total) * 100
+            : 0;
+        });
+
+        return {
+          label: `${faixa} ampolas`,
+          data: percentuais,
+          casosAbsolutos,
+          backgroundColor:
+            CORES_FAIXAS_AMPOLAS[
+              indiceFaixa % CORES_FAIXAS_AMPOLAS.length
+            ],
+          borderColor: "#FFFFFF",
+          borderWidth: 1,
+        };
+      });
+
+      renderizarGrafico("ampolas", "#grafico-ampolas", {
         type: "bar",
         data: {
           labels,
-          datasets: [
-            {
-              label: "Casos",
-              data: valores,
-              backgroundColor: "#0A2C57",
-              borderRadius: 4,
-            },
-          ],
+          datasets,
         },
         options: {
           indexAxis: "y",
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            mode: "index",
+            intersect: false,
+          },
           plugins: {
             legend: {
-              display: false,
-            },
-            tooltip: {
-              callbacks: {
-                label: (contexto) => `Casos: ${formatarNumero(contexto.raw)}`,
-              },
-            },
-          },
-          scales: {
-            x: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: "Número de casos",
-              },
-              ticks: {
-                callback: (valor) => formatarNumero(valor),
-              },
-            },
-            y: {
-              title: {
-                display: true,
-                text: "Tipo de animal",
-              },
-            },
-          },
-        },
-      });
-    }
-
-    // =========================
-    // GRÁFICO DE GRAVIDADE
-    // =========================
-    function atualizarGraficoGravidade(dadosFiltrados) {
-      const casosPorGravidade = {};
-
-      dadosFiltrados.forEach((linha) => {
-        const indiceGravidade = linha[INDICE_CARDS.gravidade];
-        casosPorGravidade[indiceGravidade] =
-          (casosPorGravidade[indiceGravidade] || 0) + linha[INDICE_CARDS.casos];
-      });
-
-      const indicesGravidade = Object.keys(casosPorGravidade)
-        .map(Number)
-        .sort((a, b) => a - b);
-
-      const labels = indicesGravidade.map((indice) => filtros.gravidades[indice]);
-      const valores = indicesGravidade.map((indice) => casosPorGravidade[indice]);
-
-      const canvas = document.querySelector("#grafico-gravidade");
-      if (!(canvas instanceof HTMLCanvasElement)) return;
-
-      if (graficoGravidade) graficoGravidade.destroy();
-
-      graficoGravidade = new Chart(canvas, {
-        type: "pie",
-        data: {
-          labels,
-          datasets: [
-            {
-              data: valores,
-              backgroundColor: [
-                "#0A2C57",
-                "#4F86C6",
-                "#B91C1C",
-                "#94A3B8",
-              ],
-              borderColor: "#FFFFFF",
-              borderWidth: 2,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
+              display: true,
               position: "bottom",
             },
             tooltip: {
               callbacks: {
                 label: (contexto) => {
-                  const valor = Number(contexto.raw);
-                  const total = contexto.dataset.data.reduce(
-                    (soma, numero) => soma + Number(numero),
-                    0
-                  );
-                  const percentual = total > 0 ? (valor / total) * 100 : 0;
+                  const casos =
+                    contexto.dataset.casosAbsolutos?.[contexto.dataIndex] || 0;
+                  const percentual = Number(contexto.raw);
 
-                  return `${contexto.label}: ${formatarNumero(
-                    valor
-                  )} (${formatarPercentual(percentual, 1)})`;
+                  return `${contexto.dataset.label}: ${formatarNumero(
+                    casos
+                  )} casos (${formatarPercentual(percentual, 1)})`;
                 },
+              },
+            },
+          },
+          scales: {
+            x: {
+              stacked: true,
+              beginAtZero: true,
+              max: 100,
+              title: {
+                display: true,
+                text: "Distribuição dos casos (%)",
+              },
+              ticks: {
+                callback: (valor) => `${valor}%`,
+              },
+            },
+            y: {
+              stacked: true,
+              title: {
+                display: true,
+                text: "Tipo de soro",
               },
             },
           },
@@ -530,39 +1523,428 @@ import Container from "@/components/container.astro";
       });
     }
 
-    // =========================
-    // GRÁFICO DE TEMPO
-    // =========================
-    function atualizarGraficoTempo(dadosFiltrados) {
-      const casosPorTempo = {};
+    function atualizarGraficoCategoria(
+      nome,
+      seletor,
+      dadosFiltrados,
+      rotulos,
+      opcoes = {}
+    ) {
+      const {
+        horizontal = false,
+        ordenar = false,
+        tituloCategoria = "",
+        cores = null,
+        corIgnorado = CORES_CATEGORIAS.ignorado,
+      } = opcoes;
 
-      dadosFiltrados.forEach((linha) => {
-        const tempo = linha[INDICE_TEMPO.tempo];
-        casosPorTempo[tempo] =
-          (casosPorTempo[tempo] || 0) + linha[INDICE_TEMPO.casos];
-      });
-
-      const temposPresentes = ORDEM_TEMPOS.filter(
-        (tempo) => casosPorTempo[tempo] !== undefined
+      const totais = somarPor(
+        dadosFiltrados,
+        INDICE_SERIE.categoria,
+        INDICE_SERIE.casos
       );
 
-      const labels = temposPresentes.map((tempo) => MAPA_TEMPOS[tempo]);
-      const valores = temposPresentes.map((tempo) => casosPorTempo[tempo]);
+      let indices = [...totais.keys()];
 
-      const canvas = document.querySelector("#grafico-tempo");
-      if (!(canvas instanceof HTMLCanvasElement)) return;
+      if (ordenar) {
+        indices.sort((a, b) => totais.get(b) - totais.get(a));
+      } else {
+        indices.sort((a, b) => a - b);
+      }
 
-      if (graficoTempo) graficoTempo.destroy();
+      const labels = indices.map((indice) => rotulos[indice]);
+      const valores = indices.map((indice) => totais.get(indice) || 0);
 
-      graficoTempo = new Chart(canvas, {
+      const coresGrafico = indices.map((indice) => {
+        if (cores?.[indice]) return cores[indice];
+        const rotulo = rotulos[indice];
+        return rotulo === "Ignorado"
+          ? corIgnorado
+          : CORES_CATEGORIAS.principal;
+      });
+
+      renderizarGrafico(
+        nome,
+        seletor,
+        configuracaoBarrasCategorias(
+          labels,
+          valores,
+          coresGrafico,
+          horizontal,
+          tituloCategoria
+        )
+      );
+    }
+
+    function atualizarGraficoFaixaEtaria(dadosFiltrados) {
+      atualizarGraficoCategoria(
+        "faixa-etaria",
+        "#grafico-faixa-etaria",
+        dadosFiltrados,
+        filtros.faixas_etarias,
+        {
+          tituloCategoria: "Faixa etária",
+          corIgnorado: CORES_CATEGORIAS.principal,
+        }
+      );
+    }
+
+    function atualizarGraficoPizzaCategoria(
+      nome,
+      seletor,
+      dadosFiltrados,
+      rotulos,
+      coresPorIndice
+    ) {
+      const totais = somarPor(
+        dadosFiltrados,
+        INDICE_SERIE.categoria,
+        INDICE_SERIE.casos
+      );
+
+      const indices = [...totais.keys()].sort((a, b) => a - b);
+      const labels = indices.map((indice) => rotulos[indice]);
+      const valores = indices.map((indice) => totais.get(indice) || 0);
+      const cores = indices.map(
+        (indice) => coresPorIndice[indice] || CORES_CATEGORIAS.ignorado
+      );
+
+      renderizarGrafico(
+        nome,
+        seletor,
+        configuracaoPizza(labels, valores, cores)
+      );
+    }
+
+    function atualizarGraficoSexo(dadosFiltrados) {
+      atualizarGraficoPizzaCategoria(
+        "sexo",
+        "#grafico-sexo",
+        dadosFiltrados,
+        filtros.sexos,
+        {
+          0: "#0A2C57",
+          1: "#6D4C8E",
+          2: "#94A3B8",
+        }
+      );
+    }
+
+    function atualizarGraficoLocalPicada(dadosFiltrados) {
+      atualizarGraficoCategoria(
+        "local-picada",
+        "#grafico-local-picada",
+        dadosFiltrados,
+        filtros.locais_picada,
+        {
+          horizontal: true,
+          ordenar: true,
+          tituloCategoria: "Local da picada",
+          corIgnorado: CORES_CATEGORIAS.principal,
+        }
+      );
+    }
+
+    function atualizarGraficoAcidenteTrabalho(dadosFiltrados) {
+      atualizarGraficoPizzaCategoria(
+        "trabalho",
+        "#grafico-trabalho",
+        dadosFiltrados,
+        filtros.acidente_trabalho,
+        {
+          0: "#C47A00",
+          1: "#0A2C57",
+          2: "#94A3B8",
+        }
+      );
+    }
+
+    function atualizarGraficoRacaCor(dadosFiltrados) {
+      atualizarGraficoCategoria(
+        "raca-cor",
+        "#grafico-raca-cor",
+        dadosFiltrados,
+        filtros.racas_cores,
+        {
+          horizontal: true,
+          tituloCategoria: "Raça/cor",
+          corIgnorado: CORES_CATEGORIAS.principal,
+        }
+      );
+    }
+
+    function atualizarGraficoEscolaridade(dadosFiltrados) {
+      atualizarGraficoCategoria(
+        "escolaridade",
+        "#grafico-escolaridade",
+        dadosFiltrados,
+        filtros.escolaridades,
+        {
+          horizontal: true,
+          tituloCategoria: "Escolaridade",
+          corIgnorado: CORES_CATEGORIAS.principal,
+        }
+      );
+    }
+
+    function atualizarGraficoSubtipoAnimal(dadosFiltrados) {
+      const totais = somarPor(
+        dadosFiltrados,
+        INDICE_SERIE.categoria,
+        INDICE_SERIE.casos
+      );
+
+      const itens = [...totais.keys()]
+        .sort((a, b) => a - b)
+        .map((indice) => {
+          const nomeCompleto = filtros.subtipos_animais[indice];
+          const [animal, subtipo] = nomeCompleto.split(" — ");
+
+          return {
+            animal,
+            subtipo: subtipo || nomeCompleto,
+            casos: totais.get(indice) || 0,
+          };
+        })
+        .filter((item) => item.subtipo !== "Ignorado");
+
+      const labels = itens.map((item) => item.subtipo);
+      const valores = itens.map((item) => item.casos);
+      const cores = itens.map((item) => obterCorAnimal(item.animal));
+
+      const animaisPresentes = ["Serpente", "Aranha", "Lagarta"].filter(
+        (animal) => itens.some((item) => item.animal === animal)
+      );
+
+      renderizarGrafico(
+        "subtipo-animal",
+        "#grafico-subtipo-animal",
+        {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Casos",
+                data: valores,
+                backgroundColor: cores,
+                borderRadius: 5,
+                barThickness: 24,
+                maxBarThickness: 28,
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+              legend: {
+                display: true,
+                position: "bottom",
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: "rectRounded",
+                  generateLabels: () =>
+                    animaisPresentes.map((animal, indice) => ({
+                      text: animal,
+                      fillStyle: obterCorAnimal(animal),
+                      strokeStyle: obterCorAnimal(animal),
+                      hidden: false,
+                      index: indice,
+                    })),
+                },
+                onClick: () => {},
+              },
+
+              tooltip: {
+                callbacks: {
+                  label: (contexto) => {
+                    const item = itens[contexto.dataIndex];
+                    return `${item.animal}: ${formatarNumero(
+                      contexto.raw
+                    )} casos`;
+                  },
+                },
+              },
+            },
+
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: {
+                  color: "#E5E7EB",
+                },
+                title: {
+                  display: true,
+                  text: "Número de casos",
+                },
+                ticks: {
+                  callback: (valor) => formatarNumero(valor),
+                },
+              },
+
+              y: {
+                grid: {
+                  color: "#E5E7EB",
+                },
+                title: {
+                  display: true,
+                  text: "Subtipo",
+                },
+                ticks: {
+                  autoSkip: false,
+                },
+              },
+            },
+          },
+        }
+      );
+    }
+    function atualizarGraficoGravidadeAnimal(dadosFiltrados) {
+      const { matriz, totais, linhas } = agruparDuasCategorias(
+        dadosFiltrados,
+        INDICE_CARDS.animal,
+        INDICE_CARDS.gravidade,
+        INDICE_CARDS.casos
+      );
+
+      const indicesAnimais = linhas.sort((a, b) => a - b);
+      const categorias = filtros.gravidades.map((_, indice) => indice);
+      const labels = indicesAnimais.map((indice) => filtros.animais[indice]);
+      const datasets = criarDatasetsPercentuais(
+        indicesAnimais,
+        categorias,
+        matriz,
+        totais,
+        (indice) => filtros.gravidades[indice],
+        (indice) => CORES_GRAVIDADE[indice] || "#94A3B8"
+      );
+
+      renderizarGrafico(
+        "gravidade-animal",
+        "#grafico-gravidade-animal",
+        configuracaoBarras100Empilhadas(
+          labels,
+          datasets,
+          "Tipo de animal"
+        )
+      );
+    }
+
+    function atualizarGraficoSoroterapiaGravidade(dadosFiltrados) {
+      const matriz = new Map();
+      const totais = new Map();
+      const gravidadesPresentes = new Set();
+
+      dadosFiltrados.forEach((linha) => {
+        const gravidade = Number(linha[INDICE_CARDS.gravidade]);
+        const casos = Number(linha[INDICE_CARDS.casos]);
+        const sim = Number(linha[INDICE_CARDS.soroterapiaSim]);
+        const conhecidos = Number(linha[INDICE_CARDS.soroterapiaConhecida]);
+        const nao = Math.max(conhecidos - sim, 0);
+        const ignorado = Math.max(casos - conhecidos, 0);
+
+        gravidadesPresentes.add(gravidade);
+        totais.set(gravidade, (totais.get(gravidade) || 0) + casos);
+
+        [sim, nao, ignorado].forEach((valor, categoria) => {
+          const chave = `${gravidade}-${categoria}`;
+          matriz.set(chave, (matriz.get(chave) || 0) + valor);
+        });
+      });
+
+      const indices = [...gravidadesPresentes].sort((a, b) => a - b);
+      const categorias = [0, 1, 2];
+      const rotulos = ["Sim", "Não", "Ignorado"];
+      const cores = [
+        CORES_SOROTERAPIA.sim,
+        CORES_SOROTERAPIA.nao,
+        CORES_SOROTERAPIA.ignorado,
+      ];
+
+      const datasets = criarDatasetsPercentuais(
+        indices,
+        categorias,
+        matriz,
+        totais,
+        (indice) => rotulos[indice],
+        (indice) => cores[indice]
+      );
+
+      renderizarGrafico(
+        "soroterapia-gravidade",
+        "#grafico-soroterapia-gravidade",
+        configuracaoBarras100Empilhadas(
+          indices.map((indice) => filtros.gravidades[indice]),
+          datasets,
+          "Gravidade"
+        )
+      );
+    }
+
+    function atualizarGraficoTempoGravidade(dadosFiltrados) {
+      const { matriz, totais, linhas } = agruparDuasCategorias(
+        dadosFiltrados,
+        INDICE_COMUM.gravidade,
+        INDICE_SERIE.categoria,
+        INDICE_SERIE.casos
+      );
+
+      const indices = linhas.sort((a, b) => a - b);
+      const datasets = criarDatasetsPercentuais(
+        indices,
+        ORDEM_TEMPOS,
+        matriz,
+        totais,
+        (tempo) => MAPA_TEMPOS[tempo],
+        (tempo) => CORES_TEMPO[tempo] || "#94A3B8"
+      );
+
+      renderizarGrafico(
+        "tempo-gravidade",
+        "#grafico-tempo-gravidade",
+        configuracaoBarras100Empilhadas(
+          indices.map((indice) => filtros.gravidades[indice]),
+          datasets,
+          "Gravidade"
+        )
+      );
+    }
+
+    function atualizarGraficoObitosAnimal(dadosFiltrados) {
+      const casosPorAnimal = somarPor(
+        dadosFiltrados,
+        INDICE_CARDS.animal,
+        INDICE_CARDS.casos
+      );
+      const obitosPorAnimal = somarPor(
+        dadosFiltrados,
+        INDICE_CARDS.animal,
+        INDICE_CARDS.obitos
+      );
+
+      const indices = [...casosPorAnimal.keys()].sort(
+        (a, b) => (obitosPorAnimal.get(b) || 0) - (obitosPorAnimal.get(a) || 0)
+      );
+      const labels = indices.map((indice) => filtros.animais[indice]);
+      const obitos = indices.map((indice) => obitosPorAnimal.get(indice) || 0);
+      const letalidades = indices.map((indice) => {
+        const casos = casosPorAnimal.get(indice) || 0;
+        return casos > 0 ? ((obitosPorAnimal.get(indice) || 0) / casos) * 100 : 0;
+      });
+
+      renderizarGrafico("obitos-animal", "#grafico-obitos-animal", {
         type: "bar",
         data: {
           labels,
           datasets: [
             {
-              label: "Casos",
-              data: valores,
-              backgroundColor: "#0A2C57",
+              label: "Óbitos",
+              data: obitos,
+              letalidades,
+              backgroundColor: COR_OBITOS,
               borderRadius: 4,
             },
           ],
@@ -572,12 +1954,17 @@ import Container from "@/components/container.astro";
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: false,
-            },
+            legend: { display: false },
             tooltip: {
               callbacks: {
-                label: (contexto) => `Casos: ${formatarNumero(contexto.raw)}`,
+                label: (contexto) => {
+                  const letalidade =
+                    contexto.dataset.letalidades?.[contexto.dataIndex] || 0;
+                  return `${formatarNumero(contexto.raw)} óbitos (${formatarPercentual(
+                    letalidade,
+                    2
+                  )} de letalidade)`;
+                },
               },
             },
           },
@@ -586,7 +1973,83 @@ import Container from "@/components/container.astro";
               beginAtZero: true,
               title: {
                 display: true,
-                text: "Número de casos",
+                text: "Número de óbitos",
+              },
+              ticks: {
+                precision: 0,
+                callback: (valor) => formatarNumero(valor),
+              },
+            },
+          },
+        },
+      });
+    }
+
+    function atualizarGraficoAmpolasTotais(dadosFiltrados) {
+      const ampolasPorSoro = new Map();
+      const casosPorSoro = new Map();
+
+      dadosFiltrados.forEach((linha) => {
+        const soro = Number(linha[INDICE_AMPOLAS_TOTAIS.soro]);
+        ampolasPorSoro.set(
+          soro,
+          (ampolasPorSoro.get(soro) || 0) +
+            Number(linha[INDICE_AMPOLAS_TOTAIS.ampolas])
+        );
+        casosPorSoro.set(
+          soro,
+          (casosPorSoro.get(soro) || 0) +
+            Number(linha[INDICE_AMPOLAS_TOTAIS.casos])
+        );
+      });
+
+      const indices = [...ampolasPorSoro.keys()].sort(
+        (a, b) => ampolasPorSoro.get(b) - ampolasPorSoro.get(a)
+      );
+      const labels = indices.map((indice) => filtros.soros[indice]);
+      const valores = indices.map((indice) => ampolasPorSoro.get(indice));
+      const casosUso = indices.map((indice) => casosPorSoro.get(indice) || 0);
+
+      renderizarGrafico("ampolas-totais", "#grafico-ampolas-totais", {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Ampolas",
+              data: valores,
+              casosUso,
+              backgroundColor: COR_PRIMARIA,
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (contexto) =>
+                  `Ampolas registradas: ${formatarNumero(contexto.raw)}`,
+                afterLabel: (contexto) => {
+                  const casos = contexto.dataset.casosUso?.[contexto.dataIndex] || 0;
+                  const media = casos > 0 ? Number(contexto.raw) / casos : 0;
+                  return `Casos com uso: ${formatarNumero(casos)} | Média: ${media
+                    .toFixed(2)
+                    .replace(".", ",")} ampolas/caso`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Número de ampolas registradas",
               },
               ticks: {
                 callback: (valor) => formatarNumero(valor),
@@ -595,12 +2058,47 @@ import Container from "@/components/container.astro";
             y: {
               title: {
                 display: true,
-                text: "Tempo até o atendimento",
+                text: "Tipo de soro",
               },
             },
           },
         },
       });
+    }
+
+    function atualizarGraficoMes(dadosFiltrados) {
+      const { labels, datasets } = prepararSeriesPorAnimal(
+        dadosFiltrados,
+        ORDEM_MESES,
+        MAPA_MESES
+      );
+
+      renderizarGrafico(
+        "mes",
+        "#grafico-mes",
+        configuracaoBarrasEmpilhadas(
+          labels,
+          datasets,
+          "Mês do acidente"
+        )
+      );
+    }
+
+    function atualizarGraficoSemana(dadosFiltrados) {
+      const { labels, datasets } = prepararSeriesPorAnimal(
+        dadosFiltrados,
+        ORDEM_SEMANAS
+      );
+
+      renderizarGrafico(
+        "semana",
+        "#grafico-semana",
+        configuracaoBarrasEmpilhadas(
+          labels,
+          datasets,
+          "Semana epidemiológica"
+        )
+      );
     }
 
     // =========================
@@ -608,14 +2106,46 @@ import Container from "@/components/container.astro";
     // =========================
     function atualizarDashboard() {
       const selecao = obterSelecaoAtual();
+
       const cardsFiltrados = filtrarDados(dadosCards, selecao);
       const tempoFiltrado = filtrarDados(dadosTempo, selecao);
+      const mesFiltrado = filtrarDados(dadosMes, selecao);
+      const semanaFiltrada = filtrarDados(dadosSemana, selecao);
+      const faixaEtariaFiltrada = filtrarDados(dadosFaixaEtaria, selecao);
+      const sexoFiltrado = filtrarDados(dadosSexo, selecao);
+      const localPicadaFiltrado = filtrarDados(dadosLocalPicada, selecao);
+      const trabalhoFiltrado = filtrarDados(dadosAcidenteTrabalho, selecao);
+      const racaCorFiltrada = filtrarDados(dadosRacaCor, selecao);
+      const escolaridadeFiltrada = filtrarDados(dadosEscolaridade, selecao);
+      const subtipoAnimalFiltrado = filtrarDados(dadosSubtipoAnimal, selecao);
+      const sorosFiltrados = filtrarDados(dadosSoros, selecao);
+      const ampolasTotaisFiltradas = filtrarDados(dadosAmpolasTotais, selecao);
+      const ampolasFiltradas = filtrarDados(dadosAmpolas, selecao);
+      const totaisCards = resumirCards(cardsFiltrados);
 
-      atualizarIndicadores(cardsFiltrados);
+      atualizarIndicadores(totaisCards);
       atualizarGraficoTemporal(cardsFiltrados);
       atualizarGraficoAnimal(cardsFiltrados);
       atualizarGraficoGravidade(cardsFiltrados);
+      atualizarGraficoSubtipoAnimal(subtipoAnimalFiltrado);
+      atualizarGraficoGravidadeAnimal(cardsFiltrados);
       atualizarGraficoTempo(tempoFiltrado);
+      atualizarGraficoSoroterapia(totaisCards);
+      atualizarPainelEvolucao(cardsFiltrados);
+      atualizarGraficoMes(mesFiltrado);
+      atualizarGraficoSemana(semanaFiltrada);
+      atualizarGraficoLocalPicada(localPicadaFiltrado);
+      atualizarGraficoAcidenteTrabalho(trabalhoFiltrado);
+      atualizarGraficoFaixaEtaria(faixaEtariaFiltrada);
+      atualizarGraficoSexo(sexoFiltrado);
+      atualizarGraficoRacaCor(racaCorFiltrada);
+      atualizarGraficoEscolaridade(escolaridadeFiltrada);
+      atualizarGraficoTempoGravidade(tempoFiltrado);
+      atualizarGraficoObitosAnimal(cardsFiltrados);
+      atualizarGraficoSoros(sorosFiltrados);
+      atualizarGraficoSoroterapiaGravidade(cardsFiltrados);
+      atualizarGraficoAmpolasTotais(ampolasTotaisFiltradas);
+      atualizarGraficoAmpolas(ampolasFiltradas);
     }
 
     // =========================
@@ -652,24 +2182,31 @@ import Container from "@/components/container.astro";
 
       container.innerHTML = "";
 
-      const todos = document.createElement("label");
-      todos.className =
-        "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
-      todos.innerHTML = `
-        <input type="checkbox" value="todos" data-filtro="${nome}" checked class="accent-[#0A2C57]">
-        <span class="text-sm text-slate-700">Todos</span>
-      `;
-      container.appendChild(todos);
-
-      valores.forEach((valor, indice) => {
+      const criarOpcao = (valor, texto, checked = false) => {
         const item = document.createElement("label");
         item.className =
           "flex items-center gap-2 px-2 py-2 rounded hover:bg-slate-50 cursor-pointer";
         item.innerHTML = `
-          <input type="checkbox" value="${indice}" data-filtro="${nome}" class="accent-[#0A2C57]">
-          <span class="text-sm text-slate-700">${valor}</span>
+          <input
+            type="checkbox"
+            value="${valor}"
+            data-filtro="${nome}"
+            ${checked ? "checked" : ""}
+            class="accent-[#0A2C57]"
+          >
+          <span class="text-sm text-slate-700">${texto}</span>
         `;
-        container.appendChild(item);
+        return item;
+      };
+
+      container.appendChild(
+        criarOpcao("todos", "Todos", true)
+      );
+
+      valores.forEach((valor, indice) => {
+        container.appendChild(
+          criarOpcao(indice, valor)
+        );
       });
 
       container.addEventListener("change", (evento) => {
@@ -679,12 +2216,19 @@ import Container from "@/components/container.astro";
         const checkboxes = Array.from(
           container.querySelectorAll('input[type="checkbox"]')
         );
-        const checkboxTodos = checkboxes[0];
+
+        const checkboxTodos = checkboxes.find(
+          (checkbox) => checkbox.value === "todos"
+        );
+
+        if (!checkboxTodos) return;
 
         if (alvo.value === "todos" && alvo.checked) {
-          checkboxes.slice(1).forEach((checkbox) => {
-            checkbox.checked = false;
-          });
+          checkboxes
+            .filter((checkbox) => checkbox.value !== "todos")
+            .forEach((checkbox) => {
+              checkbox.checked = false;
+            });
         }
 
         if (alvo.value !== "todos" && alvo.checked) {
@@ -730,12 +2274,10 @@ import Container from "@/components/container.astro";
     }
 
     function configurarBuscaMunicipio() {
-      const buscaMunicipio = document.querySelector("#busca-municipio");
-      const opcoesMunicipio = document.querySelector("#municipio-opcoes");
+      const busca = document.querySelector("#busca-municipio");
+      const opcoes = document.querySelector("#municipio-opcoes");
 
-      if (!(buscaMunicipio instanceof HTMLInputElement) || !opcoesMunicipio) {
-        return;
-      }
+      if (!(busca instanceof HTMLInputElement) || !opcoes) return;
 
       const normalizar = (texto) =>
         texto
@@ -743,18 +2285,18 @@ import Container from "@/components/container.astro";
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "");
 
-      buscaMunicipio.addEventListener("input", () => {
-        const termo = normalizar(buscaMunicipio.value);
-        const opcoes = opcoesMunicipio.querySelectorAll("label");
+      busca.addEventListener("input", () => {
+        const termo = normalizar(busca.value);
 
-        opcoes.forEach((opcao, indice) => {
+        opcoes.querySelectorAll("label").forEach((opcao, indice) => {
           if (indice === 0) {
             opcao.style.display = "flex";
             return;
           }
 
           const texto = normalizar(opcao.textContent || "");
-          opcao.style.display = texto.includes(termo) ? "flex" : "none";
+          opcao.style.display =
+            texto.includes(termo) ? "flex" : "none";
         });
       });
     }
@@ -764,34 +2306,45 @@ import Container from "@/components/container.astro";
     // =========================
     async function carregarDashboard() {
       try {
-        const [
-          respostaFiltros,
-          respostaCards,
-          respostaTempo,
+        [
+          filtros,
+          dadosCards,
+          dadosTempo,
+          dadosMes,
+          dadosSemana,
+          dadosFaixaEtaria,
+          dadosSexo,
+          dadosLocalPicada,
+          dadosAcidenteTrabalho,
+          dadosRacaCor,
+          dadosEscolaridade,
+          dadosSubtipoAnimal,
+          dadosSoros,
+          dadosAmpolasTotais,
+          dadosAmpolas,
         ] = await Promise.all([
-          fetch("/data/filtros.json"),
-          fetch("/data/cards.json"),
-          fetch("/data/tempo.json"),
+          carregarJson("/data/filtros.json"),
+          carregarJson("/data/cards.json"),
+          carregarJson("/data/tempo.json"),
+          carregarJson("/data/mes.json"),
+          carregarJson("/data/semana.json"),
+          carregarJson("/data/faixa_etaria.json"),
+          carregarJson("/data/sexo.json"),
+          carregarJson("/data/local_picada.json"),
+          carregarJson("/data/acidente_trabalho.json"),
+          carregarJson("/data/raca_cor.json"),
+          carregarJson("/data/escolaridade.json"),
+          carregarJson("/data/subtipo_animal.json"),
+          carregarJson("/data/soros.json"),
+          carregarJson("/data/ampolas_totais.json"),
+          carregarJson("/data/ampolas.json"),
         ]);
-
-        if (
-          !respostaFiltros.ok ||
-          !respostaCards.ok ||
-          !respostaTempo.ok
-        ) {
-          throw new Error(
-            "Não foi possível carregar os arquivos do dashboard."
-          );
-        }
-
-        filtros = await respostaFiltros.json();
-        dadosCards = await respostaCards.json();
-        dadosTempo = await respostaTempo.json();
 
         criarFiltro("ano", filtros.anos);
         criarFiltro("animal", filtros.animais);
         criarFiltro("municipio", filtros.municipios);
         criarFiltro("gravidade", filtros.gravidades);
+        criarFiltro("evolucao", filtros.evolucoes);
 
         configurarDropdowns();
         configurarBuscaMunicipio();

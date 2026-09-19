@@ -3,94 +3,55 @@ import json
 import pandas as pd
 
 # =========================
-# CAMINHOS
+# CONFIGURAÇÃO
 # =========================
 RAIZ = Path(__file__).resolve().parent.parent
 PASTA_DADOS = RAIZ / "dados_local"
 PASTA_DATA = RAIZ / "public" / "data"
-PASTA_DATA.mkdir(parents=True, exist_ok=True)
-
 ARQUIVO_ENTRADA = PASTA_DADOS / "sinan_sp_tratado.csv"
 
-# =========================
-# LEITURA DA BASE TRATADA
-# =========================
-print("======================================")
-print("PREPARAÇÃO DOS DADOS DO DASHBOARD")
-print("======================================")
-print("\n[1/7] Lendo base tratada...")
+PASTA_DATA.mkdir(parents=True, exist_ok=True)
 
-df = pd.read_csv(ARQUIVO_ENTRADA, low_memory=False)
+# Prefixo comum dos JSONs agregados:
+# [ano, animal, municipio, gravidade, evolucao, ...]
+CHAVES_FILTRO = ["y", "a", "m", "g", "e"]
 
-print(
-    f"Base carregada: {len(df):,} registros e "
-    f"{len(df.columns)} colunas."
-    .replace(",", ".")
-)
+# Cada coluna representa a quantidade de ampolas de um tipo de soro.
+COLUNAS_SOROS = {
+    "ampolas_antiaracnidico": "Antiaracnídico",
+    "ampolas_antibotropico": "Antibotrópico",
+    "ampolas_antibotropico_crotalico": "Antibotrópico-crotálico",
+    "ampolas_antibotropico_laquetico": "Antibotrópico-laquético",
+    "ampolas_anticrotalico": "Anticrotálico",
+    "ampolas_antielapidico": "Antielapídico",
+    "ampolas_antiescorpionico": "Antiescorpiônico",
+    "ampolas_antilonomico": "Antilonômico",
+    "ampolas_antiloxoscelico": "Antiloxoscélico",
+}
 
-# =========================
-# VALIDAÇÃO DAS COLUNAS
-# =========================
-print("\n[2/7] Validando colunas necessárias...")
-
-colunas_necessarias = [
+COLUNAS_NECESSARIAS = [
     "ano_notificacao",
+    "semana_epidemiologica",
     "tipo_acidente",
     "municipio_ocorrencia",
     "gravidade",
-    "acidente_trabalho",
     "mes_acidente",
     "tempo_atendimento",
+    "idade_anos",
+    "sexo",
+    "local_picada",
+    "acidente_trabalho",
+    "raca_cor",
+    "escolaridade",
+    "tipo_serpente",
+    "tipo_aranha",
+    "tipo_lagarta",
     "soroterapia",
     "evolucao",
+    *COLUNAS_SOROS.keys(),
 ]
 
-colunas_ausentes = [
-    coluna
-    for coluna in colunas_necessarias
-    if coluna not in df.columns
-]
-
-if colunas_ausentes:
-    raise ValueError(
-        "Colunas necessárias ausentes na base tratada: "
-        + ", ".join(colunas_ausentes)
-    )
-
-print("Colunas necessárias encontradas.")
-
-# =========================
-# PREPARAÇÃO DAS VARIÁVEIS
-# =========================
-print("\n[3/7] Preparando variáveis utilizadas pelo dashboard...")
-
-df_dashboard = df.dropna(
-    subset=[
-        "ano_notificacao",
-        "tipo_acidente",
-        "municipio_ocorrencia",
-    ]
-).copy()
-
-df_dashboard["ano_notificacao"] = pd.to_numeric(
-    df_dashboard["ano_notificacao"],
-    errors="coerce"
-).astype("Int64")
-
-mapa_gravidade = {
-    "Leve": 1,
-    "Moderado": 2,
-    "Grave": 3,
-    "Ignorado": 9,
-}
-
-mapa_trabalho = {
-    "Sim": 1,
-    "Não": 2,
-    "Ignorado": 9,
-}
-
-mapa_tempo = {
+MAPA_TEMPO = {
     "0 a 1 hora": 1,
     "1 a 3 horas": 2,
     "3 a 6 horas": 3,
@@ -100,7 +61,7 @@ mapa_tempo = {
     "Ignorado": 9,
 }
 
-mapa_meses = {
+MAPA_MESES = {
     "Janeiro": 1,
     "Fevereiro": 2,
     "Março": 3,
@@ -116,50 +77,98 @@ mapa_meses = {
     "Ignorado": 0,
 }
 
-df_dashboard["gravidade_codigo"] = (
-    df_dashboard["gravidade"]
-    .map(mapa_gravidade)
-    .fillna(9)
-    .astype(int)
-)
+ORDEM_GRAVIDADE = ["Leve", "Moderado", "Grave", "Ignorado"]
 
-df_dashboard["trabalho_codigo"] = (
-    df_dashboard["acidente_trabalho"]
-    .map(mapa_trabalho)
-    .fillna(9)
-    .astype(int)
-)
+ORDEM_EVOLUCAO = [
+    "Cura",
+    "Óbito por acidente por animais peçonhentos",
+    "Óbito por outras causas",
+    "Ignorado",
+    "Sem informação",
+]
 
-df_dashboard["tempo_codigo"] = (
-    df_dashboard["tempo_atendimento"]
-    .map(mapa_tempo)
-    .fillna(9)
-    .astype(int)
-)
+FAIXAS_ETARIAS = [
+    "0–9",
+    "10–19",
+    "20–29",
+    "30–39",
+    "40–49",
+    "50–59",
+    "60–69",
+    "70–79",
+    "80–89",
+    "90–99",
+    "100+",
+    "Ignorado",
+]
 
-df_dashboard["mes_codigo"] = (
-    df_dashboard["mes_acidente"]
-    .map(mapa_meses)
-    .fillna(0)
-    .astype(int)
-)
+ORDEM_SEXO = [
+    "Masculino",
+    "Feminino",
+    "Ignorado",
+]
 
-df_dashboard["obito"] = (
-    df_dashboard["evolucao"]
-    == "Óbito por acidente por animais peçonhentos"
-).astype(int)
+ORDEM_LOCAL_PICADA = [
+    "Cabeça",
+    "Braço",
+    "Antebraço",
+    "Mão",
+    "Dedo da mão",
+    "Tronco",
+    "Coxa",
+    "Perna",
+    "Pé",
+    "Dedo do pé",
+    "Ignorado",
+]
 
-# Variáveis auxiliares dos cards.
-# Percentuais usam apenas registros com informação conhecida no denominador.
-df_dashboard["soroterapia_sim"] = (
-    df_dashboard["soroterapia"] == "Sim"
-).astype(int)
+ORDEM_ACIDENTE_TRABALHO = [
+    "Sim",
+    "Não",
+    "Ignorado",
+]
 
-df_dashboard["soroterapia_conhecida"] = (
-    df_dashboard["soroterapia"].isin(["Sim", "Não"])
-).astype(int)
+ORDEM_RACA_COR = [
+    "Branca",
+    "Preta",
+    "Amarela",
+    "Parda",
+    "Indígena",
+    "Ignorado",
+]
 
-categorias_tempo_conhecido = [
+ORDEM_ESCOLARIDADE = [
+    "Analfabeto",
+    "1ª a 4ª série incompleta do EF",
+    "4ª série completa do EF",
+    "5ª a 8ª série incompleta do EF",
+    "Ensino fundamental completo",
+    "Ensino médio incompleto",
+    "Ensino médio completo",
+    "Educação superior incompleta",
+    "Educação superior completa",
+    "Ignorado",
+    "Não se aplica",
+]
+
+ORDEM_SUBTIPOS_ANIMAIS = [
+    "Serpente — Botrópico",
+    "Serpente — Crotálico",
+    "Serpente — Elapídico",
+    "Serpente — Laquético",
+    "Serpente — Serpente não peçonhenta",
+    "Serpente — Ignorado",
+    "Aranha — Foneutrismo",
+    "Aranha — Loxoscelismo",
+    "Aranha — Latrodectismo",
+    "Aranha — Outra aranha",
+    "Aranha — Ignorado",
+    "Lagarta — Lonomia",
+    "Lagarta — Outra lagarta",
+    "Lagarta — Ignorado",
+]
+
+TEMPOS_CONHECIDOS = [
     "0 a 1 hora",
     "1 a 3 horas",
     "3 a 6 horas",
@@ -168,54 +177,423 @@ categorias_tempo_conhecido = [
     "24 horas ou mais",
 ]
 
+FAIXAS_AMPOLAS = [
+    "1–2",
+    "3–4",
+    "5–6",
+    "7–8",
+    "9–12",
+    "13 ou mais",
+]
+
+LIMITES_AMPOLAS = [0, 2, 4, 6, 8, 12, float("inf")]
+
+
+# =========================
+# FUNÇÕES AUXILIARES
+# =========================
+def valores_ordenados(serie):
+    """Retorna valores únicos, sem nulos, em ordem."""
+    return sorted(serie.dropna().unique().tolist())
+
+
+def criar_mapa_indices(valores):
+    """Cria índices compactos usados nos JSONs."""
+    return {valor: indice for indice, valor in enumerate(valores)}
+
+
+def indices_filtro(registro):
+    """Retorna os índices compactos dos filtros na ordem padrão."""
+    return [int(getattr(registro, chave)) for chave in CHAVES_FILTRO]
+
+
+def agregar_categoria(df, coluna):
+    """Conta casos por filtros + categoria."""
+    return (
+        df.groupby(CHAVES_FILTRO + [coluna], observed=True)
+        .size()
+        .reset_index(name="casos")
+    )
+
+
+def para_json_categoria(df_agregado, coluna):
+    """Converte para [filtros..., categoria, casos]."""
+    return [
+        [
+            *indices_filtro(r),
+            int(getattr(r, coluna)),
+            int(r.casos),
+        ]
+        for r in df_agregado.itertuples()
+    ]
+
+
+def preparar_uso_soros(df):
+    """Conta casos com uso registrado de cada tipo de soro."""
+    dados = []
+
+    for indice_soro, coluna in enumerate(COLUNAS_SOROS):
+        agregado = (
+            df.loc[df[coluna].gt(0)]
+            .groupby(CHAVES_FILTRO, observed=True)
+            .size()
+            .reset_index(name="casos")
+        )
+
+        dados.extend(
+            [
+                [
+                    *indices_filtro(r),
+                    indice_soro,
+                    int(r.casos),
+                ]
+                for r in agregado.itertuples()
+            ]
+        )
+
+    return dados
+
+
+def preparar_total_ampolas(df):
+    """Soma ampolas registradas e conta casos com uso de cada soro."""
+    dados = []
+
+    for indice_soro, coluna in enumerate(COLUNAS_SOROS):
+        agregado = (
+            df.loc[df[coluna].gt(0)]
+            .groupby(CHAVES_FILTRO, observed=True)
+            .agg(
+                ampolas=(coluna, "sum"),
+                casos=(coluna, "size"),
+            )
+            .reset_index()
+        )
+
+        dados.extend(
+            [
+                [
+                    *indices_filtro(r),
+                    indice_soro,
+                    int(r.ampolas),
+                    int(r.casos),
+                ]
+                for r in agregado.itertuples()
+            ]
+        )
+
+    return dados
+
+
+def preparar_distribuicao_ampolas(df):
+    """Conta casos por tipo de soro e faixa de ampolas administradas."""
+    dados = []
+
+    for indice_soro, coluna in enumerate(COLUNAS_SOROS):
+        base_soro = df.loc[
+            df[coluna].gt(0),
+            CHAVES_FILTRO + [coluna],
+        ].copy()
+
+        if base_soro.empty:
+            continue
+
+        base_soro["faixa_ampolas"] = pd.cut(
+            base_soro[coluna],
+            bins=LIMITES_AMPOLAS,
+            labels=False,
+            include_lowest=False,
+            right=True,
+        ).astype("Int64")
+
+        agregado = (
+            base_soro
+            .dropna(subset=["faixa_ampolas"])
+            .groupby(
+                CHAVES_FILTRO + ["faixa_ampolas"],
+                observed=True,
+            )
+            .size()
+            .reset_index(name="casos")
+        )
+
+        dados.extend(
+            [
+                [
+                    *indices_filtro(r),
+                    indice_soro,
+                    int(r.faixa_ampolas),
+                    int(r.casos),
+                ]
+                for r in agregado.itertuples()
+            ]
+        )
+
+    return dados
+
+
+def salvar_json(nome, conteudo):
+    """Salva JSON compacto em public/data."""
+    caminho = PASTA_DATA / nome
+
+    with open(caminho, "w", encoding="utf-8") as arquivo:
+        json.dump(
+            conteudo,
+            arquivo,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+
+    print(f"Arquivo criado: {nome}")
+
+
+# =========================
+# 1. LEITURA
+# =========================
+print("======================================")
+print("PREPARAÇÃO DOS DADOS DO DASHBOARD")
+print("======================================")
+print("\n[1/7] Lendo base tratada...")
+
+df = pd.read_csv(ARQUIVO_ENTRADA, low_memory=False)
+
+print(
+    (
+        f"Base carregada: {len(df):,} registros e "
+        f"{len(df.columns)} colunas."
+    ).replace(",", ".")
+)
+
+
+# =========================
+# 2. VALIDAÇÃO
+# =========================
+print("\n[2/7] Validando colunas necessárias...")
+
+colunas_ausentes = [
+    coluna
+    for coluna in COLUNAS_NECESSARIAS
+    if coluna not in df.columns
+]
+
+if colunas_ausentes:
+    raise ValueError(
+        "Colunas necessárias ausentes na base tratada: "
+        + ", ".join(colunas_ausentes)
+    )
+
+print("Colunas necessárias encontradas.")
+
+
+# =========================
+# 3. PREPARAÇÃO
+# =========================
+print("\n[3/7] Preparando variáveis utilizadas pelo dashboard...")
+
+df_dashboard = df.copy()
+
+# Conversões numéricas antes da filtragem evitam falhas com valores inválidos.
+df_dashboard["ano_notificacao"] = pd.to_numeric(
+    df_dashboard["ano_notificacao"],
+    errors="coerce",
+).astype("Int64")
+
+df_dashboard["semana_codigo"] = pd.to_numeric(
+    df_dashboard["semana_epidemiologica"],
+    errors="coerce",
+).astype("Int64")
+
+for coluna in COLUNAS_SOROS:
+    df_dashboard[coluna] = pd.to_numeric(
+        df_dashboard[coluna],
+        errors="coerce",
+    )
+
+# Mantém registros sem desfecho explícito disponíveis no filtro.
+df_dashboard["evolucao_filtro"] = (
+    df_dashboard["evolucao"]
+    .fillna("Sem informação")
+    .astype(str)
+    .str.strip()
+    .replace("", "Sem informação")
+)
+
+# Estes campos são necessários para todos os filtros do dashboard.
+df_dashboard = df_dashboard.dropna(
+    subset=[
+        "ano_notificacao",
+        "tipo_acidente",
+        "municipio_ocorrencia",
+        "gravidade",
+    ]
+).copy()
+
+# A base tratada deve conter apenas semanas epidemiológicas de 1 a 53.
+semanas_invalidas = (
+    df_dashboard["semana_codigo"].notna()
+    & ~df_dashboard["semana_codigo"].between(1, 53)
+)
+
+if semanas_invalidas.any():
+    raise ValueError(
+        f"Foram encontradas {int(semanas_invalidas.sum())} "
+        "semanas epidemiológicas fora do intervalo 1–53."
+    )
+
+# Variáveis do perfil epidemiológico.
+df_dashboard["idade_anos"] = pd.to_numeric(
+    df_dashboard["idade_anos"],
+    errors="coerce",
+)
+
+# Faixas etárias: valores ausentes ficam em "Ignorado".
+df_dashboard["faixa_etaria_codigo"] = pd.cut(
+    df_dashboard["idade_anos"],
+    bins=[-1, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, float("inf")],
+    labels=False,
+    include_lowest=True,
+).astype("Int64")
+df_dashboard["faixa_etaria_codigo"] = (
+    df_dashboard["faixa_etaria_codigo"]
+    .fillna(len(FAIXAS_ETARIAS) - 1)
+    .astype(int)
+)
+
+mapa_sexo = {
+    valor: indice
+    for indice, valor in enumerate(ORDEM_SEXO)
+}
+mapa_local_picada = {
+    valor: indice
+    for indice, valor in enumerate(ORDEM_LOCAL_PICADA)
+}
+mapa_acidente_trabalho = {
+    valor: indice
+    for indice, valor in enumerate(ORDEM_ACIDENTE_TRABALHO)
+}
+
+df_dashboard["sexo_codigo_dashboard"] = (
+    df_dashboard["sexo"]
+    .map(mapa_sexo)
+    .fillna(mapa_sexo["Ignorado"])
+    .astype(int)
+)
+
+df_dashboard["local_picada_codigo_dashboard"] = (
+    df_dashboard["local_picada"]
+    .map(mapa_local_picada)
+    .fillna(mapa_local_picada["Ignorado"])
+    .astype(int)
+)
+
+df_dashboard["acidente_trabalho_codigo_dashboard"] = (
+    df_dashboard["acidente_trabalho"]
+    .map(mapa_acidente_trabalho)
+    .fillna(mapa_acidente_trabalho["Ignorado"])
+    .astype(int)
+)
+
+# Variáveis sociais usadas no perfil das vítimas.
+mapa_raca_cor = criar_mapa_indices(ORDEM_RACA_COR)
+mapa_escolaridade = criar_mapa_indices(ORDEM_ESCOLARIDADE)
+mapa_subtipos = criar_mapa_indices(ORDEM_SUBTIPOS_ANIMAIS)
+
+# Valores inesperados são tratados como ignorados apenas no dashboard.
+df_dashboard["raca_cor_codigo_dashboard"] = (
+    df_dashboard["raca_cor"]
+    .map(mapa_raca_cor)
+    .fillna(mapa_raca_cor["Ignorado"])
+    .astype(int)
+)
+
+df_dashboard["escolaridade_codigo_dashboard"] = (
+    df_dashboard["escolaridade"]
+    .map(mapa_escolaridade)
+    .fillna(mapa_escolaridade["Ignorado"])
+    .astype(int)
+)
+
+# Os campos de subtipo só são aplicáveis a serpentes, aranhas e lagartas.
+df_dashboard["subtipo_animal"] = pd.Series(
+    pd.NA,
+    index=df_dashboard.index,
+    dtype="string",
+)
+
+for animal, coluna in {
+    "Serpente": "tipo_serpente",
+    "Aranha": "tipo_aranha",
+    "Lagarta": "tipo_lagarta",
+}.items():
+    mascara = df_dashboard["tipo_acidente"].eq(animal)
+    df_dashboard.loc[mascara, "subtipo_animal"] = (
+        animal
+        + " — "
+        + df_dashboard.loc[mascara, coluna].astype("string")
+    )
+
+df_dashboard["subtipo_animal_codigo_dashboard"] = (
+    df_dashboard["subtipo_animal"]
+    .map(mapa_subtipos)
+    .astype("Int64")
+)
+
+# Códigos compactos usados nas séries específicas.
+df_dashboard["tempo_codigo"] = (
+    df_dashboard["tempo_atendimento"]
+    .map(MAPA_TEMPO)
+    .astype("Int64")
+)
+
+df_dashboard["mes_codigo"] = (
+    df_dashboard["mes_acidente"]
+    .map(MAPA_MESES)
+    .astype("Int64")
+)
+
+# Variáveis auxiliares dos indicadores.
+df_dashboard["obito"] = (
+    df_dashboard["evolucao"]
+    == "Óbito por acidente por animais peçonhentos"
+).astype(int)
+
+df_dashboard["soroterapia_sim"] = (
+    df_dashboard["soroterapia"] == "Sim"
+).astype(int)
+
+# "Ignorado" não entra no denominador do percentual.
+df_dashboard["soroterapia_conhecida"] = (
+    df_dashboard["soroterapia"].isin(["Sim", "Não"])
+).astype(int)
+
 df_dashboard["atendimento_ate_3h"] = (
     df_dashboard["tempo_atendimento"].isin(
         ["0 a 1 hora", "1 a 3 horas"]
     )
 ).astype(int)
 
+# "Ignorado" não entra no denominador do percentual.
 df_dashboard["tempo_conhecido"] = (
-    df_dashboard["tempo_atendimento"].isin(
-        categorias_tempo_conhecido
-    )
+    df_dashboard["tempo_atendimento"].isin(TEMPOS_CONHECIDOS)
 ).astype(int)
 
-# Conferências opcionais:
-# print(df_dashboard["gravidade_codigo"].value_counts(dropna=False).sort_index())
-# print(df_dashboard["trabalho_codigo"].value_counts(dropna=False).sort_index())
-# print(df_dashboard["tempo_codigo"].value_counts(dropna=False).sort_index())
-# print(df_dashboard["mes_codigo"].value_counts(dropna=False).sort_index())
 
 # =========================
-# FILTROS E ÍNDICES
+# 4. FILTROS E ÍNDICES
 # =========================
 print("\n[4/7] Criando filtros e índices compactos...")
 
-anos = sorted(
-    df_dashboard["ano_notificacao"]
-    .dropna()
-    .astype(int)
-    .unique()
-    .tolist()
+anos = valores_ordenados(
+    df_dashboard["ano_notificacao"].astype(int)
 )
 
-animais = sorted(
-    df_dashboard["tipo_acidente"]
-    .dropna()
-    .astype(str)
-    .unique()
-    .tolist()
+animais = valores_ordenados(
+    df_dashboard["tipo_acidente"].astype(str)
 )
 
-municipios = sorted(
-    df_dashboard["municipio_ocorrencia"]
-    .dropna()
-    .astype(str)
-    .unique()
-    .tolist()
+municipios = valores_ordenados(
+    df_dashboard["municipio_ocorrencia"].astype(str)
 )
 
-ordem_gravidade = ["Leve", "Moderado", "Grave", "Ignorado"]
 gravidades_presentes = set(
     df_dashboard["gravidade"]
     .dropna()
@@ -226,19 +604,44 @@ gravidades_presentes = set(
 
 gravidades = [
     gravidade
-    for gravidade in ordem_gravidade
+    for gravidade in ORDEM_GRAVIDADE
     if gravidade in gravidades_presentes
 ]
+
+evolucoes_presentes = set(
+    df_dashboard["evolucao_filtro"]
+    .dropna()
+    .astype(str)
+    .unique()
+    .tolist()
+)
+
+# Mantém uma ordem legível e acrescenta categorias inesperadas ao final.
+evolucoes = [
+    evolucao
+    for evolucao in ORDEM_EVOLUCAO
+    if evolucao in evolucoes_presentes
+]
+evolucoes += sorted(evolucoes_presentes - set(evolucoes))
 
 filtros = {
     "anos": anos,
     "animais": animais,
     "municipios": municipios,
     "gravidades": gravidades,
+    "evolucoes": evolucoes,
+    "soros": list(COLUNAS_SOROS.values()),
+    "faixas_ampolas": FAIXAS_AMPOLAS,
+    "faixas_etarias": FAIXAS_ETARIAS,
+    "sexos": ORDEM_SEXO,
+    "locais_picada": ORDEM_LOCAL_PICADA,
+    "acidente_trabalho": ORDEM_ACIDENTE_TRABALHO,
+    "racas_cores": ORDEM_RACA_COR,
+    "escolaridades": ORDEM_ESCOLARIDADE,
+    "subtipos_animais": ORDEM_SUBTIPOS_ANIMAIS,
 }
 
-# Variáveis territoriais adicionais já disponíveis para futuras
-# expansões dos filtros do dashboard.
+# Metadados territoriais disponíveis para filtros futuros.
 for chave, coluna in {
     "regioes_saude": "regiao_saude_ocorrencia",
     "rras": "rras_ocorrencia",
@@ -246,61 +649,38 @@ for chave, coluna in {
     "gve": "gve_ocorrencia",
 }.items():
     if coluna in df_dashboard.columns:
-        filtros[chave] = sorted(
-            df_dashboard[coluna]
-            .dropna()
-            .astype(str)
-            .unique()
-            .tolist()
+        filtros[chave] = valores_ordenados(
+            df_dashboard[coluna].astype(str)
         )
 
-mapa_anos = {
-    ano: i
-    for i, ano in enumerate(filtros["anos"])
+mapas_indices = {
+    "y": criar_mapa_indices(anos),
+    "a": criar_mapa_indices(animais),
+    "m": criar_mapa_indices(municipios),
+    "g": criar_mapa_indices(gravidades),
+    "e": criar_mapa_indices(evolucoes),
 }
 
-mapa_animais = {
-    animal: i
-    for i, animal in enumerate(filtros["animais"])
+colunas_origem = {
+    "y": "ano_notificacao",
+    "a": "tipo_acidente",
+    "m": "municipio_ocorrencia",
+    "g": "gravidade",
+    "e": "evolucao_filtro",
 }
 
-mapa_municipios = {
-    municipio: i
-    for i, municipio in enumerate(filtros["municipios"])
-}
-
-mapa_gravidades = {
-    gravidade: i
-    for i, gravidade in enumerate(filtros["gravidades"])
-}
-
-df_dashboard["y"] = (
-    df_dashboard["ano_notificacao"]
-    .astype(int)
-    .map(mapa_anos)
-)
-
-df_dashboard["a"] = (
-    df_dashboard["tipo_acidente"]
-    .map(mapa_animais)
-)
-
-df_dashboard["m"] = (
-    df_dashboard["municipio_ocorrencia"]
-    .map(mapa_municipios)
-)
-
-df_dashboard["g"] = (
-    df_dashboard["gravidade"]
-    .map(mapa_gravidades)
-)
+for codigo, coluna in colunas_origem.items():
+    df_dashboard[codigo] = (
+        df_dashboard[coluna]
+        .map(mapas_indices[codigo])
+    )
 
 df_dashboard = df_dashboard.dropna(
-    subset=["y", "a", "m", "g"]
+    subset=CHAVES_FILTRO
 ).copy()
 
-df_dashboard[["y", "a", "m", "g"]] = (
-    df_dashboard[["y", "a", "m", "g"]]
+df_dashboard[CHAVES_FILTRO] = (
+    df_dashboard[CHAVES_FILTRO]
     .astype(int)
 )
 
@@ -311,24 +691,16 @@ print(
     f"{len(gravidades)} gravidades."
 )
 
+
 # =========================
-# AGREGAÇÕES
+# 5. AGREGAÇÕES
 # =========================
 print("\n[5/7] Agregando indicadores do dashboard...")
 
-base = (
-    df_dashboard
-    .groupby(["y", "a", "m"], observed=True)
-    .agg(
-        casos=("ano_notificacao", "size"),
-        obitos=("obito", "sum"),
-    )
-    .reset_index()
-)
-
+# cards.json concentra indicadores e gráficos gerais.
 cards = (
     df_dashboard
-    .groupby(["y", "a", "m", "g"], observed=True)
+    .groupby(CHAVES_FILTRO, observed=True)
     .agg(
         casos=("ano_notificacao", "size"),
         obitos=("obito", "sum"),
@@ -340,67 +712,9 @@ cards = (
     .reset_index()
 )
 
-gravidade = (
-    df_dashboard
-    .groupby(
-        ["y", "a", "m", "gravidade_codigo"],
-        observed=True
-    )
-    .size()
-    .reset_index(name="casos")
-)
-
-trabalho = (
-    df_dashboard
-    .groupby(
-        ["y", "a", "m", "trabalho_codigo"],
-        observed=True
-    )
-    .size()
-    .reset_index(name="casos")
-)
-
-mes = (
-    df_dashboard
-    .groupby(
-        ["y", "a", "m", "mes_codigo"],
-        observed=True
-    )
-    .size()
-    .reset_index(name="casos")
-)
-
-tempo = (
-    df_dashboard
-    .groupby(
-        ["y", "a", "m", "g", "tempo_codigo"],
-        observed=True
-    )
-    .size()
-    .reset_index(name="casos")
-)
-
-dados_base = [
-    [
-        int(r.y),
-        int(r.a),
-        int(r.m),
-        int(r.casos),
-        int(r.obitos),
-    ]
-    for r in base.itertuples()
-]
-
-# cards.json:
-# [ano_idx, animal_idx, municipio_idx, gravidade_idx, casos, obitos,
-#  soroterapia_sim, soroterapia_conhecida,
-#  atendimento_ate_3h, tempo_conhecido]
 dados_cards = [
     [
-        int(r.y),
-        int(r.a),
-        int(r.m),
-        int(r.g),
+        *indices_filtro(r),
         int(r.casos),
         int(r.obitos),
         int(r.soroterapia_sim),
@@ -411,93 +725,101 @@ dados_cards = [
     for r in cards.itertuples()
 ]
 
-dados_gravidade = [
-    [
-        int(r.y),
-        int(r.a),
-        int(r.m),
-        int(r.gravidade_codigo),
-        int(r.casos),
-    ]
-    for r in gravidade.itertuples()
-]
-
-dados_trabalho = [
-    [
-        int(r.y),
-        int(r.a),
-        int(r.m),
-        int(r.trabalho_codigo),
-        int(r.casos),
-    ]
-    for r in trabalho.itertuples()
-]
-
-dados_mes = [
-    [
-        int(r.y),
-        int(r.a),
-        int(r.m),
-        int(r.mes_codigo),
-        int(r.casos),
-    ]
-    for r in mes.itertuples()
-]
-
-# tempo.json:
-# [ano_idx, animal_idx, municipio_idx, gravidade_idx, tempo_codigo, casos]
-dados_tempo = [
-    [
-        int(r.y),
-        int(r.a),
-        int(r.m),
-        int(r.g),
-        int(r.tempo_codigo),
-        int(r.casos),
-    ]
-    for r in tempo.itertuples()
-]
-
-print(
-    f"Agregações concluídas: "
-    f"{len(dados_base):,} combinações principais."
-    .replace(",", ".")
+# Séries específicas mantêm o mesmo prefixo [y, a, m, g, e].
+dados_mes = para_json_categoria(
+    agregar_categoria(df_dashboard, "mes_codigo"),
+    "mes_codigo",
 )
 
+dados_tempo = para_json_categoria(
+    agregar_categoria(df_dashboard, "tempo_codigo"),
+    "tempo_codigo",
+)
+
+dados_semana = para_json_categoria(
+    agregar_categoria(df_dashboard, "semana_codigo"),
+    "semana_codigo",
+)
+
+dados_faixa_etaria = para_json_categoria(
+    agregar_categoria(df_dashboard, "faixa_etaria_codigo"),
+    "faixa_etaria_codigo",
+)
+
+dados_sexo = para_json_categoria(
+    agregar_categoria(df_dashboard, "sexo_codigo_dashboard"),
+    "sexo_codigo_dashboard",
+)
+
+dados_local_picada = para_json_categoria(
+    agregar_categoria(df_dashboard, "local_picada_codigo_dashboard"),
+    "local_picada_codigo_dashboard",
+)
+
+dados_acidente_trabalho = para_json_categoria(
+    agregar_categoria(df_dashboard, "acidente_trabalho_codigo_dashboard"),
+    "acidente_trabalho_codigo_dashboard",
+)
+
+dados_raca_cor = para_json_categoria(
+    agregar_categoria(df_dashboard, "raca_cor_codigo_dashboard"),
+    "raca_cor_codigo_dashboard",
+)
+
+dados_escolaridade = para_json_categoria(
+    agregar_categoria(df_dashboard, "escolaridade_codigo_dashboard"),
+    "escolaridade_codigo_dashboard",
+)
+
+dados_subtipo_animal = para_json_categoria(
+    agregar_categoria(df_dashboard, "subtipo_animal_codigo_dashboard"),
+    "subtipo_animal_codigo_dashboard",
+)
+
+# Um caso pode aparecer em mais de um tipo de soro se houver uso combinado.
+dados_soros = preparar_uso_soros(df_dashboard)
+
+# Total e distribuição da quantidade de ampolas por caso.
+dados_ampolas_totais = preparar_total_ampolas(df_dashboard)
+dados_ampolas = preparar_distribuicao_ampolas(df_dashboard)
+
+print(
+    (
+        f"Agregações concluídas: "
+        f"{len(dados_cards):,} combinações de filtros."
+    ).replace(",", ".")
+)
+
+
 # =========================
-# GERAÇÃO DOS JSON
+# 6. GERAÇÃO DOS JSON
 # =========================
 print("\n[6/7] Gerando arquivos JSON...")
 
 arquivos_dashboard = {
     "filtros.json": filtros,
-    "base.json": dados_base,
     "cards.json": dados_cards,
-    "gravidade.json": dados_gravidade,
-    "trabalho.json": dados_trabalho,
     "mes.json": dados_mes,
     "tempo.json": dados_tempo,
+    "semana.json": dados_semana,
+    "faixa_etaria.json": dados_faixa_etaria,
+    "sexo.json": dados_sexo,
+    "local_picada.json": dados_local_picada,
+    "acidente_trabalho.json": dados_acidente_trabalho,
+    "raca_cor.json": dados_raca_cor,
+    "escolaridade.json": dados_escolaridade,
+    "subtipo_animal.json": dados_subtipo_animal,
+    "soros.json": dados_soros,
+    "ampolas_totais.json": dados_ampolas_totais,
+    "ampolas.json": dados_ampolas,
 }
 
 for nome_arquivo, conteudo in arquivos_dashboard.items():
-    caminho = PASTA_DATA / nome_arquivo
+    salvar_json(nome_arquivo, conteudo)
 
-    with open(
-        caminho,
-        "w",
-        encoding="utf-8"
-    ) as arquivo:
-        json.dump(
-            conteudo,
-            arquivo,
-            ensure_ascii=False,
-            separators=(",", ":"),
-        )
-
-    print(f"Arquivo criado: {nome_arquivo}")
 
 # =========================
-# FINALIZAÇÃO
+# 7. FINALIZAÇÃO
 # =========================
 print("\n[7/7] Finalizando preparação do dashboard...")
 
