@@ -744,6 +744,222 @@ import "leaflet/dist/leaflet.css";
       </div>
     </section>
 
+    <!-- FLUXOS TERRITORIAIS -->
+    <section class="mx-auto max-w-6xl mt-16 mb-20">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-[#0A2C57]">
+          Fluxos territoriais
+        </h2>
+        <p class="mt-1 text-sm text-slate-500">
+          Comparação entre o território de ocorrência do acidente e o território de notificação do caso.
+        </p>
+        <p class="mt-2 text-xs text-slate-400">
+          O destino representa o território de notificação registrado no SINAN e não necessariamente o estabelecimento onde ocorreu o atendimento.
+        </p>
+      </div>
+
+      <!-- CONTROLES -->
+      <div class="grid sm:grid-cols-2 gap-4 mb-6">
+        <div class="border border-gray-200 rounded-lg p-5">
+          <label
+            for="fluxo-nivel"
+            class="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Recorte territorial
+          </label>
+          <select
+            id="fluxo-nivel"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-sm outline-none focus:border-[#0A2C57]"
+          >
+            <option value="municipio">Municípios</option>
+            <option value="regiao_saude">Região de Saúde</option>
+            <option value="drs">DRS</option>
+            <option value="rras">RRAS</option>
+          </select>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-5">
+          <label
+            for="fluxo-limite"
+            class="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Fluxos exibidos no mapa
+          </label>
+          <select
+            id="fluxo-limite"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-sm outline-none focus:border-[#0A2C57]"
+          >
+            <option value="10">Top 10</option>
+            <option value="20" selected>Top 20</option>
+            <option value="50">Top 50</option>
+            <option value="100">Top 100</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- CARDS -->
+      <div class="grid sm:grid-cols-3 gap-4 mb-6">
+        <div class="border border-gray-200 rounded-lg p-5">
+          <p class="text-xs font-medium text-slate-500">
+            Mesma unidade territorial
+          </p>
+          <p
+            id="fluxo-mesma-unidade"
+            class="mt-2 text-2xl font-bold text-[#0A2C57]"
+          >
+            —
+          </p>
+          <p
+            id="fluxo-mesma-unidade-percentual"
+            class="mt-1 text-xs text-slate-400"
+          >
+            —
+          </p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-5">
+          <p class="text-xs font-medium text-slate-500">
+            Outra unidade territorial
+          </p>
+          <p
+            id="fluxo-outra-unidade"
+            class="mt-2 text-2xl font-bold text-[#0A2C57]"
+          >
+            —
+          </p>
+          <p
+            id="fluxo-outra-unidade-percentual"
+            class="mt-1 text-xs text-slate-400"
+          >
+            —
+          </p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-5">
+          <p class="text-xs font-medium text-slate-500">
+            Casos com deslocamento territorial
+          </p>
+          <p
+            id="fluxo-percentual-deslocamento"
+            class="mt-2 text-2xl font-bold text-[#0A2C57]"
+          >
+            —
+          </p>
+          <p
+            id="fluxo-rotas-distintas"
+            class="mt-1 text-xs text-slate-400"
+          >
+            —
+          </p>
+        </div>
+      </div>
+
+      <!-- MESMA × OUTRA -->
+      <div class="border border-gray-200 rounded-lg p-6 mb-6">
+        <h3 class="font-semibold text-gray-800">
+          Permanência e deslocamento territorial
+        </h3>
+        <p class="mt-1 text-sm text-slate-500">
+          Proporção dos casos notificados na mesma unidade de ocorrência ou em outra unidade.
+        </p>
+        <div class="mt-4 h-48">
+          <canvas id="grafico-fluxo-mesma-outra"></canvas>
+        </div>
+      </div>
+
+      <!-- MAPA -->
+      <div class="border border-gray-200 rounded-lg p-6 mb-6">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 class="font-semibold text-gray-800">
+              Principais fluxos territoriais
+            </h3>
+            <p
+              id="descricao-mapa-fluxos"
+              class="mt-1 text-sm text-slate-500"
+            >
+              Linhas representam deslocamentos entre municípios de ocorrência e notificação.
+            </p>
+          </div>
+        </div>
+
+        <div
+          id="mapa-fluxos"
+          class="mt-4 h-[34rem] w-full rounded-md border border-slate-200 overflow-hidden relative z-0"
+          style="background:#f8fafc;"
+        ></div>
+
+        <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500">
+          <span>
+            A espessura da linha é proporcional ao volume total do fluxo entre as duas unidades.
+          </span>
+          <span class="inline-flex items-center gap-2">
+            <span class="h-3 w-3 rounded-full bg-blue-600"></span>
+            Origem
+          </span>
+          <span class="inline-flex items-center gap-2">
+            <span class="h-3 w-3 rounded-full bg-red-600"></span>
+            Destino
+          </span>
+          <span class="inline-flex items-center gap-2">
+            <span class="h-3 w-3 rounded-full bg-purple-600"></span>
+            Origem e destino
+          </span>
+        </div>
+      </div>
+
+      <!-- TABELA + MATRIZ -->
+      <div class="grid lg:grid-cols-2 gap-6 items-stretch">
+        <div class="border border-gray-200 rounded-lg p-6 h-full">
+          <h3 class="font-semibold text-gray-800">
+            Principais fluxos entre unidades
+          </h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Apenas fluxos em que origem e destino são diferentes.
+          </p>
+
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full text-xs sm:text-sm">
+              <thead>
+                <tr class="border-b border-slate-200 text-left text-slate-500">
+                  <th class="py-3 pr-3 font-medium w-10">#</th>
+                  <th class="py-3 pr-3 font-medium">Origem</th>
+                  <th class="py-3 pr-3 font-medium">Destino</th>
+                  <th class="py-3 px-2 text-right font-medium">Casos</th>
+                  <th class="py-3 pl-2 text-right font-medium">% fluxos</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-fluxos-territoriais"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-6 h-full flex flex-col">
+          <h3 class="font-semibold text-gray-800">
+            Matriz origem × destino
+          </h3>
+          <p
+            id="descricao-matriz-fluxos"
+            class="mt-1 text-sm text-slate-500"
+          >
+            Selecione Região de Saúde, DRS ou RRAS para visualizar a matriz.
+          </p>
+
+          <div
+            id="matriz-fluxos-vazia"
+            class="mt-5 min-h-64 rounded-lg border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center p-6 text-center text-sm text-slate-500"
+          >
+            A matriz não é exibida para municípios para evitar excesso de informação.
+          </div>
+
+          <div
+            id="matriz-fluxos-container"
+            class="hidden mt-5 flex-1 min-h-0 overflow-auto"
+          ></div>
+        </div>
+      </div>
+    </section>
+
   </Container>
 
   <script>
@@ -755,6 +971,7 @@ import "leaflet/dist/leaflet.css";
     // =========================
     let filtros = {};
     let dadosCards = [];
+    let dadosFluxos = [];
     let dadosTempo = [];
     let dadosMes = [];
     let dadosSemana = [];
@@ -833,14 +1050,14 @@ import "leaflet/dist/leaflet.css";
     const COR_ZERO_PERCENTUAL_TERRITORIO = "#FFFDE7";
 
     const CORES_MAPA_TERRITORIAL = [
-      "#FFFFCC",
-      "#FFEDA0",
-      "#FED976",
-      "#FEB24C",
-      "#FD8D3C",
-      "#FC4E2A",
-      "#E31A1C",
-      "#B10026",
+      "#E0ECF4",
+      "#D0D1E6",
+      "#BFD3E6",
+      "#9EBCDA",
+      "#8C96C6",
+      "#8C6BB1",
+      "#88419D",
+      "#6E016B",
     ];
 
     const ROTULOS_INDICADOR_TERRITORIO = {
@@ -863,6 +1080,22 @@ import "leaflet/dist/leaflet.css";
       municipio: 2,
       gravidade: 3,
       evolucao: 4,
+    };
+
+    const INDICE_FLUXOS = {
+      ano: 0,
+      animal: 1,
+      gravidade: 2,
+      evolucao: 3,
+      municipioOrigem: 4,
+      municipioDestino: 5,
+      regiaoOrigem: 6,
+      regiaoDestino: 7,
+      drsOrigem: 8,
+      drsDestino: 9,
+      rrasOrigem: 10,
+      rrasDestino: 11,
+      casos: 12,
     };
 
     const INDICE_CARDS = {
@@ -4568,6 +4801,1166 @@ import "leaflet/dist/leaflet.css";
     }
 
     // =========================
+    // FLUXOS TERRITORIAIS
+    // =========================
+    let mapaFluxos = null;
+    let camadaLinhasFluxo = null;
+    let camadaDestinosFluxo = null;
+    let camadaFundoFluxos = null;
+
+    let geojsonFluxos = {
+      municipio: null,
+      regiao_saude: null,
+      drs: null,
+      rras: null,
+    };
+
+    function obterConfiguracaoFluxo() {
+      const nivelEl = document.querySelector("#fluxo-nivel");
+      const limiteEl = document.querySelector("#fluxo-limite");
+
+      const nivel =
+        nivelEl instanceof HTMLSelectElement
+          ? nivelEl.value
+          : "municipio";
+
+      const limite =
+        limiteEl instanceof HTMLSelectElement
+          ? Number(limiteEl.value)
+          : 20;
+
+      const meta = filtros.fluxos || {};
+
+      if (nivel === "regiao_saude") {
+        return {
+          nivel,
+          limite,
+          nomes: meta.regioes_saude || [],
+          coordenadas:
+            meta.coordenadas_regioes_saude || [],
+          origem: INDICE_FLUXOS.regiaoOrigem,
+          destino: INDICE_FLUXOS.regiaoDestino,
+          singular: "Região de Saúde",
+          plural: "Regiões de Saúde",
+        };
+      }
+
+      if (nivel === "drs") {
+        return {
+          nivel,
+          limite,
+          nomes: meta.drs || [],
+          coordenadas: meta.coordenadas_drs || [],
+          origem: INDICE_FLUXOS.drsOrigem,
+          destino: INDICE_FLUXOS.drsDestino,
+          singular: "DRS",
+          plural: "DRS",
+        };
+      }
+
+      if (nivel === "rras") {
+        return {
+          nivel,
+          limite,
+          nomes: meta.rras || [],
+          coordenadas: meta.coordenadas_rras || [],
+          origem: INDICE_FLUXOS.rrasOrigem,
+          destino: INDICE_FLUXOS.rrasDestino,
+          singular: "RRAS",
+          plural: "RRAS",
+        };
+      }
+
+      return {
+        nivel: "municipio",
+        limite,
+        nomes: meta.municipios || [],
+        coordenadas:
+          meta.coordenadas_municipios || [],
+        origem: INDICE_FLUXOS.municipioOrigem,
+        destino: INDICE_FLUXOS.municipioDestino,
+        singular: "Município",
+        plural: "Municípios",
+      };
+    }
+
+    function filtrarDadosFluxos(selecao) {
+      const todos = (valores) =>
+        valores.includes("todos");
+
+      return dadosFluxos.filter((linha) => {
+        const anoOk =
+          todos(selecao.ano) ||
+          selecao.ano.includes(
+            String(linha[INDICE_FLUXOS.ano])
+          );
+
+        const animalOk =
+          todos(selecao.animal) ||
+          selecao.animal.includes(
+            String(linha[INDICE_FLUXOS.animal])
+          );
+
+        const gravidadeOk =
+          todos(selecao.gravidade) ||
+          selecao.gravidade.includes(
+            String(linha[INDICE_FLUXOS.gravidade])
+          );
+
+        const evolucaoOk =
+          todos(selecao.evolucao) ||
+          selecao.evolucao.includes(
+            String(linha[INDICE_FLUXOS.evolucao])
+          );
+
+        return (
+          anoOk &&
+          animalOk &&
+          gravidadeOk &&
+          evolucaoOk
+        );
+      });
+    }
+
+    function agregarFluxosPorNivel(
+      dados,
+      configuracao
+    ) {
+      const mapa = new Map();
+
+      dados.forEach((linha) => {
+        const origem = Number(
+          linha[configuracao.origem]
+        );
+        const destino = Number(
+          linha[configuracao.destino]
+        );
+        const casos =
+          Number(linha[INDICE_FLUXOS.casos]) || 0;
+
+        if (
+          !Number.isFinite(origem) ||
+          !Number.isFinite(destino)
+        ) {
+          return;
+        }
+
+        const chave = `${origem}|${destino}`;
+
+        mapa.set(
+          chave,
+          (mapa.get(chave) || 0) + casos
+        );
+      });
+
+      return [...mapa.entries()].map(
+        ([chave, casos]) => {
+          const [origem, destino] =
+            chave.split("|").map(Number);
+
+          return {
+            origem,
+            destino,
+            nomeOrigem:
+              configuracao.nomes[origem] ??
+              `Unidade ${origem}`,
+            nomeDestino:
+              configuracao.nomes[destino] ??
+              `Unidade ${destino}`,
+            casos,
+          };
+        }
+      );
+    }
+
+    function calcularResumoFluxos(fluxos) {
+      const mesma = fluxos
+        .filter(
+          (fluxo) =>
+            fluxo.origem === fluxo.destino
+        )
+        .reduce(
+          (soma, fluxo) => soma + fluxo.casos,
+          0
+        );
+
+      const outra = fluxos
+        .filter(
+          (fluxo) =>
+            fluxo.origem !== fluxo.destino
+        )
+        .reduce(
+          (soma, fluxo) => soma + fluxo.casos,
+          0
+        );
+
+      const total = mesma + outra;
+      const percentualOutra =
+        total > 0 ? (outra / total) * 100 : 0;
+
+      const rotasDistintas = fluxos.filter(
+        (fluxo) =>
+          fluxo.origem !== fluxo.destino &&
+          fluxo.casos > 0
+      ).length;
+
+      return {
+        mesma,
+        outra,
+        total,
+        percentualOutra,
+        rotasDistintas,
+      };
+    }
+
+    function atualizarCardsFluxos(resumo) {
+      const mesma = document.querySelector(
+        "#fluxo-mesma-unidade"
+      );
+      const mesmaPct = document.querySelector(
+        "#fluxo-mesma-unidade-percentual"
+      );
+      const outra = document.querySelector(
+        "#fluxo-outra-unidade"
+      );
+      const outraPct = document.querySelector(
+        "#fluxo-outra-unidade-percentual"
+      );
+      const percentual = document.querySelector(
+        "#fluxo-percentual-deslocamento"
+      );
+      const rotas = document.querySelector(
+        "#fluxo-rotas-distintas"
+      );
+
+      const pctMesma =
+        resumo.total > 0
+          ? (resumo.mesma / resumo.total) * 100
+          : 0;
+
+      if (mesma) {
+        mesma.textContent =
+          formatarNumero(resumo.mesma);
+      }
+
+      if (mesmaPct) {
+        mesmaPct.textContent =
+          `${pctMesma.toLocaleString("pt-BR", {
+            maximumFractionDigits: 1,
+          })}% dos casos`;
+      }
+
+      if (outra) {
+        outra.textContent =
+          formatarNumero(resumo.outra);
+      }
+
+      if (outraPct) {
+        outraPct.textContent =
+          `${resumo.percentualOutra.toLocaleString(
+            "pt-BR",
+            { maximumFractionDigits: 1 }
+          )}% dos casos`;
+      }
+
+      if (percentual) {
+        percentual.textContent =
+          `${resumo.percentualOutra.toLocaleString(
+            "pt-BR",
+            {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            }
+          )}%`;
+      }
+
+      if (rotas) {
+        rotas.textContent =
+          `${formatarNumero(
+            resumo.rotasDistintas
+          )} rotas distintas`;
+      }
+    }
+
+    function atualizarGraficoMesmaOutra(resumo) {
+      const total = resumo.total || 1;
+
+      const mesmaPct =
+        (resumo.mesma / total) * 100;
+      const outraPct =
+        (resumo.outra / total) * 100;
+
+      renderizarGrafico(
+        "fluxo-mesma-outra",
+        "#grafico-fluxo-mesma-outra",
+        {
+          type: "bar",
+          data: {
+            labels: [
+              "Distribuição dos casos",
+            ],
+            datasets: [
+              {
+                label: "Mesma unidade",
+                data: [mesmaPct],
+                backgroundColor: "#0A2C57",
+                borderRadius: 3,
+              },
+              {
+                label: "Outra unidade",
+                data: [outraPct],
+                backgroundColor: "#4F86C6",
+                borderRadius: 3,
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+              tooltip: {
+                callbacks: {
+                  label: (contexto) => {
+                    const casos =
+                      contexto.datasetIndex === 0
+                        ? resumo.mesma
+                        : resumo.outra;
+
+                    return `${contexto.dataset.label}: ${contexto.raw.toLocaleString(
+                      "pt-BR",
+                      {
+                        maximumFractionDigits: 1,
+                      }
+                    )}% (${formatarNumero(
+                      casos
+                    )} casos)`;
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                stacked: true,
+                min: 0,
+                max: 100,
+                title: {
+                  display: true,
+                  text: "Percentual dos casos",
+                },
+                ticks: {
+                  callback: (valor) =>
+                    `${valor}%`,
+                },
+                grid: {
+                  color: "#E5E7EB",
+                },
+              },
+              y: {
+                stacked: true,
+                grid: {
+                  display: false,
+                },
+              },
+            },
+          },
+        }
+      );
+    }
+
+    function atualizarTabelaFluxos(
+      fluxos,
+      resumo
+    ) {
+      const corpo = document.querySelector(
+        "#tabela-fluxos-territoriais"
+      );
+
+      if (!corpo) return;
+
+      const inter = fluxos
+        .filter(
+          (fluxo) =>
+            fluxo.origem !== fluxo.destino
+        )
+        .sort((a, b) => b.casos - a.casos)
+        .slice(0, 10);
+
+      corpo.innerHTML = inter
+        .map((fluxo, indice) => {
+          const percentual =
+            resumo.outra > 0
+              ? (fluxo.casos / resumo.outra) * 100
+              : 0;
+
+          return `
+            <tr class="border-b border-slate-100 last:border-0">
+              <td class="py-3 pr-3 font-semibold text-slate-400">
+                ${indice + 1}
+              </td>
+              <td class="py-3 pr-3 text-slate-700">
+                ${fluxo.nomeOrigem}
+              </td>
+              <td class="py-3 pr-3 text-slate-700">
+                ${fluxo.nomeDestino}
+              </td>
+              <td class="py-3 px-2 text-right font-semibold text-[#0A2C57]">
+                ${formatarNumero(fluxo.casos)}
+              </td>
+              <td class="py-3 pl-2 text-right text-slate-600">
+                ${percentual.toLocaleString(
+                  "pt-BR",
+                  {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  }
+                )}%
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      if (!inter.length) {
+        corpo.innerHTML = `
+          <tr>
+            <td
+              colspan="5"
+              class="py-6 text-center text-slate-400"
+            >
+              Nenhum fluxo entre unidades para a seleção atual.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function obterGeojsonFluxosPorNivel(nivel) {
+      if (nivel === "regiao_saude") {
+        return geojsonFluxos.regiao_saude;
+      }
+
+      if (nivel === "drs") {
+        return geojsonFluxos.drs;
+      }
+
+      if (nivel === "rras") {
+        return geojsonFluxos.rras;
+      }
+
+      return geojsonFluxos.municipio;
+    }
+
+    function atualizarFundoMapaFluxos(configuracao) {
+      if (!mapaFluxos) return;
+
+      if (camadaFundoFluxos) {
+        mapaFluxos.removeLayer(camadaFundoFluxos);
+      }
+
+      const geojson = obterGeojsonFluxosPorNivel(
+        configuracao.nivel
+      );
+
+      if (!geojson) return;
+
+      camadaFundoFluxos = L.geoJSON(geojson, {
+        style: {
+          color: "#94A3B8",
+          weight:
+            configuracao.nivel === "municipio"
+              ? 0.7
+              : 1.2,
+          opacity: 0.8,
+          fillColor: "#E2E8F0",
+          fillOpacity: 0.24,
+        },
+        interactive: true,
+        onEachFeature: (feature, layer) => {
+          const indice = Number(
+            feature?.properties?.u
+          );
+
+          const nome =
+            configuracao.nomes?.[indice];
+
+          if (!nome) return;
+
+          layer.bindTooltip(
+            `<strong>${nome}</strong>`,
+            {
+              sticky: true,
+              direction: "top",
+              opacity: 0.95,
+            }
+          );
+
+          layer.on({
+            mouseover: () => {
+              layer.setStyle({
+                color: "#475569",
+                weight:
+                  configuracao.nivel === "municipio"
+                    ? 1.4
+                    : 2,
+                fillOpacity: 0.32,
+              });
+            },
+            mouseout: () => {
+              camadaFundoFluxos?.resetStyle(layer);
+            },
+          });
+        },
+      });
+
+      camadaFundoFluxos.addTo(mapaFluxos);
+      camadaFundoFluxos.bringToBack();
+
+      const bounds = camadaFundoFluxos.getBounds();
+
+      if (bounds.isValid()) {
+        mapaFluxos.fitBounds(bounds, {
+          padding: [8, 8],
+        });
+
+        mapaFluxos.zoomIn(1);
+      }
+    }
+
+    function atualizarMapaFluxos(
+      fluxos,
+      configuracao
+    ) {
+      const container = document.querySelector(
+        "#mapa-fluxos"
+      );
+
+      if (!container) return;
+
+      if (!mapaFluxos) {
+        mapaFluxos = L.map(container, {
+          zoomControl: true,
+          attributionControl: false,
+          minZoom: 6,
+          maxZoom: 11,
+        });
+
+        mapaFluxos.setView(
+          [-22.2, -48.7],
+          7
+        );
+      }
+
+      atualizarFundoMapaFluxos(configuracao);
+
+      if (camadaLinhasFluxo) {
+        mapaFluxos.removeLayer(
+          camadaLinhasFluxo
+        );
+      }
+
+      if (camadaDestinosFluxo) {
+        mapaFluxos.removeLayer(
+          camadaDestinosFluxo
+        );
+      }
+
+      camadaLinhasFluxo = L.layerGroup();
+      camadaDestinosFluxo = L.layerGroup();
+
+      const fluxosInter = fluxos.filter(
+        (fluxo) =>
+          fluxo.origem !== fluxo.destino
+      );
+
+      // Reúne A→B e B→A na mesma conexão visual.
+      const pares = new Map();
+
+      fluxosInter.forEach((fluxo) => {
+        const menor = Math.min(
+          fluxo.origem,
+          fluxo.destino
+        );
+        const maior = Math.max(
+          fluxo.origem,
+          fluxo.destino
+        );
+        const chave = `${menor}|${maior}`;
+
+        if (!pares.has(chave)) {
+          pares.set(chave, {
+            a: menor,
+            b: maior,
+            aParaB: 0,
+            bParaA: 0,
+          });
+        }
+
+        const par = pares.get(chave);
+
+        if (
+          fluxo.origem === menor &&
+          fluxo.destino === maior
+        ) {
+          par.aParaB += fluxo.casos;
+        } else {
+          par.bParaA += fluxo.casos;
+        }
+      });
+
+      const principais = [...pares.values()]
+        .map((par) => ({
+          ...par,
+          total: par.aParaB + par.bParaA,
+        }))
+        .sort((a, b) => b.total - a.total)
+        .slice(0, configuracao.limite);
+
+      const maximo = Math.max(
+        1,
+        ...principais.map(
+          (par) => par.total
+        )
+      );
+
+      // Guarda os papéis de cada unidade entre os fluxos exibidos.
+      const papeis = new Map();
+
+      const marcarPapel = (
+        indice,
+        papel
+      ) => {
+        if (!papeis.has(indice)) {
+          papeis.set(indice, {
+            origem: false,
+            destino: false,
+          });
+        }
+
+        papeis.get(indice)[papel] = true;
+      };
+
+      principais.forEach((par) => {
+        if (par.aParaB > 0) {
+          marcarPapel(par.a, "origem");
+          marcarPapel(par.b, "destino");
+        }
+
+        if (par.bParaA > 0) {
+          marcarPapel(par.b, "origem");
+          marcarPapel(par.a, "destino");
+        }
+
+        const coordA =
+          configuracao.coordenadas[
+            par.a
+          ];
+        const coordB =
+          configuracao.coordenadas[
+            par.b
+          ];
+
+        if (
+          !coordA ||
+          !coordB ||
+          coordA[0] == null ||
+          coordA[1] == null ||
+          coordB[0] == null ||
+          coordB[1] == null
+        ) {
+          return;
+        }
+
+        const peso =
+          1.5 +
+          6 *
+            Math.sqrt(
+              par.total / maximo
+            );
+
+        const nomeA =
+          configuracao.nomes[par.a] ??
+          `Unidade ${par.a}`;
+        const nomeB =
+          configuracao.nomes[par.b] ??
+          `Unidade ${par.b}`;
+
+        const possuiIda = par.aParaB > 0;
+        const possuiVolta = par.bParaA > 0;
+
+        const conteudoPopup = `
+          <div style="min-width:230px">
+            <strong>${nomeA} ↔ ${nomeB}</strong>
+
+            <div style="margin-top:8px;line-height:1.6;font-size:12px">
+              <strong>${nomeA} → ${nomeB}:</strong>
+              ${formatarNumero(par.aParaB)} casos
+              <br>
+
+              <strong>${nomeB} → ${nomeA}:</strong>
+              ${formatarNumero(par.bParaA)} casos
+              <br>
+
+              <strong>Total entre as unidades:</strong>
+              ${formatarNumero(par.total)} casos
+              <br>
+
+              <strong>Fluxo bidirecional:</strong>
+              ${
+                possuiIda && possuiVolta
+                  ? "Sim"
+                  : "Não"
+              }
+            </div>
+          </div>
+        `;
+
+        const conteudoTooltip = `
+          <strong>${nomeA} ↔ ${nomeB}</strong>
+          <br>
+          ${formatarNumero(par.total)} casos no total
+        `;
+
+        const linha = L.polyline(
+          [coordA, coordB],
+          {
+            color: "#475569",
+            weight: peso,
+            opacity: 0.62,
+          }
+        );
+
+        linha.bindTooltip(
+          conteudoTooltip,
+          {
+            sticky: true,
+          }
+        );
+
+        linha.bindPopup(
+          conteudoPopup,
+          {
+            maxWidth: 320,
+          }
+        );
+
+        linha.on({
+          mouseover: () => {
+            linha.setStyle({
+              color: "#0F172A",
+              opacity: 0.9,
+            });
+          },
+          mouseout: () => {
+            linha.setStyle({
+              color: "#475569",
+              opacity: 0.62,
+            });
+          },
+        });
+
+        linha.addTo(camadaLinhasFluxo);
+      });
+
+      // Desenha uma única bolinha por unidade.
+      // Também calcula o total de entradas e saídas entre os fluxos exibidos.
+      const totaisNos = new Map();
+
+      const obterTotaisNo = (indice) => {
+        if (!totaisNos.has(indice)) {
+          totaisNos.set(indice, {
+            entradas: 0,
+            saidas: 0,
+          });
+        }
+
+        return totaisNos.get(indice);
+      };
+
+      principais.forEach((par) => {
+        if (par.aParaB > 0) {
+          obterTotaisNo(par.a).saidas += par.aParaB;
+          obterTotaisNo(par.b).entradas += par.aParaB;
+        }
+
+        if (par.bParaA > 0) {
+          obterTotaisNo(par.b).saidas += par.bParaA;
+          obterTotaisNo(par.a).entradas += par.bParaA;
+        }
+      });
+
+      papeis.forEach(
+        (papel, indice) => {
+          const coordenada =
+            configuracao.coordenadas[
+              indice
+            ];
+
+          if (
+            !coordenada ||
+            coordenada[0] == null ||
+            coordenada[1] == null
+          ) {
+            return;
+          }
+
+          let cor = "#2563EB";
+          let descricaoPapel = "Origem";
+
+          if (
+            papel.origem &&
+            papel.destino
+          ) {
+            cor = "#7E22CE";
+            descricaoPapel =
+              "Origem e destino";
+          } else if (
+            papel.destino
+          ) {
+            cor = "#DC2626";
+            descricaoPapel = "Destino";
+          }
+
+          const nome =
+            configuracao.nomes[indice] ??
+            `Unidade ${indice}`;
+
+          const totais = totaisNos.get(indice) || {
+            entradas: 0,
+            saidas: 0,
+          };
+
+          const totalMovimentado =
+            totais.entradas + totais.saidas;
+
+          const ponto = L.circleMarker(
+            coordenada,
+            {
+              radius: 5.5,
+              color: "#FFFFFF",
+              weight: 1.5,
+              fillColor: cor,
+              fillOpacity: 1,
+            }
+          );
+
+          ponto.bindTooltip(
+            `<strong>${nome}</strong><br>${descricaoPapel}`,
+            {
+              direction: "top",
+              offset: [0, -4],
+            }
+          );
+
+          ponto.bindPopup(
+            `
+              <div style="min-width:220px">
+                <strong>${nome}</strong>
+
+                <div style="margin-top:8px;line-height:1.6;font-size:12px">
+                  <strong>Papel:</strong>
+                  ${descricaoPapel}
+                  <br>
+
+                  <strong>Entradas:</strong>
+                  ${formatarNumero(totais.entradas)} casos
+                  <br>
+
+                  <strong>Saídas:</strong>
+                  ${formatarNumero(totais.saidas)} casos
+                  <br>
+
+                  <strong>Total movimentado:</strong>
+                  ${formatarNumero(totalMovimentado)} casos
+                </div>
+              </div>
+            `,
+            {
+              maxWidth: 300,
+            }
+          );
+
+          ponto.addTo(
+            camadaDestinosFluxo
+          );
+        }
+      );
+
+      camadaLinhasFluxo.addTo(
+        mapaFluxos
+      );
+      camadaDestinosFluxo.addTo(
+        mapaFluxos
+      );
+
+      if (camadaFundoFluxos) {
+        camadaFundoFluxos.bringToBack();
+      }
+
+      // LayerGroup não possui bringToFront() como uma linha/ponto individual.
+      // Trazemos cada camada de fluxo para frente separadamente.
+      camadaLinhasFluxo.eachLayer((layer) => {
+        if ("bringToFront" in layer) {
+          layer.bringToFront();
+        }
+      });
+
+      camadaDestinosFluxo.eachLayer((layer) => {
+        if ("bringToFront" in layer) {
+          layer.bringToFront();
+        }
+      });
+
+      const descricao = document.querySelector(
+        "#descricao-mapa-fluxos"
+      );
+
+      if (descricao) {
+        descricao.textContent =
+          `Top ${configuracao.limite} conexões entre ${configuracao.plural.toLowerCase()} de ocorrência e notificação, com o recorte territorial exibido ao fundo.`;
+      }
+
+      setTimeout(() => {
+        mapaFluxos?.invalidateSize();
+      }, 0);
+    }
+
+    function atualizarMatrizFluxos(
+      fluxos,
+      configuracao
+    ) {
+      const vazio = document.querySelector(
+        "#matriz-fluxos-vazia"
+      );
+      const container = document.querySelector(
+        "#matriz-fluxos-container"
+      );
+      const descricao = document.querySelector(
+        "#descricao-matriz-fluxos"
+      );
+
+      if (!container || !vazio) return;
+
+      if (configuracao.nivel === "municipio") {
+        vazio.classList.remove("hidden");
+        container.classList.add("hidden");
+        return;
+      }
+
+      vazio.classList.add("hidden");
+      container.classList.remove("hidden");
+
+      const inter = fluxos.filter(
+        (fluxo) =>
+          fluxo.origem !== fluxo.destino
+      );
+
+      const totaisUnidade = new Map();
+
+      inter.forEach((fluxo) => {
+        totaisUnidade.set(
+          fluxo.origem,
+          (totaisUnidade.get(fluxo.origem) || 0) +
+            fluxo.casos
+        );
+        totaisUnidade.set(
+          fluxo.destino,
+          (totaisUnidade.get(fluxo.destino) || 0) +
+            fluxo.casos
+        );
+      });
+
+      let unidades = [
+        ...totaisUnidade.entries(),
+      ]
+        .sort((a, b) => b[1] - a[1])
+        .map(([indice]) => indice);
+
+      if (!unidades.length) {
+        container.innerHTML = `
+          <div class="min-h-64 flex items-center justify-center text-center text-sm text-slate-400">
+            Nenhum fluxo entre unidades para a seleção atual.
+          </div>
+        `;
+
+        if (descricao) {
+          descricao.textContent =
+            "Não há fluxos entre unidades territoriais para os filtros selecionados.";
+        }
+
+        return;
+      }
+
+      const limiteMatriz =
+        configuracao.nivel === "regiao_saude"
+          ? 20
+          : unidades.length;
+
+      unidades = unidades.slice(
+        0,
+        limiteMatriz
+      );
+
+      const conjunto = new Set(unidades);
+      const matriz = new Map();
+
+      inter.forEach((fluxo) => {
+        if (
+          !conjunto.has(fluxo.origem) ||
+          !conjunto.has(fluxo.destino)
+        ) {
+          return;
+        }
+
+        matriz.set(
+          `${fluxo.origem}|${fluxo.destino}`,
+          fluxo.casos
+        );
+      });
+
+      const maximo = Math.max(
+        1,
+        ...matriz.values()
+      );
+
+      const cabecalho = unidades
+        .map(
+          (indice) => `
+            <th
+              class="px-2 py-2 font-medium text-slate-500 whitespace-nowrap"
+              title="${configuracao.nomes[indice]}"
+            >
+              ${configuracao.nomes[indice]}
+            </th>
+          `
+        )
+        .join("");
+
+      const linhas = unidades
+        .map((origem) => {
+          const celulas = unidades
+            .map((destino) => {
+              if (origem === destino) {
+                return `
+                  <td
+                    class="h-9 min-w-12 text-center bg-slate-100 text-slate-300"
+                  >
+                    —
+                  </td>
+                `;
+              }
+
+              const casos =
+                matriz.get(
+                  `${origem}|${destino}`
+                ) || 0;
+
+              const intensidade =
+                casos > 0
+                  ? 0.12 +
+                    0.78 *
+                      (casos / maximo)
+                  : 0;
+
+              const fundo =
+                casos > 0
+                  ? `rgba(10,44,87,${intensidade})`
+                  : "#ffffff";
+
+              const texto =
+                intensidade > 0.5
+                  ? "#ffffff"
+                  : "#334155";
+
+              return `
+                <td
+                  class="h-9 min-w-12 text-center border border-slate-100"
+                  style="background:${fundo};color:${texto}"
+                  title="${configuracao.nomes[origem]} → ${configuracao.nomes[destino]}: ${formatarNumero(casos)} casos"
+                >
+                  ${casos > 0 ? formatarNumero(casos) : ""}
+                </td>
+              `;
+            })
+            .join("");
+
+          return `
+            <tr>
+              <th
+                class="sticky left-0 z-10 bg-white px-2 py-2 text-left font-medium text-slate-500 whitespace-nowrap"
+              >
+                ${configuracao.nomes[origem]}
+              </th>
+              ${celulas}
+            </tr>
+          `;
+        })
+        .join("");
+
+      container.innerHTML = `
+        <table class="w-full h-full text-[11px] border-collapse">
+          <thead>
+            <tr>
+              <th
+                class="sticky left-0 z-20 bg-white px-2 py-2"
+              >
+                Origem ↓ / Destino →
+              </th>
+              ${cabecalho}
+            </tr>
+          </thead>
+          <tbody>
+            ${linhas}
+          </tbody>
+        </table>
+      `;
+
+      if (descricao) {
+        descricao.textContent =
+          configuracao.nivel ===
+          "regiao_saude"
+            ? "São exibidas as 20 Regiões de Saúde com maior volume de fluxos inter-regionais."
+            : `Fluxos entre ${configuracao.plural}. A diagonal foi omitida para destacar deslocamentos entre unidades.`;
+      }
+    }
+
+    function atualizarFluxosTerritoriais(
+      selecao
+    ) {
+      const configuracao =
+        obterConfiguracaoFluxo();
+
+      const dadosFiltrados =
+        filtrarDadosFluxos(selecao);
+
+      const fluxos = agregarFluxosPorNivel(
+        dadosFiltrados,
+        configuracao
+      );
+
+      const resumo =
+        calcularResumoFluxos(fluxos);
+
+      atualizarCardsFluxos(resumo);
+      atualizarGraficoMesmaOutra(resumo);
+      atualizarTabelaFluxos(
+        fluxos,
+        resumo
+      );
+      atualizarMapaFluxos(
+        fluxos,
+        configuracao
+      );
+      atualizarMatrizFluxos(
+        fluxos,
+        configuracao
+      );
+    }
+
+    // =========================
     // ATUALIZAÇÃO GERAL
     // =========================
     function atualizarDashboard() {
@@ -4627,6 +6020,10 @@ import "leaflet/dist/leaflet.css";
       atualizarGraficoAmpolas(ampolasFiltradas);
       atualizarTerritorio(
         cardsTerritoriaisFiltrados
+      );
+
+      atualizarFluxosTerritoriais(
+        selecaoTerritorial
       );
     }
 
@@ -4791,6 +6188,11 @@ import "leaflet/dist/leaflet.css";
         [
           filtros,
           dadosCards,
+          dadosFluxos,
+          geojsonFluxos.municipio,
+          geojsonFluxos.regiao_saude,
+          geojsonFluxos.drs,
+          geojsonFluxos.rras,
           dadosTempo,
           dadosMes,
           dadosSemana,
@@ -4811,6 +6213,11 @@ import "leaflet/dist/leaflet.css";
         ] = await Promise.all([
           carregarJson("/data/filtros.json"),
           carregarJson("/data/cards.json"),
+          carregarJson("/data/fluxos.json"),
+          carregarJson("/data/municipios_sp.geojson"),
+          carregarJson("/data/regioes_saude_sp.geojson"),
+          carregarJson("/data/drs_sp.geojson"),
+          carregarJson("/data/rras_sp.geojson"),
           carregarJson("/data/tempo.json"),
           carregarJson("/data/mes.json"),
           carregarJson("/data/semana.json"),
@@ -4859,6 +6266,20 @@ import "leaflet/dist/leaflet.css";
               atualizarDashboard();
             });
           });
+
+        document
+          .querySelector("#fluxo-nivel")
+          ?.addEventListener(
+            "change",
+            atualizarDashboard
+          );
+
+        document
+          .querySelector("#fluxo-limite")
+          ?.addEventListener(
+            "change",
+            atualizarDashboard
+          );
 
         document
           .querySelector("#territorio-nivel")

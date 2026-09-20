@@ -36,6 +36,7 @@ COLUNAS_NECESSARIAS = [
     "semana_epidemiologica",
     "tipo_acidente",
     "municipio_ocorrencia",
+    "municipio_notificacao",
     "gravidade",
     "mes_acidente",
     "tempo_atendimento",
@@ -856,6 +857,155 @@ for codigo, coluna in colunas_origem.items():
         .map(mapas_indices[codigo])
     )
 
+# =========================
+# ÍNDICES DOS FLUXOS TERRITORIAIS
+# =========================
+# Os fluxos comparam município de ocorrência com município de notificação.
+# O município de notificação não é interpretado como local de atendimento.
+municipios_fluxo = sorted(
+    set(
+        df_dashboard["municipio_ocorrencia"]
+        .dropna()
+        .astype(str)
+        .tolist()
+    )
+    | set(
+        df_dashboard["municipio_notificacao"]
+        .dropna()
+        .astype(str)
+        .tolist()
+    )
+)
+
+mapa_municipios_fluxo = criar_mapa_indices(municipios_fluxo)
+
+mapa_regiao_saude_fluxo = criar_mapa_indices(
+    filtros.get("regioes_saude", [])
+)
+mapa_drs_fluxo = criar_mapa_indices(
+    filtros.get("drs", [])
+)
+mapa_rras_fluxo = criar_mapa_indices(
+    filtros.get("rras", [])
+)
+
+df_dashboard["fm_o"] = (
+    df_dashboard["municipio_ocorrencia"]
+    .astype(str)
+    .map(mapa_municipios_fluxo)
+)
+df_dashboard["fm_d"] = (
+    df_dashboard["municipio_notificacao"]
+    .astype(str)
+    .map(mapa_municipios_fluxo)
+)
+
+# As divisões territoriais dos dois lados são obtidas pela mesma base
+# territorial usada no mapa, evitando depender de nomes duplicados no CSV.
+mapa_municipio_regiao = (
+    divisoes.drop_duplicates(subset=["Municipio"])
+    .set_index("Municipio")["Regiao de Saude"]
+    .astype(str)
+    .to_dict()
+)
+mapa_municipio_drs = (
+    divisoes.drop_duplicates(subset=["Municipio"])
+    .set_index("Municipio")["Departamento Regional de Saude"]
+    .astype(str)
+    .to_dict()
+)
+mapa_municipio_rras = (
+    divisoes.drop_duplicates(subset=["Municipio"])
+    .set_index("Municipio")["Macrorregiao de Saude"]
+    .astype(str)
+    .to_dict()
+)
+
+for sufixo, coluna_municipio in {
+    "o": "municipio_ocorrencia",
+    "d": "municipio_notificacao",
+}.items():
+    df_dashboard[f"fr_{sufixo}"] = (
+        df_dashboard[coluna_municipio]
+        .astype(str)
+        .map(mapa_municipio_regiao)
+        .map(mapa_regiao_saude_fluxo)
+    )
+    df_dashboard[f"fd_{sufixo}"] = (
+        df_dashboard[coluna_municipio]
+        .astype(str)
+        .map(mapa_municipio_drs)
+        .map(mapa_drs_fluxo)
+    )
+    df_dashboard[f"frr_{sufixo}"] = (
+        df_dashboard[coluna_municipio]
+        .astype(str)
+        .map(mapa_municipio_rras)
+        .map(mapa_rras_fluxo)
+    )
+
+# Coordenadas de referência usadas apenas para desenhar os fluxos no mapa.
+divisoes_fluxo = (
+    divisoes
+    .drop_duplicates(subset=["Municipio"])
+    .set_index("Municipio")
+)
+
+def coordenadas_por_nomes(nomes, coluna_agrupamento=None):
+    if coluna_agrupamento is None:
+        return [
+            [
+                float(divisoes_fluxo.loc[nome, "Latitude"]),
+                float(divisoes_fluxo.loc[nome, "Longitude"]),
+            ]
+            if nome in divisoes_fluxo.index
+            else [None, None]
+            for nome in nomes
+        ]
+
+    coordenadas = (
+        divisoes[
+            [coluna_agrupamento, "Latitude", "Longitude"]
+        ]
+        .dropna()
+        .groupby(coluna_agrupamento, observed=True)[
+            ["Latitude", "Longitude"]
+        ]
+        .mean()
+    )
+
+    return [
+        [
+            float(coordenadas.loc[nome, "Latitude"]),
+            float(coordenadas.loc[nome, "Longitude"]),
+        ]
+        if nome in coordenadas.index
+        else [None, None]
+        for nome in nomes
+    ]
+
+filtros["fluxos"] = {
+    "municipios": municipios_fluxo,
+    "regioes_saude": filtros.get("regioes_saude", []),
+    "drs": filtros.get("drs", []),
+    "rras": filtros.get("rras", []),
+    "coordenadas_municipios": coordenadas_por_nomes(
+        municipios_fluxo
+    ),
+    "coordenadas_regioes_saude": coordenadas_por_nomes(
+        filtros.get("regioes_saude", []),
+        "Regiao de Saude",
+    ),
+    "coordenadas_drs": coordenadas_por_nomes(
+        filtros.get("drs", []),
+        "Departamento Regional de Saude",
+    ),
+    "coordenadas_rras": coordenadas_por_nomes(
+        filtros.get("rras", []),
+        "Macrorregiao de Saude",
+    ),
+}
+
 df_dashboard = df_dashboard.dropna(
     subset=CHAVES_FILTRO
 ).copy()
@@ -904,6 +1054,46 @@ dados_cards = [
         int(r.tempo_conhecido),
     ]
     for r in cards.itertuples()
+]
+
+# fluxos.json
+# Estrutura compacta:
+# [y, a, g, e,
+#  municipio_origem, municipio_destino,
+#  regiao_origem, regiao_destino,
+#  drs_origem, drs_destino,
+#  rras_origem, rras_destino,
+#  casos]
+COLUNAS_FLUXO = [
+    "y", "a", "g", "e",
+    "fm_o", "fm_d",
+    "fr_o", "fr_d",
+    "fd_o", "fd_d",
+    "frr_o", "frr_d",
+]
+
+df_fluxos = df_dashboard.dropna(
+    subset=COLUNAS_FLUXO
+).copy()
+
+df_fluxos[COLUNAS_FLUXO] = (
+    df_fluxos[COLUNAS_FLUXO]
+    .astype(int)
+)
+
+fluxos = (
+    df_fluxos
+    .groupby(COLUNAS_FLUXO, observed=True)
+    .size()
+    .reset_index(name="casos")
+)
+
+dados_fluxos = [
+    [
+        int(getattr(r, coluna))
+        for coluna in COLUNAS_FLUXO
+    ] + [int(r.casos)]
+    for r in fluxos.itertuples()
 ]
 
 # Séries específicas mantêm o mesmo prefixo [y, a, m, g, e].
@@ -984,6 +1174,7 @@ arquivos_dashboard = {
     "drs_sp.geojson": drs_geojson,
     "rras_sp.geojson": rras_geojson,
     "cards.json": dados_cards,
+    "fluxos.json": dados_fluxos,
     "mes.json": dados_mes,
     "tempo.json": dados_tempo,
     "semana.json": dados_semana,
