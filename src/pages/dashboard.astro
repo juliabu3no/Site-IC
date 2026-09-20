@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Container from "@/components/container.astro";
+import "leaflet/dist/leaflet.css";
 ---
 
 <Layout title="Dashboard">
@@ -181,21 +182,45 @@ import Container from "@/components/container.astro";
           </div>
         </div>
 
-        <!-- MÊS -->
+        <!-- DISTRIBUIÇÃO TEMPORAL: MÊS / SEMANA -->
         <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
-          <h3 class="font-semibold text-gray-800">Distribuição mensal dos casos</h3>
-          <div class="mt-4 h-80">
-            <canvas id="grafico-mes"></canvas>
-          </div>
-        </div>
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 class="font-semibold text-gray-800">
+                Distribuição temporal dos casos
+              </h3>
+              <p
+                id="descricao-periodo-acidente"
+                class="mt-1 text-sm text-slate-500"
+              >
+                Casos segundo o mês de ocorrência do acidente.
+              </p>
+            </div>
 
-        <!-- SEMANA EPIDEMIOLÓGICA -->
-        <div class="border border-gray-200 rounded-lg p-6 md:col-span-2">
-          <h3 class="font-semibold text-gray-800">
-            Casos por semana epidemiológica
-          </h3>
+            <div
+              class="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1"
+              role="group"
+              aria-label="Escala temporal do gráfico"
+            >
+              <button
+                type="button"
+                data-periodo-acidente="mes"
+                class="botao-periodo-acidente rounded-md px-3 py-1.5 text-sm font-medium bg-[#0A2C57] text-white shadow-sm"
+              >
+                Mês
+              </button>
+              <button
+                type="button"
+                data-periodo-acidente="semana"
+                class="botao-periodo-acidente rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-[#0A2C57]"
+              >
+                Semana epidemiológica
+              </button>
+            </div>
+          </div>
+
           <div class="mt-4 h-96">
-            <canvas id="grafico-semana"></canvas>
+            <canvas id="grafico-periodo-acidente"></canvas>
           </div>
         </div>
 
@@ -376,10 +401,354 @@ import Container from "@/components/container.astro";
         </div>
       </div>
     </section>
+
+    <!-- DISTRIBUIÇÃO TERRITORIAL -->
+    <section class="mx-auto max-w-6xl mt-16 mb-20">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-[#0A2C57]">
+          Distribuição territorial
+        </h2>
+        <p class="mt-1 text-sm text-slate-500">
+          Distribuição dos registros selecionados segundo diferentes recortes territoriais do estado de São Paulo.
+        </p>
+      </div>
+
+      <!-- CONTROLES TERRITORIAIS -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="border border-gray-200 rounded-lg p-5">
+          <label
+            for="territorio-nivel"
+            class="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Recorte territorial
+          </label>
+          <select
+            id="territorio-nivel"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-sm outline-none focus:border-[#0A2C57]"
+          >
+            <option value="municipio">Municípios</option>
+            <option value="regiao_saude">Região de Saúde</option>
+            <option value="drs">DRS</option>
+            <option value="rras">RRAS</option>
+          </select>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-5">
+          <label
+            for="territorio-indicador"
+            class="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Indicador
+          </label>
+          <select
+            id="territorio-indicador"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-sm outline-none focus:border-[#0A2C57]"
+          >
+            <option value="casos">Casos</option>
+            <option value="obitos">Óbitos</option>
+            <option value="soroterapia">Soroterapia</option>
+            <option value="letalidade">Letalidade</option>
+            <option value="proporcao_soroterapia">
+              Proporção com soroterapia
+            </option>
+          </select>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-5">
+          <label
+            for="territorio-medida"
+            class="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Medida
+          </label>
+          <select
+            id="territorio-medida"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-sm outline-none focus:border-[#0A2C57] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed"
+          >
+            <option value="absoluto">Número absoluto</option>
+            <option value="taxa">Por 100 mil habitantes</option>
+            <option value="percentual" hidden>Percentual (%)</option>
+          </select>
+        </div>
+      </div>
+
+      <p
+        id="territorio-nota-taxa"
+        class="hidden mb-4 text-xs text-slate-500"
+      >
+        Taxas calculadas com a população de referência do IBGE 2022, agregada
+        conforme o recorte territorial selecionado. Para períodos com mais de um ano,
+        o valor representa os registros acumulados no período por 100 mil habitantes.
+      </p>
+
+      <p
+        id="territorio-nota-percentual"
+        class="hidden mb-4 text-xs text-slate-500"
+      ></p>
+
+      <!-- MAPA -->
+      <div class="border border-gray-200 rounded-lg p-6">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3
+              id="titulo-mapa-territorial"
+              class="font-semibold text-gray-800"
+            >
+              Casos por município
+            </h3>
+            <p
+              id="descricao-mapa-territorial"
+              class="mt-1 text-sm text-slate-500"
+            >
+              Município de ocorrência do acidente.
+            </p>
+          </div>
+        </div>
+
+        <div
+          id="mapa-territorial"
+          class="mt-4 h-[34rem] w-full rounded-md border border-slate-200 overflow-hidden relative z-0"
+          style="background:#f8fafc;"
+        ></div>
+
+        <div
+          id="legenda-territorial"
+          class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-600"
+        ></div>
+      </div>
+
+      <!-- RESUMO + DETALHE + RANKING -->
+      <div class="mt-6 grid lg:grid-cols-2 gap-6 items-start">
+        <!-- COLUNA ESQUERDA -->
+        <div class="space-y-6">
+          <!-- RESUMO TERRITORIAL -->
+          <div class="border border-gray-200 rounded-lg p-6">
+            <h3 class="font-semibold text-gray-800">
+              Resumo territorial
+            </h3>
+
+            <div
+              id="painel-resumo-territorial"
+              class="mt-5 grid sm:grid-cols-2 gap-3"
+            >
+              <div class="min-h-24 rounded-lg border border-slate-200 p-4">
+                <p
+                  id="rotulo-territorio-com-registro"
+                  class="text-xs font-medium text-slate-500"
+                >
+                  Unidades com registros
+                </p>
+                <p
+                  id="territorio-com-registro"
+                  class="mt-2 text-xl font-bold text-[#0A2C57]"
+                >
+                  —
+                </p>
+              </div>
+
+              <div class="min-h-24 rounded-lg border border-slate-200 p-4">
+                <p
+                  id="rotulo-territorio-sem-registro"
+                  class="text-xs font-medium text-slate-500"
+                >
+                  Unidades sem registros
+                </p>
+                <p
+                  id="territorio-sem-registro"
+                  class="mt-2 text-xl font-bold text-[#0A2C57]"
+                >
+                  —
+                </p>
+              </div>
+
+              <div class="min-h-24 rounded-lg border border-slate-200 p-4">
+                <p class="text-xs font-medium text-slate-500">
+                  Maior valor
+                </p>
+                <p
+                  id="territorio-maior-valor"
+                  class="mt-2 text-xl font-bold text-[#0A2C57]"
+                >
+                  —
+                </p>
+                <p
+                  id="territorio-maior-nome"
+                  class="mt-1 text-xs text-slate-500"
+                >
+                  —
+                </p>
+              </div>
+
+              <div class="min-h-24 rounded-lg border border-slate-200 p-4">
+                <p class="text-xs font-medium text-slate-500">
+                  Mediana
+                </p>
+                <p
+                  id="territorio-mediana"
+                  class="mt-2 text-xl font-bold text-[#0A2C57]"
+                >
+                  —
+                </p>
+              </div>
+
+              <div class="min-h-24 rounded-lg border border-slate-200 p-4 sm:col-span-2">
+                <p
+                  id="rotulo-territorio-concentracao"
+                  class="text-xs font-medium text-slate-500"
+                >
+                  Top 10 concentram
+                </p>
+                <p
+                  id="territorio-concentracao"
+                  class="mt-2 text-xl font-bold text-[#0A2C57]"
+                >
+                  —
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETALHE DA UNIDADE SELECIONADA -->
+          <div
+            id="detalhe-territorial"
+            class="border border-gray-200 rounded-lg p-6 min-h-[20rem]"
+          >
+            <!-- ESTADO INICIAL -->
+            <div
+              id="detalhe-territorial-vazio"
+              class="min-h-[17rem] rounded-lg border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center p-8 text-center"
+            >
+              <div class="max-w-sm">
+                <h3 class="font-semibold text-gray-800">
+                  Explore uma unidade territorial
+                </h3>
+                <p
+                  id="texto-detalhe-territorial-vazio"
+                  class="mt-2 text-sm leading-6 text-slate-500"
+                >
+                  Clique em uma área do mapa para visualizar sua evolução ao longo do tempo.
+                </p>
+                <p class="mt-2 text-xs text-slate-400">
+                  O detalhamento acompanha o indicador e os filtros selecionados.
+                </p>
+              </div>
+            </div>
+
+            <!-- ESTADO SELECIONADO -->
+            <div
+              id="detalhe-territorial-conteudo"
+              class="hidden"
+            >
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p
+                    id="tipo-unidade-territorial-selecionada"
+                    class="text-xs font-medium uppercase tracking-wide text-slate-400"
+                  >
+                    Município selecionado
+                  </p>
+                  <h3
+                    id="nome-unidade-territorial-selecionada"
+                    class="mt-1 text-lg font-semibold text-gray-800"
+                  >
+                    —
+                  </h3>
+                  <p
+                    id="titulo-evolucao-territorial"
+                    class="mt-1 text-sm text-slate-500"
+                  >
+                    Evolução anual — Casos
+                  </p>
+                </div>
+
+                <button
+                  id="limpar-selecao-territorial"
+                  type="button"
+                  class="text-xs font-medium text-slate-500 hover:text-[#0A2C57]"
+                >
+                  Limpar seleção
+                </button>
+              </div>
+
+              <div class="mt-4 h-56">
+                <canvas id="grafico-evolucao-unidade-territorial"></canvas>
+              </div>
+
+              <p class="mt-3 text-xs text-slate-400">
+                A série respeita os filtros gerais ativos, incluindo o período selecionado.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RANKING -->
+        <div class="border border-gray-200 rounded-lg p-6">
+          <h3
+            id="titulo-ranking-territorial"
+            class="font-semibold text-gray-800"
+          >
+            Municípios com maiores valores — Casos
+          </h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Dez maiores valores entre as unidades territoriais.
+          </p>
+
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full text-xs sm:text-sm">
+              <thead>
+                <tr class="border-b border-slate-200 text-left text-slate-500">
+                  <th class="py-3 pr-3 font-medium w-10">#</th>
+                  <th
+                    id="cabecalho-ranking-unidade"
+                    class="py-3 pr-3 font-medium"
+                  >
+                    Município
+                  </th>
+                  <th
+                    id="cabecalho-ranking-principal"
+                    class="py-3 px-2 text-right font-medium whitespace-nowrap"
+                  >
+                    Casos
+                  </th>
+                  <th
+                    id="cabecalho-ranking-aux1"
+                    class="py-3 px-2 text-right font-medium whitespace-nowrap"
+                  >
+                    % do total
+                  </th>
+                  <th
+                    id="cabecalho-ranking-aux2"
+                    class="py-3 pl-2 text-right font-medium whitespace-nowrap"
+                  >
+                    Por 100 mil
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="tabela-ranking-territorial"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISTRIBUIÇÃO DOS VALORES -->
+      <div class="mt-6 border border-gray-200 rounded-lg p-6">
+        <h3 class="font-semibold text-gray-800">
+          Distribuição dos valores territoriais
+        </h3>
+        <p class="mt-1 text-sm text-slate-500">
+          Frequência das unidades territoriais segundo o valor do indicador selecionado.
+        </p>
+        <div class="mt-4 h-72">
+          <canvas id="grafico-distribuicao-territorial"></canvas>
+        </div>
+      </div>
+    </section>
+
   </Container>
 
   <script>
     import Chart from "chart.js/auto";
+    import * as L from "leaflet";
 
     // =========================
     // ESTADO E CONSTANTES
@@ -399,6 +768,18 @@ import Container from "@/components/container.astro";
     let dadosSoros = [];
     let dadosAmpolasTotais = [];
     let dadosAmpolas = [];
+    let dadosTerritoriosGeojson = {
+      municipio: null,
+      regiao_saude: null,
+      drs: null,
+      rras: null,
+    };
+    let mapaTerritorial = null;
+    let camadaTerritorial = null;
+    let mapaTerritorialAjustado = false;
+    let modoPeriodoAcidente = "mes";
+    let unidadeTerritorialSelecionada = null;
+    let contextoTerritorialAtual = null;
 
     // Guarda as instâncias para destruí-las antes de redesenhar.
     const graficos = new Map();
@@ -448,6 +829,32 @@ import Container from "@/components/container.astro";
       destaque: "#C47A00",
       ignorado: "#94A3B8",
     };
+
+    const COR_ZERO_PERCENTUAL_TERRITORIO = "#FFFDE7";
+
+    const CORES_MAPA_TERRITORIAL = [
+      "#FFFFCC",
+      "#FFEDA0",
+      "#FED976",
+      "#FEB24C",
+      "#FD8D3C",
+      "#FC4E2A",
+      "#E31A1C",
+      "#B10026",
+    ];
+
+    const ROTULOS_INDICADOR_TERRITORIO = {
+      casos: "Casos",
+      obitos: "Óbitos",
+      soroterapia: "Casos com soroterapia",
+      letalidade: "Letalidade",
+      proporcao_soroterapia: "Proporção com soroterapia",
+    };
+
+    const INDICADORES_PERCENTUAIS_TERRITORIO = new Set([
+      "letalidade",
+      "proporcao_soroterapia",
+    ]);
 
     // Os cinco primeiros campos são iguais em todos os JSONs agregados.
     const INDICE_COMUM = {
@@ -1738,7 +2145,6 @@ import Container from "@/components/container.astro";
             indexAxis: "y",
             responsive: true,
             maintainAspectRatio: false,
-
             plugins: {
               legend: {
                 display: true,
@@ -1757,7 +2163,6 @@ import Container from "@/components/container.astro";
                 },
                 onClick: () => {},
               },
-
               tooltip: {
                 callbacks: {
                   label: (contexto) => {
@@ -1769,7 +2174,6 @@ import Container from "@/components/container.astro";
                 },
               },
             },
-
             scales: {
               x: {
                 beginAtZero: true,
@@ -1784,7 +2188,6 @@ import Container from "@/components/container.astro";
                   callback: (valor) => formatarNumero(valor),
                 },
               },
-
               y: {
                 grid: {
                   color: "#E5E7EB",
@@ -1802,6 +2205,7 @@ import Container from "@/components/container.astro";
         }
       );
     }
+
     function atualizarGraficoGravidadeAnimal(dadosFiltrados) {
       const { matriz, totais, linhas } = agruparDuasCategorias(
         dadosFiltrados,
@@ -2066,39 +2470,2101 @@ import Container from "@/components/container.astro";
       });
     }
 
-    function atualizarGraficoMes(dadosFiltrados) {
-      const { labels, datasets } = prepararSeriesPorAnimal(
-        dadosFiltrados,
-        ORDEM_MESES,
-        MAPA_MESES
+    function atualizarBotoesPeriodoAcidente() {
+      document
+        .querySelectorAll(".botao-periodo-acidente")
+        .forEach((botao) => {
+          if (!(botao instanceof HTMLButtonElement)) return;
+
+          const ativo =
+            botao.dataset.periodoAcidente ===
+            modoPeriodoAcidente;
+
+          botao.classList.toggle(
+            "bg-[#0A2C57]",
+            ativo
+          );
+          botao.classList.toggle(
+            "text-white",
+            ativo
+          );
+          botao.classList.toggle(
+            "shadow-sm",
+            ativo
+          );
+          botao.classList.toggle(
+            "text-slate-600",
+            !ativo
+          );
+        });
+    }
+
+    function atualizarGraficoPeriodoAcidente(
+      mesFiltrado,
+      semanaFiltrada
+    ) {
+      const usandoMes =
+        modoPeriodoAcidente === "mes";
+
+      const dados = usandoMes
+        ? mesFiltrado
+        : semanaFiltrada;
+
+      const ordem = usandoMes
+        ? ORDEM_MESES
+        : ORDEM_SEMANAS;
+
+      const mapaRotulos = usandoMes
+        ? MAPA_MESES
+        : null;
+
+      const tituloEixo = usandoMes
+        ? "Mês do acidente"
+        : "Semana epidemiológica";
+
+      const descricao = document.querySelector(
+        "#descricao-periodo-acidente"
       );
 
+      if (descricao) {
+        descricao.textContent = usandoMes
+          ? "Casos segundo o mês de ocorrência do acidente."
+          : "Casos segundo a semana epidemiológica de ocorrência do acidente.";
+      }
+
+      const { labels, datasets } =
+        prepararSeriesPorAnimal(
+          dados,
+          ordem,
+          mapaRotulos
+        );
+
       renderizarGrafico(
-        "mes",
-        "#grafico-mes",
+        "periodo-acidente",
+        "#grafico-periodo-acidente",
         configuracaoBarrasEmpilhadas(
           labels,
           datasets,
-          "Mês do acidente"
+          tituloEixo
+        )
+      );
+
+      atualizarBotoesPeriodoAcidente();
+    }
+
+    // =========================
+    // DISTRIBUIÇÃO TERRITORIAL
+    // =========================
+    function indicadorTerritorialEhPercentual(indicador) {
+      return INDICADORES_PERCENTUAIS_TERRITORIO.has(indicador);
+    }
+
+    function sincronizarMedidaTerritorial() {
+      const indicadorEl = document.querySelector(
+        "#territorio-indicador"
+      );
+      const medidaEl = document.querySelector(
+        "#territorio-medida"
+      );
+
+      if (
+        !(indicadorEl instanceof HTMLSelectElement) ||
+        !(medidaEl instanceof HTMLSelectElement)
+      ) {
+        return;
+      }
+
+      const percentualOption = medidaEl.querySelector(
+        'option[value="percentual"]'
+      );
+
+      const percentual = indicadorTerritorialEhPercentual(
+        indicadorEl.value
+      );
+
+      if (percentual) {
+        if (percentualOption instanceof HTMLOptionElement) {
+          percentualOption.hidden = false;
+        }
+
+        medidaEl.value = "percentual";
+        medidaEl.disabled = true;
+      } else {
+        medidaEl.disabled = false;
+
+        if (medidaEl.value === "percentual") {
+          medidaEl.value = "absoluto";
+        }
+
+        if (percentualOption instanceof HTMLOptionElement) {
+          percentualOption.hidden = true;
+        }
+      }
+    }
+
+    function obterControlesTerritoriais() {
+      const nivelEl = document.querySelector("#territorio-nivel");
+      const indicadorEl = document.querySelector("#territorio-indicador");
+      const medidaEl = document.querySelector("#territorio-medida");
+
+      return {
+        nivel:
+          nivelEl instanceof HTMLSelectElement
+            ? nivelEl.value
+            : "municipio",
+        indicador:
+          indicadorEl instanceof HTMLSelectElement
+            ? indicadorEl.value
+            : "casos",
+        medida:
+          medidaEl instanceof HTMLSelectElement
+            ? medidaEl.value
+            : "absoluto",
+      };
+    }
+
+    function obterConfiguracaoNivelTerritorial(nivel) {
+      if (nivel === "regiao_saude") {
+        return {
+          nivel: "regiao_saude",
+          nomes: filtros.regioes_saude || [],
+          municipioParaUnidade:
+            filtros.municipio_para_regiao_saude || [],
+          geojson: dadosTerritoriosGeojson.regiao_saude,
+          singular: "Região de Saúde",
+          plural: "Regiões de Saúde",
+          descricao:
+            "Região de Saúde do município de ocorrência do acidente.",
+        };
+      }
+
+      if (nivel === "drs") {
+        return {
+          nivel: "drs",
+          nomes: filtros.drs || [],
+          municipioParaUnidade: filtros.municipio_para_drs || [],
+          geojson: dadosTerritoriosGeojson.drs,
+          singular: "DRS",
+          plural: "DRS",
+          descricao:
+            "Departamento Regional de Saúde do município de ocorrência.",
+        };
+      }
+
+      if (nivel === "rras") {
+        return {
+          nivel: "rras",
+          nomes: filtros.rras || [],
+          municipioParaUnidade: filtros.municipio_para_rras || [],
+          geojson: dadosTerritoriosGeojson.rras,
+          singular: "RRAS",
+          plural: "RRAS",
+          descricao:
+            "Rede Regional de Atenção à Saúde do município de ocorrência.",
+        };
+      }
+
+      return {
+        nivel: "municipio",
+        nomes: filtros.municipios || [],
+        municipioParaUnidade: filtros.municipios.map(
+          (_, indice) => indice
+        ),
+        geojson: dadosTerritoriosGeojson.municipio,
+        singular: "Município",
+        plural: "Municípios",
+        descricao: "Município de ocorrência do acidente.",
+      };
+    }
+
+    function agregarTerritorio(dadosFiltrados, configuracao) {
+      const totais = new Map();
+
+      dadosFiltrados.forEach((linha) => {
+        const municipio = Number(linha[INDICE_CARDS.municipio]);
+        const unidade =
+          configuracao.municipioParaUnidade?.[municipio];
+
+        if (
+          unidade === null ||
+          unidade === undefined ||
+          !Number.isFinite(Number(unidade))
+        ) {
+          return;
+        }
+
+        const indiceUnidade = Number(unidade);
+
+        if (!totais.has(indiceUnidade)) {
+          totais.set(indiceUnidade, {
+            casos: 0,
+            obitos: 0,
+            soroterapia: 0,
+            soroterapiaConhecida: 0,
+          });
+        }
+
+        const item = totais.get(indiceUnidade);
+        item.casos += Number(linha[INDICE_CARDS.casos]) || 0;
+        item.obitos += Number(linha[INDICE_CARDS.obitos]) || 0;
+        item.soroterapia +=
+          Number(linha[INDICE_CARDS.soroterapiaSim]) || 0;
+        item.soroterapiaConhecida +=
+          Number(linha[INDICE_CARDS.soroterapiaConhecida]) || 0;
+      });
+
+      return totais;
+    }
+
+    function calcularPopulacaoPorUnidade(configuracao) {
+      const populacoes = new Map();
+
+      filtros.municipios.forEach((_, municipio) => {
+        const unidade =
+          configuracao.municipioParaUnidade?.[municipio];
+
+        if (
+          unidade === null ||
+          unidade === undefined ||
+          !Number.isFinite(Number(unidade))
+        ) {
+          return;
+        }
+
+        const indiceUnidade = Number(unidade);
+        const populacao =
+          Number(filtros.populacoes_municipios?.[municipio]) || 0;
+
+        populacoes.set(
+          indiceUnidade,
+          (populacoes.get(indiceUnidade) || 0) + populacao
+        );
+      });
+
+      return populacoes;
+    }
+
+    function calcularPercentual(numerador, denominador) {
+      return denominador > 0
+        ? (numerador / denominador) * 100
+        : null;
+    }
+
+    function prepararValoresTerritoriais(
+      dadosFiltrados,
+      indicador,
+      medida,
+      configuracao
+    ) {
+      const agregados = agregarTerritorio(
+        dadosFiltrados,
+        configuracao
+      );
+
+      const populacoes = calcularPopulacaoPorUnidade(
+        configuracao
+      );
+
+      return configuracao.nomes.map((nome, indice) => {
+        const agregado = agregados.get(indice) || {
+          casos: 0,
+          obitos: 0,
+          soroterapia: 0,
+          soroterapiaConhecida: 0,
+        };
+
+        const casos = Number(agregado.casos) || 0;
+        const obitos = Number(agregado.obitos) || 0;
+        const soroterapia = Number(agregado.soroterapia) || 0;
+        const soroterapiaConhecida =
+          Number(agregado.soroterapiaConhecida) || 0;
+
+        const populacao = Number(populacoes.get(indice)) || 0;
+
+        const letalidade = calcularPercentual(
+          obitos,
+          casos
+        );
+
+        const proporcaoSoroterapia = calcularPercentual(
+          soroterapia,
+          soroterapiaConhecida
+        );
+
+        const taxaCasos =
+          populacao > 0
+            ? (casos / populacao) * 100000
+            : null;
+
+        const taxaObitos =
+          populacao > 0
+            ? (obitos / populacao) * 100000
+            : null;
+
+        const taxaSoroterapia =
+          populacao > 0
+            ? (soroterapia / populacao) * 100000
+            : null;
+
+        let absoluto = casos;
+        let taxa = taxaCasos;
+        let valor = casos;
+        let calculavel = true;
+
+        if (indicador === "obitos") {
+          absoluto = obitos;
+          taxa = taxaObitos;
+          valor = medida === "taxa" ? taxaObitos : obitos;
+        } else if (indicador === "soroterapia") {
+          absoluto = soroterapia;
+          taxa = taxaSoroterapia;
+          valor =
+            medida === "taxa"
+              ? taxaSoroterapia
+              : soroterapia;
+        } else if (indicador === "letalidade") {
+          absoluto = obitos;
+          taxa = null;
+          valor = letalidade;
+          calculavel = letalidade !== null;
+        } else if (indicador === "proporcao_soroterapia") {
+          absoluto = soroterapia;
+          taxa = null;
+          valor = proporcaoSoroterapia;
+          calculavel = proporcaoSoroterapia !== null;
+        } else {
+          valor = medida === "taxa" ? taxaCasos : casos;
+        }
+
+        return {
+          indice,
+          nome,
+          populacao,
+          casos,
+          obitos,
+          soroterapia,
+          soroterapiaConhecida,
+          letalidade,
+          proporcaoSoroterapia,
+          taxaCasos,
+          taxaObitos,
+          taxaSoroterapia,
+          absoluto,
+          taxa,
+          valor: valor ?? 0,
+          calculavel,
+        };
+      });
+    }
+
+    function formatarPercentualTerritorial(valor, casas = 2) {
+      if (valor === null || valor === undefined || !Number.isFinite(Number(valor))) {
+        return "—";
+      }
+
+      return `${Number(valor).toLocaleString("pt-BR", {
+        minimumFractionDigits: casas,
+        maximumFractionDigits: casas,
+      })}%`;
+    }
+
+    function formatarValorTerritorial(
+      valor,
+      medida,
+      indicador = null
+    ) {
+      if (
+        valor === null ||
+        valor === undefined ||
+        !Number.isFinite(Number(valor))
+      ) {
+        return "—";
+      }
+
+      if (
+        medida === "percentual" ||
+        indicadorTerritorialEhPercentual(indicador)
+      ) {
+        return formatarPercentualTerritorial(valor, 2);
+      }
+
+      if (medida === "taxa") {
+        return Number(valor).toLocaleString("pt-BR", {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        });
+      }
+
+      return formatarNumero(Math.round(Number(valor)));
+    }
+
+    function obterCoresClassificacao(numeroClasses) {
+      if (numeroClasses <= 0) return [];
+
+      if (numeroClasses === 1) {
+        return [
+          CORES_MAPA_TERRITORIAL[
+            Math.floor(CORES_MAPA_TERRITORIAL.length / 2)
+          ],
+        ];
+      }
+
+      return Array.from(
+        { length: numeroClasses },
+        (_, indice) => {
+          const posicao = Math.round(
+            (indice * (CORES_MAPA_TERRITORIAL.length - 1)) /
+              (numeroClasses - 1)
+          );
+
+          return CORES_MAPA_TERRITORIAL[posicao];
+        }
+      );
+    }
+
+    function calcularClassificacaoJenks(
+      valores,
+      maximoClasses = 8
+    ) {
+      const positivos = valores
+        .map(Number)
+        .filter(
+          (valor) =>
+            Number.isFinite(valor) && valor > 0
+        )
+        .sort((a, b) => a - b);
+
+      if (!positivos.length) {
+        return {
+          cortes: [],
+          numeroClasses: 0,
+          minimo: 0,
+          maximo: 0,
+          cores: [],
+        };
+      }
+
+      const valoresUnicos = [...new Set(positivos)];
+      const numeroClasses = Math.min(
+        maximoClasses,
+        valoresUnicos.length
+      );
+
+      if (numeroClasses === 1) {
+        return {
+          cortes: [],
+          numeroClasses: 1,
+          minimo: positivos[0],
+          maximo: positivos[positivos.length - 1],
+          cores: obterCoresClassificacao(1),
+        };
+      }
+
+      const n = positivos.length;
+
+      const limiteInferior = Array.from(
+        { length: n + 1 },
+        () => Array(numeroClasses + 1).fill(0)
+      );
+
+      const variancia = Array.from(
+        { length: n + 1 },
+        () => Array(numeroClasses + 1).fill(Infinity)
+      );
+
+      for (
+        let classe = 1;
+        classe <= numeroClasses;
+        classe += 1
+      ) {
+        limiteInferior[1][classe] = 1;
+        variancia[1][classe] = 0;
+      }
+
+      for (let limite = 2; limite <= n; limite += 1) {
+        let soma = 0;
+        let somaQuadrados = 0;
+        let quantidade = 0;
+        let varianciaClasse = 0;
+
+        for (
+          let deslocamento = 1;
+          deslocamento <= limite;
+          deslocamento += 1
+        ) {
+          const inicioClasse =
+            limite - deslocamento + 1;
+          const valor = positivos[inicioClasse - 1];
+
+          quantidade += 1;
+          soma += valor;
+          somaQuadrados += valor * valor;
+
+          varianciaClasse =
+            somaQuadrados -
+            (soma * soma) / quantidade;
+
+          const anterior = inicioClasse - 1;
+
+          if (anterior !== 0) {
+            for (
+              let classe = 2;
+              classe <= numeroClasses;
+              classe += 1
+            ) {
+              const candidata =
+                varianciaClasse +
+                variancia[anterior][classe - 1];
+
+              if (
+                variancia[limite][classe] >=
+                candidata
+              ) {
+                limiteInferior[limite][classe] =
+                  inicioClasse;
+
+                variancia[limite][classe] =
+                  candidata;
+              }
+            }
+          }
+        }
+
+        limiteInferior[limite][1] = 1;
+        variancia[limite][1] = varianciaClasse;
+      }
+
+      const quebras = Array(
+        numeroClasses + 1
+      ).fill(0);
+
+      quebras[0] = positivos[0];
+      quebras[numeroClasses] =
+        positivos[positivos.length - 1];
+
+      let posicao = n;
+
+      for (
+        let classe = numeroClasses;
+        classe >= 2;
+        classe -= 1
+      ) {
+        const indiceQuebra =
+          limiteInferior[posicao][classe] - 2;
+
+        quebras[classe - 1] =
+          positivos[Math.max(indiceQuebra, 0)];
+
+        posicao =
+          limiteInferior[posicao][classe] - 1;
+      }
+
+      const cortes = [
+        ...new Set(quebras.slice(1, -1)),
+      ].sort((a, b) => a - b);
+
+      const numeroClassesReal = cortes.length + 1;
+
+      return {
+        cortes,
+        numeroClasses: numeroClassesReal,
+        minimo: positivos[0],
+        maximo: positivos[positivos.length - 1],
+        cores: obterCoresClassificacao(
+          numeroClassesReal
+        ),
+      };
+    }
+
+    function obterCorTerritorial(
+      valor,
+      classificacao,
+      calculavel = true,
+      indicador = null
+    ) {
+      if (!calculavel) {
+        return "#F8FAFC";
+      }
+
+      if (!(valor > 0)) {
+        return indicadorTerritorialEhPercentual(indicador)
+          ? COR_ZERO_PERCENTUAL_TERRITORIO
+          : "#F8FAFC";
+      }
+
+      const { cortes, cores } = classificacao;
+
+      for (let i = 0; i < cortes.length; i += 1) {
+        if (valor <= cortes[i]) {
+          return cores[i];
+        }
+      }
+
+      return cores[cores.length - 1];
+    }
+
+    function atualizarLegendaTerritorial(
+      classificacao,
+      medida,
+      indicador
+    ) {
+      const container = document.querySelector(
+        "#legenda-territorial"
+      );
+
+      if (!container) return;
+
+      const {
+        cortes,
+        numeroClasses,
+        minimo,
+        maximo,
+        cores,
+      } = classificacao;
+
+      if (numeroClasses === 0) {
+        container.innerHTML = `
+          <span class="inline-flex items-center gap-2">
+            <span
+              class="inline-block h-3 w-3 rounded-sm border border-slate-300"
+              style="background:#F8FAFC"
+            ></span>
+            Sem valor
+          </span>
+        `;
+        return;
+      }
+
+      const formato = (valor) =>
+        formatarValorTerritorial(
+          valor,
+          medida,
+          indicador
+        );
+
+      let intervalos = [];
+
+      if (numeroClasses === 1) {
+        intervalos = [
+          minimo === maximo
+            ? formato(minimo)
+            : `${formato(minimo)} – ${formato(maximo)}`,
+        ];
+      } else {
+        intervalos = [
+          `Até ${formato(cortes[0])}`,
+          ...cortes.slice(1).map(
+            (limite, indice) =>
+              `> ${formato(cortes[indice])} a ${formato(limite)}`
+          ),
+          `> ${formato(cortes[cortes.length - 1])}`,
+        ];
+      }
+
+      const itemSemValor = `
+        <span class="inline-flex items-center gap-2">
+          <span
+            class="inline-block h-3 w-3 rounded-sm border border-slate-300"
+            style="background:#F8FAFC"
+          ></span>
+          ${
+            indicadorTerritorialEhPercentual(indicador)
+              ? "Sem cálculo"
+              : "Sem registros"
+          }
+        </span>
+      `;
+
+      const itemZero = indicadorTerritorialEhPercentual(indicador)
+        ? `
+          <span class="inline-flex items-center gap-2">
+            <span
+              class="inline-block h-3 w-3 rounded-sm border border-amber-100"
+              style="background:${COR_ZERO_PERCENTUAL_TERRITORIO}"
+            ></span>
+            0%
+          </span>
+        `
+        : "";
+
+      container.innerHTML = [
+        itemSemValor,
+        itemZero,
+        ...intervalos.map(
+          (rotulo, indice) => `
+            <span class="inline-flex items-center gap-2">
+              <span
+                class="inline-block h-3 w-3 rounded-sm"
+                style="background:${cores[indice]}"
+              ></span>
+              ${rotulo}
+            </span>
+          `
+        ),
+      ].filter(Boolean).join("");
+    }
+
+    function criarConteudoPopupTerritorial(
+      item,
+      indicador,
+      medida
+    ) {
+      const valorPrincipal = formatarValorTerritorial(
+        item.valor,
+        medida,
+        indicador
+      );
+
+      const sufixoPrincipal =
+        medida === "taxa"
+          ? " por 100 mil habitantes"
+          : "";
+
+      return `
+        <div style="min-width:220px">
+          <strong style="font-size:14px">${item.nome}</strong>
+
+          <div style="margin-top:8px;line-height:1.6;font-size:12px">
+            <strong>
+              ${ROTULOS_INDICADOR_TERRITORIO[indicador]}:
+            </strong>
+            ${valorPrincipal}${sufixoPrincipal}
+            <br>
+
+            Casos: ${formatarNumero(item.casos)}
+            <br>
+
+            Óbitos: ${formatarNumero(item.obitos)}
+            <br>
+
+            Com soroterapia:
+            ${formatarNumero(item.soroterapia)}
+            <br>
+
+            Letalidade:
+            ${formatarPercentualTerritorial(item.letalidade)}
+            <br>
+
+            Proporção com soroterapia:
+            ${formatarPercentualTerritorial(
+              item.proporcaoSoroterapia
+            )}
+            <br>
+
+            População IBGE 2022:
+            ${formatarNumero(item.populacao)}
+          </div>
+        </div>
+      `;
+    }
+
+    function obterRotuloEvolucaoTerritorial(
+      indicador,
+      medida
+    ) {
+      const nome =
+        ROTULOS_INDICADOR_TERRITORIO[indicador];
+
+      if (indicadorTerritorialEhPercentual(indicador)) {
+        return `${nome} (%)`;
+      }
+
+      if (medida === "taxa") {
+        return `${nome} por 100 mil habitantes`;
+      }
+
+      return nome;
+    }
+
+    function formatarValorGraficoTerritorial(
+      valor,
+      indicador,
+      medida
+    ) {
+      if (
+        valor === null ||
+        valor === undefined ||
+        !Number.isFinite(Number(valor))
+      ) {
+        return "—";
+      }
+
+      return formatarValorTerritorial(
+        Number(valor),
+        medida,
+        indicador
+      );
+    }
+
+    function prepararSerieAnualUnidadeTerritorial(
+      dadosFiltrados,
+      indicador,
+      medida,
+      configuracao,
+      indiceUnidade,
+      populacao
+    ) {
+      const indicesAnos = [
+        ...new Set(
+          dadosFiltrados.map(
+            (linha) => Number(linha[INDICE_CARDS.ano])
+          )
+        ),
+      ].sort((a, b) => a - b);
+
+      const totaisAno = new Map(
+        indicesAnos.map((ano) => [
+          ano,
+          {
+            casos: 0,
+            obitos: 0,
+            soroterapia: 0,
+            soroterapiaConhecida: 0,
+          },
+        ])
+      );
+
+      dadosFiltrados.forEach((linha) => {
+        const municipio = Number(
+          linha[INDICE_CARDS.municipio]
+        );
+        const unidade = Number(
+          configuracao.municipioParaUnidade?.[municipio]
+        );
+
+        if (unidade !== indiceUnidade) return;
+
+        const ano = Number(linha[INDICE_CARDS.ano]);
+        const total = totaisAno.get(ano);
+
+        if (!total) return;
+
+        total.casos +=
+          Number(linha[INDICE_CARDS.casos]) || 0;
+        total.obitos +=
+          Number(linha[INDICE_CARDS.obitos]) || 0;
+        total.soroterapia +=
+          Number(linha[INDICE_CARDS.soroterapiaSim]) || 0;
+        total.soroterapiaConhecida +=
+          Number(
+            linha[INDICE_CARDS.soroterapiaConhecida]
+          ) || 0;
+      });
+
+      const valores = indicesAnos.map((ano) => {
+        const total = totaisAno.get(ano);
+
+        if (!total) return null;
+
+        if (indicador === "letalidade") {
+          return total.casos > 0
+            ? (total.obitos / total.casos) * 100
+            : null;
+        }
+
+        if (indicador === "proporcao_soroterapia") {
+          return total.soroterapiaConhecida > 0
+            ? (
+                total.soroterapia /
+                total.soroterapiaConhecida
+              ) * 100
+            : null;
+        }
+
+        let absoluto = total.casos;
+
+        if (indicador === "obitos") {
+          absoluto = total.obitos;
+        } else if (indicador === "soroterapia") {
+          absoluto = total.soroterapia;
+        }
+
+        if (medida === "taxa") {
+          return populacao > 0
+            ? (absoluto / populacao) * 100000
+            : null;
+        }
+
+        return absoluto;
+      });
+
+      return {
+        labels: indicesAnos.map(
+          (indice) => filtros.anos?.[indice] ?? indice
+        ),
+        valores,
+      };
+    }
+
+    function configuracaoGraficoEvolucaoTerritorial(
+      labels,
+      valores,
+      indicador,
+      medida
+    ) {
+      const rotulo =
+        obterRotuloEvolucaoTerritorial(
+          indicador,
+          medida
+        );
+
+      return {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: rotulo,
+              data: valores,
+              borderColor: COR_PRIMARIA,
+              backgroundColor: COR_PRIMARIA,
+              borderWidth: 2,
+              tension: 0.2,
+              pointRadius: 2.5,
+              pointHoverRadius: 5,
+              spanGaps: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: "index",
+            intersect: false,
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (contexto) =>
+                  `${rotulo}: ${formatarValorGraficoTerritorial(
+                    contexto.raw,
+                    indicador,
+                    medida
+                  )}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Ano",
+              },
+              grid: {
+                color: "#E5E7EB",
+              },
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 10,
+              },
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: rotulo,
+              },
+              grid: {
+                color: "#E5E7EB",
+              },
+              ticks: {
+                callback: (valor) =>
+                  indicadorTerritorialEhPercentual(indicador)
+                    ? `${Number(valor).toLocaleString(
+                        "pt-BR",
+                        {
+                          maximumFractionDigits: 1,
+                        }
+                      )}%`
+                    : Number(valor).toLocaleString(
+                        "pt-BR",
+                        {
+                          maximumFractionDigits:
+                            medida === "taxa" ? 1 : 0,
+                        }
+                      ),
+              },
+            },
+          },
+        },
+      };
+    }
+
+    function atualizarDetalheTerritorial() {
+      const vazio = document.querySelector(
+        "#detalhe-territorial-vazio"
+      );
+      const conteudo = document.querySelector(
+        "#detalhe-territorial-conteudo"
+      );
+      const textoVazio = document.querySelector(
+        "#texto-detalhe-territorial-vazio"
+      );
+
+      if (
+        !contextoTerritorialAtual ||
+        !unidadeTerritorialSelecionada
+      ) {
+        vazio?.classList.remove("hidden");
+        conteudo?.classList.add("hidden");
+
+        if (textoVazio && contextoTerritorialAtual) {
+          textoVazio.textContent =
+            `Clique em um ${contextoTerritorialAtual.configuracao.singular.toLowerCase()} no mapa para visualizar sua evolução ao longo do tempo.`;
+        }
+
+        const grafico = graficos.get(
+          "evolucao-unidade-territorial"
+        );
+
+        if (grafico) {
+          grafico.destroy();
+          graficos.delete(
+            "evolucao-unidade-territorial"
+          );
+        }
+
+        return;
+      }
+
+      const {
+        dadosFiltrados,
+        indicador,
+        medida,
+        configuracao,
+        valoresTerritoriais,
+      } = contextoTerritorialAtual;
+
+      if (
+        unidadeTerritorialSelecionada.nivel !==
+        configuracao.nivel
+      ) {
+        unidadeTerritorialSelecionada = null;
+        atualizarDetalheTerritorial();
+        return;
+      }
+
+      const item = valoresTerritoriais.find(
+        (valor) =>
+          valor.indice ===
+          unidadeTerritorialSelecionada.indice
+      );
+
+      if (!item) return;
+
+      vazio?.classList.add("hidden");
+      conteudo?.classList.remove("hidden");
+
+      const tipo = document.querySelector(
+        "#tipo-unidade-territorial-selecionada"
+      );
+      const nome = document.querySelector(
+        "#nome-unidade-territorial-selecionada"
+      );
+      const titulo = document.querySelector(
+        "#titulo-evolucao-territorial"
+      );
+
+      if (tipo) {
+        tipo.textContent =
+          `${configuracao.singular} selecionado`;
+      }
+
+      if (nome) {
+        nome.textContent = item.nome;
+      }
+
+      const rotulo =
+        obterRotuloEvolucaoTerritorial(
+          indicador,
+          medida
+        );
+
+      if (titulo) {
+        titulo.textContent =
+          `Evolução anual — ${rotulo}`;
+      }
+
+      const serie =
+        prepararSerieAnualUnidadeTerritorial(
+          dadosFiltrados,
+          indicador,
+          medida,
+          configuracao,
+          item.indice,
+          item.populacao
+        );
+
+      renderizarGrafico(
+        "evolucao-unidade-territorial",
+        "#grafico-evolucao-unidade-territorial",
+        configuracaoGraficoEvolucaoTerritorial(
+          serie.labels,
+          serie.valores,
+          indicador,
+          medida
         )
       );
     }
 
-    function atualizarGraficoSemana(dadosFiltrados) {
-      const { labels, datasets } = prepararSeriesPorAnimal(
-        dadosFiltrados,
-        ORDEM_SEMANAS
+    function selecionarUnidadeTerritorial(item, configuracao) {
+      unidadeTerritorialSelecionada = {
+        nivel: configuracao.nivel,
+        indice: item.indice,
+        nome: item.nome,
+      };
+
+      camadaTerritorial?.resetStyle();
+      atualizarDetalheTerritorial();
+    }
+
+    function limparSelecaoTerritorial() {
+      unidadeTerritorialSelecionada = null;
+      mapaTerritorial?.closePopup();
+      camadaTerritorial?.resetStyle();
+      atualizarDetalheTerritorial();
+    }
+
+    function atualizarMapaTerritorial(
+      valoresTerritoriais,
+      indicador,
+      medida,
+      configuracao
+    ) {
+      const container = document.querySelector(
+        "#mapa-territorial"
+      );
+
+      if (!container || !configuracao.geojson) return;
+
+      if (!mapaTerritorial) {
+        mapaTerritorial = L.map(container, {
+          zoomControl: true,
+          attributionControl: false,
+          minZoom: 6,
+          maxZoom: 11,
+        });
+      }
+
+      if (camadaTerritorial) {
+        mapaTerritorial.removeLayer(camadaTerritorial);
+      }
+
+      const mapaValores = new Map(
+        valoresTerritoriais.map((item) => [
+          item.indice,
+          item,
+        ])
+      );
+
+      const classificacao = calcularClassificacaoJenks(
+        valoresTerritoriais
+          .filter((item) => item.calculavel)
+          .map((item) => item.valor),
+        8
+      );
+
+      camadaTerritorial = L.geoJSON(
+        configuracao.geojson,
+        {
+          style: (feature) => {
+            const indice = Number(
+              feature?.properties?.u
+            );
+            const item = mapaValores.get(indice);
+            const valor = item?.valor || 0;
+
+            const selecionado =
+              unidadeTerritorialSelecionada?.nivel ===
+                configuracao.nivel &&
+              unidadeTerritorialSelecionada?.indice ===
+                indice;
+
+            const existeSelecao =
+              unidadeTerritorialSelecionada?.nivel ===
+              configuracao.nivel;
+
+            return {
+              color: selecionado
+                ? "#0A2C57"
+                : "#CBD5E1",
+              weight: selecionado
+                ? 3
+                : configuracao.singular === "Município"
+                  ? 0.8
+                  : 1.2,
+              fillColor: obterCorTerritorial(
+                valor,
+                classificacao,
+                item?.calculavel ?? false,
+                indicador
+              ),
+              fillOpacity: selecionado
+                ? 1
+                : existeSelecao
+                  ? 0.58
+                  : 0.92,
+            };
+          },
+
+          onEachFeature: (feature, layer) => {
+            const indice = Number(
+              feature?.properties?.u
+            );
+            const item = mapaValores.get(indice);
+
+            if (!item) return;
+
+            let conteudoTooltip = `
+              <strong>${item.nome}</strong><br>
+              ${ROTULOS_INDICADOR_TERRITORIO[indicador]}:
+              ${formatarValorTerritorial(
+                item.valor,
+                medida,
+                indicador
+              )}
+            `;
+
+            if (medida === "taxa") {
+              conteudoTooltip += `
+                por 100 mil habitantes
+                <br>Valor absoluto:
+                ${formatarNumero(item.absoluto)}
+              `;
+            }
+
+            layer.bindTooltip(conteudoTooltip, {
+              sticky: true,
+            });
+
+            layer.bindPopup(
+              criarConteudoPopupTerritorial(
+                item,
+                indicador,
+                medida
+              ),
+              {
+                maxWidth: 300,
+              }
+            );
+
+            layer.on({
+              click: () => {
+                selecionarUnidadeTerritorial(
+                  item,
+                  configuracao
+                );
+
+                layer.bringToFront();
+                layer.openPopup();
+              },
+              mouseover: () => {
+                const selecionado =
+                  unidadeTerritorialSelecionada?.nivel ===
+                    configuracao.nivel &&
+                  unidadeTerritorialSelecionada?.indice ===
+                    item.indice;
+
+                layer.setStyle({
+                  color: selecionado
+                    ? "#0A2C57"
+                    : "#334155",
+                  weight: selecionado ? 3 : 2,
+                });
+              },
+              mouseout: () => {
+                camadaTerritorial?.resetStyle(layer);
+              },
+            });
+          },
+        }
+      ).addTo(mapaTerritorial);
+
+      if (!mapaTerritorialAjustado) {
+        mapaTerritorial.fitBounds(
+          camadaTerritorial.getBounds(),
+          { padding: [0, 0] }
+        );
+
+        mapaTerritorial.zoomIn(1);
+        mapaTerritorialAjustado = true;
+      }
+
+      setTimeout(() => {
+        mapaTerritorial?.invalidateSize();
+      }, 0);
+
+      atualizarLegendaTerritorial(
+        classificacao,
+        medida,
+        indicador
+      );
+    }
+
+    function calcularMediana(valores) {
+      const ordenados = valores
+        .filter((valor) => Number.isFinite(Number(valor)))
+        .map(Number)
+        .sort((a, b) => a - b);
+
+      if (!ordenados.length) return null;
+
+      const meio = Math.floor(ordenados.length / 2);
+
+      if (ordenados.length % 2 === 0) {
+        return (
+          ordenados[meio - 1] +
+          ordenados[meio]
+        ) / 2;
+      }
+
+      return ordenados[meio];
+    }
+
+    function obterUnidadesValidasResumo(
+      valoresTerritoriais,
+      indicador
+    ) {
+      if (indicador === "letalidade") {
+        return valoresTerritoriais.filter(
+          (item) => item.casos > 0
+        );
+      }
+
+      if (indicador === "proporcao_soroterapia") {
+        return valoresTerritoriais.filter(
+          (item) => item.soroterapiaConhecida > 0
+        );
+      }
+
+      return valoresTerritoriais;
+    }
+
+    function atualizarResumoTerritorial(
+      valoresTerritoriais,
+      indicador,
+      medida,
+      configuracao
+    ) {
+      const validas = obterUnidadesValidasResumo(
+        valoresTerritoriais,
+        indicador
+      );
+
+      const comValor = validas.filter(
+        (item) => item.valor > 0
+      );
+
+      const semValor =
+        indicadorTerritorialEhPercentual(indicador)
+          ? valoresTerritoriais.length - validas.length
+          : valoresTerritoriais.length - comValor.length;
+
+      const maior = validas
+        .filter((item) => item.calculavel)
+        .sort((a, b) => b.valor - a.valor)[0];
+
+      const mediana = calcularMediana(
+        validas
+          .filter((item) => item.calculavel)
+          .map((item) => item.valor)
+      );
+
+      const rotuloCom = document.querySelector(
+        "#rotulo-territorio-com-registro"
+      );
+      const rotuloSem = document.querySelector(
+        "#rotulo-territorio-sem-registro"
+      );
+      const rotuloConcentracao = document.querySelector(
+        "#rotulo-territorio-concentracao"
+      );
+
+      const elCom = document.querySelector(
+        "#territorio-com-registro"
+      );
+      const elSem = document.querySelector(
+        "#territorio-sem-registro"
+      );
+      const elMaior = document.querySelector(
+        "#territorio-maior-valor"
+      );
+      const elMaiorNome = document.querySelector(
+        "#territorio-maior-nome"
+      );
+      const elMediana = document.querySelector(
+        "#territorio-mediana"
+      );
+      const elConcentracao = document.querySelector(
+        "#territorio-concentracao"
+      );
+
+      const percentual = indicadorTerritorialEhPercentual(
+        indicador
+      );
+
+      if (rotuloCom) {
+        rotuloCom.textContent = percentual
+          ? "Unidades com cálculo disponível"
+          : `${configuracao.plural} com registros`;
+      }
+
+      if (rotuloSem) {
+        rotuloSem.textContent = percentual
+          ? "Sem denominador válido"
+          : `${configuracao.plural} sem registros`;
+      }
+
+      if (elCom) {
+        elCom.textContent = formatarNumero(
+          percentual ? validas.length : comValor.length
+        );
+      }
+
+      if (elSem) {
+        elSem.textContent = formatarNumero(semValor);
+      }
+
+      if (elMaior) {
+        elMaior.textContent = maior
+          ? formatarValorTerritorial(
+              maior.valor,
+              medida,
+              indicador
+            )
+          : "—";
+      }
+
+      if (elMaiorNome) {
+        elMaiorNome.textContent = maior?.nome || "—";
+      }
+
+      if (elMediana) {
+        elMediana.textContent =
+          mediana === null
+            ? "—"
+            : formatarValorTerritorial(
+                mediana,
+                medida,
+                indicador
+              );
+      }
+
+      if (percentual) {
+        if (rotuloConcentracao) {
+          rotuloConcentracao.textContent =
+            "Média estadual";
+        }
+
+        let media = null;
+
+        if (indicador === "letalidade") {
+          const casos = valoresTerritoriais.reduce(
+            (soma, item) => soma + item.casos,
+            0
+          );
+          const obitos = valoresTerritoriais.reduce(
+            (soma, item) => soma + item.obitos,
+            0
+          );
+          media = calcularPercentual(obitos, casos);
+        } else {
+          const sim = valoresTerritoriais.reduce(
+            (soma, item) => soma + item.soroterapia,
+            0
+          );
+          const conhecidos = valoresTerritoriais.reduce(
+            (soma, item) =>
+              soma + item.soroterapiaConhecida,
+            0
+          );
+          media = calcularPercentual(
+            sim,
+            conhecidos
+          );
+        }
+
+        if (elConcentracao) {
+          elConcentracao.textContent =
+            formatarPercentualTerritorial(media);
+        }
+      } else {
+        if (rotuloConcentracao) {
+          rotuloConcentracao.textContent =
+            "Top 10 concentram";
+        }
+
+        const valoresOrdenados = valoresTerritoriais
+          .map((item) => item.absoluto)
+          .filter((valor) => valor > 0)
+          .sort((a, b) => b - a);
+
+        const total = valoresOrdenados.reduce(
+          (soma, valor) => soma + valor,
+          0
+        );
+        const top10 = valoresOrdenados
+          .slice(0, 10)
+          .reduce(
+            (soma, valor) => soma + valor,
+            0
+          );
+
+        if (elConcentracao) {
+          elConcentracao.textContent =
+            total > 0
+              ? formatarPercentualTerritorial(
+                  (top10 / total) * 100,
+                  1
+                )
+              : "—";
+        }
+      }
+    }
+
+    function obterConfiguracaoColunasRanking(
+      indicador,
+      medida
+    ) {
+      if (indicador === "letalidade") {
+        return {
+          principal: "Letalidade",
+          aux1: "Óbitos",
+          aux2: "Casos",
+        };
+      }
+
+      if (indicador === "proporcao_soroterapia") {
+        return {
+          principal: "% com soroterapia",
+          aux1: "Com soroterapia",
+          aux2: "Casos conhecidos",
+        };
+      }
+
+      if (indicador === "obitos") {
+        return {
+          principal:
+            medida === "taxa"
+              ? "Óbitos/100 mil"
+              : "Óbitos",
+          aux1: "Letalidade",
+          aux2:
+            medida === "taxa"
+              ? "Óbitos"
+              : "Por 100 mil",
+        };
+      }
+
+      if (indicador === "soroterapia") {
+        return {
+          principal:
+            medida === "taxa"
+              ? "Soroterapia/100 mil"
+              : "Com soroterapia",
+          aux1: "% com soroterapia",
+          aux2:
+            medida === "taxa"
+              ? "Com soroterapia"
+              : "Por 100 mil",
+        };
+      }
+
+      return {
+        principal:
+          medida === "taxa"
+            ? "Casos/100 mil"
+            : "Casos",
+        aux1: "% do total",
+        aux2:
+          medida === "taxa"
+            ? "Casos"
+            : "Por 100 mil",
+      };
+    }
+
+    function obterValoresLinhaRanking(
+      item,
+      indicador,
+      medida,
+      totalIndicador
+    ) {
+      if (indicador === "letalidade") {
+        return {
+          principal:
+            formatarPercentualTerritorial(
+              item.letalidade
+            ),
+          aux1: formatarNumero(item.obitos),
+          aux2: formatarNumero(item.casos),
+        };
+      }
+
+      if (indicador === "proporcao_soroterapia") {
+        return {
+          principal:
+            formatarPercentualTerritorial(
+              item.proporcaoSoroterapia
+            ),
+          aux1: formatarNumero(item.soroterapia),
+          aux2: formatarNumero(
+            item.soroterapiaConhecida
+          ),
+        };
+      }
+
+      if (indicador === "obitos") {
+        return {
+          principal:
+            medida === "taxa"
+              ? formatarValorTerritorial(
+                  item.taxaObitos,
+                  "taxa"
+                )
+              : formatarNumero(item.obitos),
+          aux1:
+            formatarPercentualTerritorial(
+              item.letalidade
+            ),
+          aux2:
+            medida === "taxa"
+              ? formatarNumero(item.obitos)
+              : formatarValorTerritorial(
+                  item.taxaObitos,
+                  "taxa"
+                ),
+        };
+      }
+
+      if (indicador === "soroterapia") {
+        return {
+          principal:
+            medida === "taxa"
+              ? formatarValorTerritorial(
+                  item.taxaSoroterapia,
+                  "taxa"
+                )
+              : formatarNumero(item.soroterapia),
+          aux1:
+            formatarPercentualTerritorial(
+              item.proporcaoSoroterapia
+            ),
+          aux2:
+            medida === "taxa"
+              ? formatarNumero(item.soroterapia)
+              : formatarValorTerritorial(
+                  item.taxaSoroterapia,
+                  "taxa"
+                ),
+        };
+      }
+
+      return {
+        principal:
+          medida === "taxa"
+            ? formatarValorTerritorial(
+                item.taxaCasos,
+                "taxa"
+              )
+            : formatarNumero(item.casos),
+        aux1:
+          totalIndicador > 0
+            ? formatarPercentualTerritorial(
+                (item.casos / totalIndicador) * 100,
+                1
+              )
+            : "—",
+        aux2:
+          medida === "taxa"
+            ? formatarNumero(item.casos)
+            : formatarValorTerritorial(
+                item.taxaCasos,
+                "taxa"
+              ),
+      };
+    }
+
+    function atualizarRankingTerritorial(
+      valoresTerritoriais,
+      indicador,
+      medida,
+      configuracao
+    ) {
+      const ranking = valoresTerritoriais
+        .filter(
+          (item) =>
+            item.calculavel &&
+            Number.isFinite(Number(item.valor))
+        )
+        .sort((a, b) => b.valor - a.valor)
+        .slice(0, 10);
+
+      const corpo = document.querySelector(
+        "#tabela-ranking-territorial"
+      );
+      const cabecalhoUnidade = document.querySelector(
+        "#cabecalho-ranking-unidade"
+      );
+      const cabecalhoPrincipal = document.querySelector(
+        "#cabecalho-ranking-principal"
+      );
+      const cabecalhoAux1 = document.querySelector(
+        "#cabecalho-ranking-aux1"
+      );
+      const cabecalhoAux2 = document.querySelector(
+        "#cabecalho-ranking-aux2"
+      );
+
+      if (!corpo) return;
+
+      const colunas = obterConfiguracaoColunasRanking(
+        indicador,
+        medida
+      );
+
+      if (cabecalhoUnidade) {
+        cabecalhoUnidade.textContent =
+          configuracao.singular;
+      }
+
+      if (cabecalhoPrincipal) {
+        cabecalhoPrincipal.textContent =
+          colunas.principal;
+      }
+
+      if (cabecalhoAux1) {
+        cabecalhoAux1.textContent = colunas.aux1;
+      }
+
+      if (cabecalhoAux2) {
+        cabecalhoAux2.textContent = colunas.aux2;
+      }
+
+      const totalIndicador =
+        indicador === "casos"
+          ? valoresTerritoriais.reduce(
+              (soma, item) => soma + item.casos,
+              0
+            )
+          : 0;
+
+      corpo.innerHTML = ranking
+        .map((item, indice) => {
+          const valores = obterValoresLinhaRanking(
+            item,
+            indicador,
+            medida,
+            totalIndicador
+          );
+
+          return `
+            <tr class="border-b border-slate-100 last:border-0">
+              <td class="py-3 pr-3 font-semibold text-slate-400">
+                ${indice + 1}
+              </td>
+              <td class="py-3 pr-3 font-medium text-slate-700">
+                ${item.nome}
+              </td>
+              <td class="py-3 px-2 text-right font-semibold text-[#0A2C57] whitespace-nowrap">
+                ${valores.principal}
+              </td>
+              <td class="py-3 px-2 text-right text-slate-600 whitespace-nowrap">
+                ${valores.aux1}
+              </td>
+              <td class="py-3 pl-2 text-right text-slate-600 whitespace-nowrap">
+                ${valores.aux2}
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      if (!ranking.length) {
+        corpo.innerHTML = `
+          <tr>
+            <td
+              colspan="5"
+              class="py-6 text-center text-slate-400"
+            >
+              Nenhum registro para a seleção atual.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function criarHistogramaTerritorial(
+      valoresTerritoriais,
+      indicador,
+      medida
+    ) {
+      const valores = valoresTerritoriais
+        .filter((item) => item.calculavel)
+        .map((item) => Number(item.valor))
+        .filter((valor) => Number.isFinite(valor));
+
+      if (!valores.length) {
+        renderizarGrafico(
+          "distribuicao-territorial",
+          "#grafico-distribuicao-territorial",
+          {
+            type: "bar",
+            data: {
+              labels: [],
+              datasets: [],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+            },
+          }
+        );
+        return;
+      }
+
+      const minimo = Math.min(...valores);
+      const maximo = Math.max(...valores);
+
+      const numeroBins =
+        minimo === maximo
+          ? 1
+          : Math.min(
+              10,
+              Math.max(
+                4,
+                Math.ceil(Math.sqrt(valores.length))
+              )
+            );
+
+      const largura =
+        numeroBins === 1
+          ? 1
+          : (maximo - minimo) / numeroBins;
+
+      const frequencias = Array(numeroBins).fill(0);
+
+      valores.forEach((valor) => {
+        let indice =
+          numeroBins === 1
+            ? 0
+            : Math.floor(
+                (valor - minimo) / largura
+              );
+
+        if (indice >= numeroBins) {
+          indice = numeroBins - 1;
+        }
+
+        frequencias[indice] += 1;
+      });
+
+      const labels = Array.from(
+        { length: numeroBins },
+        (_, indice) => {
+          if (numeroBins === 1) {
+            return formatarValorTerritorial(
+              minimo,
+              medida,
+              indicador
+            );
+          }
+
+          const inicio = minimo + indice * largura;
+          const fim =
+            indice === numeroBins - 1
+              ? maximo
+              : minimo + (indice + 1) * largura;
+
+          return `${formatarValorTerritorial(
+            inicio,
+            medida,
+            indicador
+          )} – ${formatarValorTerritorial(
+            fim,
+            medida,
+            indicador
+          )}`;
+        }
       );
 
       renderizarGrafico(
-        "semana",
-        "#grafico-semana",
-        configuracaoBarrasEmpilhadas(
-          labels,
-          datasets,
-          "Semana epidemiológica"
-        )
+        "distribuicao-territorial",
+        "#grafico-distribuicao-territorial",
+        {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Unidades territoriais",
+                data: frequencias,
+                backgroundColor: COR_PRIMARIA,
+                borderRadius: 3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (contexto) =>
+                    `${formatarNumero(
+                      contexto.raw
+                    )} unidades`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text:
+                    ROTULOS_INDICADOR_TERRITORIO[
+                      indicador
+                    ],
+                },
+                ticks: {
+                  maxRotation: 35,
+                  minRotation: 0,
+                },
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Número de unidades",
+                },
+                ticks: {
+                  precision: 0,
+                },
+              },
+            },
+          },
+        }
       );
+    }
+
+    function atualizarTerritorio(
+      dadosFiltrados
+    ) {
+      const { nivel, indicador, medida } =
+        obterControlesTerritoriais();
+
+      const configuracao =
+        obterConfiguracaoNivelTerritorial(nivel);
+
+      const valoresTerritoriais =
+        prepararValoresTerritoriais(
+          dadosFiltrados,
+          indicador,
+          medida,
+          configuracao
+        );
+
+      contextoTerritorialAtual = {
+        dadosFiltrados,
+        indicador,
+        medida,
+        configuracao,
+        valoresTerritoriais,
+      };
+
+      if (
+        unidadeTerritorialSelecionada &&
+        unidadeTerritorialSelecionada.nivel !==
+          configuracao.nivel
+      ) {
+        unidadeTerritorialSelecionada = null;
+      }
+
+      const nomeIndicador =
+        ROTULOS_INDICADOR_TERRITORIO[indicador];
+
+      const tituloMapa = document.querySelector(
+        "#titulo-mapa-territorial"
+      );
+      const descricaoMapa = document.querySelector(
+        "#descricao-mapa-territorial"
+      );
+      const tituloRanking = document.querySelector(
+        "#titulo-ranking-territorial"
+      );
+      const notaTaxa = document.querySelector(
+        "#territorio-nota-taxa"
+      );
+      const notaPercentual = document.querySelector(
+        "#territorio-nota-percentual"
+      );
+
+      if (tituloMapa) {
+        tituloMapa.textContent =
+          `${nomeIndicador} por ${configuracao.singular}`;
+      }
+
+      if (descricaoMapa) {
+        descricaoMapa.textContent =
+          configuracao.descricao;
+      }
+
+      if (tituloRanking) {
+        tituloRanking.textContent =
+          `${configuracao.plural} com maiores valores — ${nomeIndicador}`;
+      }
+
+      notaTaxa?.classList.toggle(
+        "hidden",
+        medida !== "taxa"
+      );
+
+      if (notaPercentual) {
+        if (indicador === "letalidade") {
+          notaPercentual.textContent =
+            "Letalidade = óbitos pelo acidente ÷ casos registrados × 100.";
+          notaPercentual.classList.remove("hidden");
+        } else if (
+          indicador === "proporcao_soroterapia"
+        ) {
+          notaPercentual.textContent =
+            "Proporção com soroterapia = casos com soroterapia ÷ casos com informação conhecida sobre soroterapia × 100.";
+          notaPercentual.classList.remove("hidden");
+        } else {
+          notaPercentual.classList.add("hidden");
+        }
+      }
+
+      atualizarMapaTerritorial(
+        valoresTerritoriais,
+        indicador,
+        medida,
+        configuracao
+      );
+
+      atualizarResumoTerritorial(
+        valoresTerritoriais,
+        indicador,
+        medida,
+        configuracao
+      );
+
+      atualizarRankingTerritorial(
+        valoresTerritoriais,
+        indicador,
+        medida,
+        configuracao
+      );
+
+      criarHistogramaTerritorial(
+        valoresTerritoriais,
+        indicador,
+        medida
+      );
+
+      atualizarDetalheTerritorial();
     }
 
     // =========================
@@ -2107,7 +4573,18 @@ import Container from "@/components/container.astro";
     function atualizarDashboard() {
       const selecao = obterSelecaoAtual();
 
+      // A seção territorial compara todo o estado e, por isso,
+      // ignora apenas o filtro geral de município.
+      const selecaoTerritorial = {
+        ...selecao,
+        municipio: ["todos"],
+      };
+
       const cardsFiltrados = filtrarDados(dadosCards, selecao);
+      const cardsTerritoriaisFiltrados = filtrarDados(
+        dadosCards,
+        selecaoTerritorial
+      );
       const tempoFiltrado = filtrarDados(dadosTempo, selecao);
       const mesFiltrado = filtrarDados(dadosMes, selecao);
       const semanaFiltrada = filtrarDados(dadosSemana, selecao);
@@ -2132,8 +4609,10 @@ import Container from "@/components/container.astro";
       atualizarGraficoTempo(tempoFiltrado);
       atualizarGraficoSoroterapia(totaisCards);
       atualizarPainelEvolucao(cardsFiltrados);
-      atualizarGraficoMes(mesFiltrado);
-      atualizarGraficoSemana(semanaFiltrada);
+      atualizarGraficoPeriodoAcidente(
+        mesFiltrado,
+        semanaFiltrada
+      );
       atualizarGraficoLocalPicada(localPicadaFiltrado);
       atualizarGraficoAcidenteTrabalho(trabalhoFiltrado);
       atualizarGraficoFaixaEtaria(faixaEtariaFiltrada);
@@ -2146,6 +4625,9 @@ import Container from "@/components/container.astro";
       atualizarGraficoSoroterapiaGravidade(cardsFiltrados);
       atualizarGraficoAmpolasTotais(ampolasTotaisFiltradas);
       atualizarGraficoAmpolas(ampolasFiltradas);
+      atualizarTerritorio(
+        cardsTerritoriaisFiltrados
+      );
     }
 
     // =========================
@@ -2322,6 +4804,10 @@ import Container from "@/components/container.astro";
           dadosSoros,
           dadosAmpolasTotais,
           dadosAmpolas,
+          dadosTerritoriosGeojson.municipio,
+          dadosTerritoriosGeojson.regiao_saude,
+          dadosTerritoriosGeojson.drs,
+          dadosTerritoriosGeojson.rras,
         ] = await Promise.all([
           carregarJson("/data/filtros.json"),
           carregarJson("/data/cards.json"),
@@ -2338,6 +4824,10 @@ import Container from "@/components/container.astro";
           carregarJson("/data/soros.json"),
           carregarJson("/data/ampolas_totais.json"),
           carregarJson("/data/ampolas.json"),
+          carregarJson("/data/municipios_sp.geojson"),
+          carregarJson("/data/regioes_saude_sp.geojson"),
+          carregarJson("/data/drs_sp.geojson"),
+          carregarJson("/data/rras_sp.geojson"),
         ]);
 
         criarFiltro("ano", filtros.anos);
@@ -2348,6 +4838,54 @@ import Container from "@/components/container.astro";
 
         configurarDropdowns();
         configurarBuscaMunicipio();
+
+        document
+          .querySelectorAll(".botao-periodo-acidente")
+          .forEach((botao) => {
+            botao.addEventListener("click", () => {
+              if (!(botao instanceof HTMLButtonElement)) return;
+
+              const periodo =
+                botao.dataset.periodoAcidente;
+
+              if (
+                periodo !== "mes" &&
+                periodo !== "semana"
+              ) {
+                return;
+              }
+
+              modoPeriodoAcidente = periodo;
+              atualizarDashboard();
+            });
+          });
+
+        document
+          .querySelector("#territorio-nivel")
+          ?.addEventListener("change", () => {
+            unidadeTerritorialSelecionada = null;
+            atualizarDashboard();
+          });
+
+        document
+          .querySelector("#limpar-selecao-territorial")
+          ?.addEventListener(
+            "click",
+            limparSelecaoTerritorial
+          );
+
+        document
+          .querySelector("#territorio-indicador")
+          ?.addEventListener("change", () => {
+            sincronizarMedidaTerritorial();
+            atualizarDashboard();
+          });
+
+        document
+          .querySelector("#territorio-medida")
+          ?.addEventListener("change", atualizarDashboard);
+
+        sincronizarMedidaTerritorial();
         atualizarDashboard();
       } catch (erro) {
         console.error("Erro ao carregar o dashboard:", erro);

@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import pandas as pd
+import geopandas as gpd
 
 # =========================
 # CONFIGURAÇÃO
@@ -9,6 +10,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 PASTA_DADOS = RAIZ / "dados_local"
 PASTA_DATA = RAIZ / "public" / "data"
 ARQUIVO_ENTRADA = PASTA_DADOS / "sinan_sp_tratado.csv"
+ARQUIVO_DIVISOES = PASTA_DADOS / "divisoes.gpkg"
 
 PASTA_DATA.mkdir(parents=True, exist_ok=True)
 
@@ -356,6 +358,36 @@ print("\n[1/7] Lendo base tratada...")
 
 df = pd.read_csv(ARQUIVO_ENTRADA, low_memory=False)
 
+if not ARQUIVO_DIVISOES.exists():
+    raise FileNotFoundError(
+        f"Base territorial não encontrada: {ARQUIVO_DIVISOES}"
+    )
+
+divisoes = gpd.read_file(ARQUIVO_DIVISOES)
+
+colunas_territoriais_necessarias = [
+    "Municipio",
+    "Populacao Estimada IBGE 2022",
+    "geometry",
+]
+
+colunas_territoriais_ausentes = [
+    coluna
+    for coluna in colunas_territoriais_necessarias
+    if coluna not in divisoes.columns
+]
+
+if colunas_territoriais_ausentes:
+    raise ValueError(
+        "Colunas ausentes em divisoes.gpkg: "
+        + ", ".join(colunas_territoriais_ausentes)
+    )
+
+divisoes["Populacao Estimada IBGE 2022"] = pd.to_numeric(
+    divisoes["Populacao Estimada IBGE 2022"],
+    errors="coerce",
+)
+
 print(
     (
         f"Base carregada: {len(df):,} registros e "
@@ -624,10 +656,26 @@ evolucoes = [
 ]
 evolucoes += sorted(evolucoes_presentes - set(evolucoes))
 
+populacao_por_municipio = (
+    divisoes
+    .drop_duplicates(subset=["Municipio"])
+    .set_index("Municipio")["Populacao Estimada IBGE 2022"]
+)
+
+populacoes_municipios = [
+    (
+        int(populacao_por_municipio.get(municipio))
+        if pd.notna(populacao_por_municipio.get(municipio))
+        else 0
+    )
+    for municipio in municipios
+]
+
 filtros = {
     "anos": anos,
     "animais": animais,
     "municipios": municipios,
+    "populacoes_municipios": populacoes_municipios,
     "gravidades": gravidades,
     "evolucoes": evolucoes,
     "soros": list(COLUNAS_SOROS.values()),
@@ -660,6 +708,139 @@ mapas_indices = {
     "g": criar_mapa_indices(gravidades),
     "e": criar_mapa_indices(evolucoes),
 }
+
+# Mapeamentos do município para os recortes territoriais.
+# Eles permitem reaproveitar cards.json sem criar novas agregações.
+territorio_municipal = (
+    divisoes
+    .drop_duplicates(subset=["Municipio"])
+    .set_index("Municipio")
+)
+
+mapa_regiao_saude = criar_mapa_indices(
+    filtros.get("regioes_saude", [])
+)
+mapa_drs = criar_mapa_indices(filtros.get("drs", []))
+mapa_rras = criar_mapa_indices(filtros.get("rras", []))
+
+filtros["municipio_para_regiao_saude"] = [
+    (
+        mapa_regiao_saude.get(
+            str(
+                territorio_municipal.loc[
+                    municipio,
+                    "Regiao de Saude",
+                ]
+            )
+        )
+        if municipio in territorio_municipal.index
+        else None
+    )
+    for municipio in municipios
+]
+
+filtros["municipio_para_drs"] = [
+    (
+        mapa_drs.get(
+            str(
+                territorio_municipal.loc[
+                    municipio,
+                    "Departamento Regional de Saude",
+                ]
+            )
+        )
+        if municipio in territorio_municipal.index
+        else None
+    )
+    for municipio in municipios
+]
+
+filtros["municipio_para_rras"] = [
+    (
+        mapa_rras.get(
+            str(
+                territorio_municipal.loc[
+                    municipio,
+                    "Macrorregiao de Saude",
+                ]
+            )
+        )
+        if municipio in territorio_municipal.index
+        else None
+    )
+    for municipio in municipios
+]
+
+
+def preparar_geojson_territorial(
+    gdf,
+    coluna_nome,
+    mapa_indices_nivel,
+    dissolver=False,
+):
+    """Gera GeoJSON enxuto com índice territorial padronizado em `u`."""
+    geo = gdf[[coluna_nome, "geometry"]].dropna().copy()
+    geo[coluna_nome] = geo[coluna_nome].astype(str)
+
+    if dissolver:
+        geo = geo.dissolve(
+            by=coluna_nome,
+            as_index=False,
+        )
+
+    geo["u"] = geo[coluna_nome].map(mapa_indices_nivel)
+
+    geo = geo.dropna(
+        subset=["u", "geometry"]
+    ).copy()
+
+    geo["u"] = geo["u"].astype(int)
+
+    if geo.crs is None:
+        raise ValueError("O arquivo divisoes.gpkg não possui CRS definido.")
+
+    # Simplificação em metros para reduzir o tamanho enviado ao navegador.
+    geo = geo.to_crs(epsg=3857)
+    geo["geometry"] = geo.geometry.simplify(
+        200,
+        preserve_topology=True,
+    )
+    geo = geo.to_crs(epsg=4326)
+
+    return json.loads(
+        geo[["u", "geometry"]].to_json(
+            drop_id=True
+        )
+    )
+
+
+municipios_geojson = preparar_geojson_territorial(
+    divisoes,
+    "Municipio",
+    mapas_indices["m"],
+    dissolver=False,
+)
+
+regioes_saude_geojson = preparar_geojson_territorial(
+    divisoes,
+    "Regiao de Saude",
+    mapa_regiao_saude,
+    dissolver=True,
+)
+
+drs_geojson = preparar_geojson_territorial(
+    divisoes,
+    "Departamento Regional de Saude",
+    mapa_drs,
+    dissolver=True,
+)
+
+rras_geojson = preparar_geojson_territorial(
+    divisoes,
+    "Macrorregiao de Saude",
+    mapa_rras,
+    dissolver=True,
+)
 
 colunas_origem = {
     "y": "ano_notificacao",
@@ -798,6 +979,10 @@ print("\n[6/7] Gerando arquivos JSON...")
 
 arquivos_dashboard = {
     "filtros.json": filtros,
+    "municipios_sp.geojson": municipios_geojson,
+    "regioes_saude_sp.geojson": regioes_saude_geojson,
+    "drs_sp.geojson": drs_geojson,
+    "rras_sp.geojson": rras_geojson,
     "cards.json": dados_cards,
     "mes.json": dados_mes,
     "tempo.json": dados_tempo,

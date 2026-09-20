@@ -26,6 +26,7 @@ const publications = [
     type: "Resumo",
     year: "2026",
     link: "",
+    github: "",
   },
   {
     title:
@@ -37,6 +38,7 @@ const publications = [
     type: "Artigo",
     year: "2026",
     link: "https://sol.sbc.org.br/index.php/sbbd_estendido/article/view/44174",
+    github: "https://github.com/juliabu3no/Rede-de-Soro-Antiveneno-de-SP---DS4SG---SBBD-2026",
     },
   {
     title:
@@ -48,6 +50,7 @@ const publications = [
     type: "Pôster",
     year: "2026",
     link: "https://eventos.galoa.com.br/cnmac-2026/calendar/activity/22842?tz=device",
+    github: "https://github.com/juliabu3no/Unidade-Atendimento-Soroterapico-SP--CNMAC-2026",
   },
   {
     title:
@@ -59,6 +62,7 @@ const publications = [
     type: "Pôster",
     year: "2025",
     link: "",
+    github: "",
   },
   {
     title:
@@ -70,6 +74,7 @@ const publications = [
     type: "Apresentação Oral",
     year: "2025",
     link: "https://sites.google.com/usp.br/sim2025/eventos-e-programacao/trabalhos/apresenta%C3%A7%C3%B5es-orais?authuser=0",
+    github: "",
   },
 ];
 ---
@@ -128,19 +133,34 @@ const publications = [
               <p class="text-sm text-slate-500 mt-2">
                 {publication.authors}
               </p>
+              
+              <div class="flex flex-wrap items-center gap-2 mt-4">
+                {
+                  publication.link && (
+                    <a
+                      href={publication.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-sm font-medium bg-blue-50 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-100 transition"
+                    >
+                      Acessar conteúdo
+                    </a>
+                  )
+                }
 
-              {
-                publication.link && (
-                  <a
-                    href={publication.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-block mt-4 text-blue-600 hover:underline text-sm"
-                  >
-                    Acessar conteúdo
-                  </a>
-                )
-              }
+                {
+                  publication.github && (
+                    <a
+                      href={publication.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-sm font-medium bg-gray-100 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-200 transition"
+                    >
+                      Repositório GitHub
+                    </a>
+                  )
+                }
+              </div>
 
             </div>
           ))
