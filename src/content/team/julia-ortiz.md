@@ -3,9 +3,9 @@ draft: false
 
 name: "Julia Graziosi Ortiz"
 
-title: "Aluna de Iniciação Científica"
+title: "Iniciação Científica"
 
-formation: "Bacharelado em Matemática Aplicada e Computação Científica (USP)"
+formation: "Bacharelado em Matemática Aplicada e Computação Científica (ICMC - USP)"
 
 email: "juliagraziosi@usp.br"
 

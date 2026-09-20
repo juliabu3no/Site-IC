@@ -5,7 +5,7 @@ name: "Maristela Oliveira dos Santos"
 
 title: "Professora Orientadora"
 
-formation: "Doutora em Ciências da Computação e Matemática Computacional (USP)"
+formation: "Docente do Departamento de Matemática Aplicada e Estatística (ICMC-USP)"
 
 email: "mari@icmc.usp.br"
 

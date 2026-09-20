@@ -3,9 +3,9 @@ draft: false
 
 name: "Júlia Campos Bueno Paz Perez"
 
-title: "Aluna de Iniciação Científica"
+title: "Iniciação Científica"
 
-formation: "Bacharelado em Matemática Aplicada e Computação Científica (USP)"
+formation: "Bacharelado em Matemática Aplicada e Computação Científica (ICMC - USP)"
 
 email: "julia_bueno@usp.br"
 
