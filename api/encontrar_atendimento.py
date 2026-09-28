@@ -1,4 +1,4 @@
-from http.server import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import json
 import math
@@ -7,7 +7,24 @@ import re
 import requests
 
 BASE_DIR = Path(__file__).resolve().parents[1]
-ARQUIVO_DADOS = BASE_DIR / "public" / "data" / "atendimento.json"
+ARQUIVO_DADOS = Path(__file__).resolve().parent / "data" / "atendimento.json"
+
+def carregar_env_local():
+    for nome in [".env", ".env.local"]:
+        caminho = BASE_DIR / nome
+        if not caminho.exists():
+            continue
+        for linha in caminho.read_text(encoding="utf-8").splitlines():
+            linha = linha.strip()
+            if not linha or linha.startswith("#") or "=" not in linha:
+                continue
+            chave, valor = linha.split("=", 1)
+            chave = chave.strip()
+            valor = valor.strip().strip('"').strip("'")
+            if chave and valor and chave not in os.environ:
+                os.environ[chave] = valor
+
+carregar_env_local()
 ORS_API_KEY = os.getenv("ORS_API_KEY")
 
 PERFIS_ORS = {
@@ -38,16 +55,25 @@ ROTULOS_SORO = {
     "Lonômico": "Soro antilonômico",
 }
 
+if not ARQUIVO_DADOS.exists():
+    raise FileNotFoundError(
+        f"Arquivo não encontrado: {ARQUIVO_DADOS}. "
+        "Rode primeiro: python scripts/preparar_atendimento.py"
+    )
+
 with open(ARQUIVO_DADOS, encoding="utf-8") as arquivo:
     DADOS = json.load(arquivo)
 
 POSTOS = {int(posto["id"]): posto for posto in DADOS["postos"]}
 
-def resposta(handler, status, dados):
+def enviar_json(handler, status, dados):
     corpo = json.dumps(dados, ensure_ascii=False).encode("utf-8")
     handler.send_response(status)
     handler.send_header("Content-Type", "application/json; charset=utf-8")
     handler.send_header("Content-Length", str(len(corpo)))
+    handler.send_header("Access-Control-Allow-Origin", "*")
+    handler.send_header("Access-Control-Allow-Methods", "POST, OPTIONS, GET")
+    handler.send_header("Access-Control-Allow-Headers", "Content-Type")
     handler.end_headers()
     handler.wfile.write(corpo)
 
@@ -56,15 +82,11 @@ def normalizar_cep(valor):
     return numeros if len(numeros) == 8 else None
 
 def endereco_por_cep(cep):
-    resposta_cep = requests.get(
-        f"https://viacep.com.br/ws/{cep}/json/",
-        timeout=8,
-    )
-    resposta_cep.raise_for_status()
-    dados = resposta_cep.json()
+    resposta = requests.get(f"https://viacep.com.br/ws/{cep}/json/", timeout=8)
+    resposta.raise_for_status()
+    dados = resposta.json()
     if dados.get("erro"):
         raise ValueError("CEP não encontrado.")
-
     partes = [
         dados.get("logradouro"),
         dados.get("bairro"),
@@ -76,12 +98,16 @@ def endereco_por_cep(cep):
 
 def geocodificar(localizacao):
     if not ORS_API_KEY:
-        raise RuntimeError("ORS_API_KEY não configurada no servidor.")
+        raise RuntimeError(
+            "ORS_API_KEY não configurada. Adicione-a ao arquivo .env ou às "
+            "Environment Variables da Vercel."
+        )
 
     cep = normalizar_cep(localizacao)
-    texto_busca = endereco_por_cep(cep) if cep and re.fullmatch(r"[\d\-\s]+", localizacao) else localizacao
+    somente_cep = cep and re.fullmatch(r"[\d\-\s]+", localizacao)
+    texto_busca = endereco_por_cep(cep) if somente_cep else localizacao
 
-    resposta_geo = requests.get(
+    resposta = requests.get(
         "https://api.openrouteservice.org/geocode/search",
         params={
             "api_key": ORS_API_KEY,
@@ -91,8 +117,8 @@ def geocodificar(localizacao):
         },
         timeout=12,
     )
-    resposta_geo.raise_for_status()
-    dados = resposta_geo.json()
+    resposta.raise_for_status()
+    dados = resposta.json()
 
     if not dados.get("features"):
         raise ValueError("Endereço não encontrado.")
@@ -135,8 +161,8 @@ def municipio_mais_proximo(latitude, longitude):
 
 def calcular_rotas(origem, candidatos, perfil):
     locations = [[origem["longitude"], origem["latitude"]]]
-
     postos_candidatos = []
+
     for id_posto in candidatos:
         posto = POSTOS.get(int(id_posto))
         if not posto:
@@ -147,7 +173,7 @@ def calcular_rotas(origem, candidatos, perfil):
     if not postos_candidatos:
         return []
 
-    resposta_matriz = requests.post(
+    resposta = requests.post(
         f"https://api.openrouteservice.org/v2/matrix/{perfil}",
         headers={
             "Authorization": ORS_API_KEY,
@@ -162,8 +188,8 @@ def calcular_rotas(origem, candidatos, perfil):
         },
         timeout=20,
     )
-    resposta_matriz.raise_for_status()
-    matriz = resposta_matriz.json()
+    resposta.raise_for_status()
+    matriz = resposta.json()
 
     distancias = matriz.get("distances", [[]])[0]
     duracoes = matriz.get("durations", [[]])[0]
@@ -172,108 +198,120 @@ def calcular_rotas(origem, candidatos, perfil):
     for i, posto in enumerate(postos_candidatos):
         if i >= len(distancias) or distancias[i] is None:
             continue
-
-        resultado = dict(posto)
-        resultado["distancia_km"] = round(float(distancias[i]), 2)
-        resultado["tempo_min"] = (
+        item = dict(posto)
+        item["distancia_km"] = round(float(distancias[i]), 2)
+        item["tempo_min"] = (
             round(float(duracoes[i]) / 60, 1)
             if i < len(duracoes) and duracoes[i] is not None
             else None
         )
-        resultados.append(resultado)
+        resultados.append(item)
 
-    # Mantém a lógica do notebook: o recomendado é o de menor distância real.
     resultados.sort(key=lambda item: item["distancia_km"])
     return resultados
 
+def processar_busca(payload):
+    localizacao = str(payload.get("localizacao", "")).strip()
+    animal = str(payload.get("animal", "")).strip()
+    especie = str(payload.get("especie", "")).strip()
+    transporte = str(payload.get("transporte", "carro")).strip()
+
+    if not localizacao:
+        raise ValueError("Informe um endereço ou CEP.")
+
+    if transporte not in PERFIS_ORS:
+        raise ValueError("Modo de transporte inválido.")
+
+    origem = geocodificar(localizacao)
+    municipio = municipio_mais_proximo(origem["latitude"], origem["longitude"])
+
+    soro = SOROS.get((animal, especie))
+    especie_desconhecida = especie in {"", "nao_sei"}
+
+    if animal == "aranha" and especie == "viuva_negra":
+        return {
+            "status": "soro_nao_modelado",
+            "origem": origem,
+            "municipio_referencia": municipio["municipio"],
+            "mensagem": (
+                "A opção viúva-negra não está representada pelos oito tipos de "
+                "soro modelados nesta base. Procure atendimento de urgência."
+            ),
+        }
+
+    if soro:
+        candidatos = municipio["candidatos_por_soro"].get(soro, [])
+        soro_rotulo = ROTULOS_SORO[soro]
+        status = "soro_definido"
+    elif especie_desconhecida:
+        candidatos = municipio["candidatos_geral"]
+        soro_rotulo = None
+        status = "especie_desconhecida"
+    else:
+        raise ValueError("Não foi possível relacionar a seleção a um soro modelado.")
+
+    resultados = calcular_rotas(origem, candidatos, PERFIS_ORS[transporte])
+
+    if not resultados:
+        raise LookupError("Nenhuma unidade com rota válida foi encontrada.")
+
+    return {
+        "status": status,
+        "origem": origem,
+        "municipio_referencia": municipio["municipio"],
+        "soro": soro,
+        "soro_rotulo": soro_rotulo,
+        "transporte": transporte,
+        "recomendado": resultados[0],
+        "postos": resultados[:10],
+        "aviso": (
+            "A indicação definitiva do soro e a conduta clínica dependem "
+            "da avaliação da equipe de saúde."
+        ),
+    }
+
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
-        self.send_response(204)
-        self.end_headers()
+        enviar_json(self, 204, {})
+
+    def do_GET(self):
+        if self.path.rstrip("/") in {"", "/api/encontrar_atendimento", "/health"}:
+            return enviar_json(self, 200, {
+                "status": "ok",
+                "mensagem": "API de atendimento ativa.",
+            })
+        return enviar_json(self, 404, {"erro": "Rota não encontrada."})
 
     def do_POST(self):
         try:
             tamanho = int(self.headers.get("Content-Length", "0"))
             payload = json.loads(self.rfile.read(tamanho) or b"{}")
-
-            localizacao = str(payload.get("localizacao", "")).strip()
-            animal = str(payload.get("animal", "")).strip()
-            especie = str(payload.get("especie", "")).strip()
-            transporte = str(payload.get("transporte", "carro")).strip()
-
-            if not localizacao:
-                return resposta(self, 400, {"erro": "Informe um endereço ou CEP."})
-
-            if transporte not in PERFIS_ORS:
-                return resposta(self, 400, {"erro": "Modo de transporte inválido."})
-
-            origem = geocodificar(localizacao)
-            municipio = municipio_mais_proximo(
-                origem["latitude"],
-                origem["longitude"],
-            )
-
-            soro = SOROS.get((animal, especie))
-            especie_desconhecida = especie in {"", "nao_sei"}
-
-            if animal == "aranha" and especie == "viuva_negra":
-                return resposta(self, 200, {
-                    "status": "soro_nao_modelado",
-                    "origem": origem,
-                    "municipio_referencia": municipio["municipio"],
-                    "mensagem": (
-                        "A opção viúva-negra não está representada pelos oito tipos "
-                        "de soro modelados nesta base. Procure atendimento de urgência."
-                    ),
-                })
-
-            if soro:
-                candidatos = municipio["candidatos_por_soro"].get(soro, [])
-                soro_rotulo = ROTULOS_SORO[soro]
-                status = "soro_definido"
-            elif especie_desconhecida:
-                candidatos = municipio["candidatos_geral"]
-                soro_rotulo = None
-                status = "especie_desconhecida"
-            else:
-                return resposta(self, 400, {
-                    "erro": "Não foi possível relacionar a seleção a um soro modelado."
-                })
-
-            resultados = calcular_rotas(
-                origem,
-                candidatos,
-                PERFIS_ORS[transporte],
-            )
-
-            if not resultados:
-                return resposta(self, 404, {
-                    "erro": "Nenhuma unidade com rota válida foi encontrada."
-                })
-
-            return resposta(self, 200, {
-                "status": status,
-                "origem": origem,
-                "municipio_referencia": municipio["municipio"],
-                "soro": soro,
-                "soro_rotulo": soro_rotulo,
-                "transporte": transporte,
-                "recomendado": resultados[0],
-                "postos": resultados[:10],
-                "aviso": (
-                    "A indicação definitiva do soro e a conduta clínica dependem "
-                    "da avaliação da equipe de saúde."
-                ),
-            })
-
+            resultado = processar_busca(payload)
+            return enviar_json(self, 200, resultado)
         except ValueError as erro:
-            return resposta(self, 400, {"erro": str(erro)})
-        except requests.RequestException:
-            return resposta(self, 502, {
-                "erro": "Não foi possível consultar o serviço de rotas neste momento."
+            return enviar_json(self, 400, {"erro": str(erro)})
+        except LookupError as erro:
+            return enviar_json(self, 404, {"erro": str(erro)})
+        except requests.RequestException as erro:
+            print("Erro OpenRouteService/ViaCEP:", repr(erro))
+            return enviar_json(self, 502, {
+                "erro": "Não foi possível consultar o serviço de localização/rotas neste momento."
             })
         except Exception as erro:
             print("Erro em encontrar_atendimento:", repr(erro))
-            return resposta(self, 500, {
-                "erro": "Ocorreu um erro ao buscar a unidade de atendimento."
-            })
+            mensagem = str(erro)
+            if "ORS_API_KEY" not in mensagem:
+                mensagem = "Ocorreu um erro ao buscar a unidade de atendimento."
+            return enviar_json(self, 500, {"erro": mensagem})
+
+if __name__ == "__main__":
+    porta = 8000
+    servidor = ThreadingHTTPServer(("127.0.0.1", porta), handler)
+    print(f"API local ativa em http://127.0.0.1:{porta}")
+    print(f"Teste de saúde: http://127.0.0.1:{porta}/health")
+    print("Pressione Ctrl+C para encerrar.")
+    try:
+        servidor.serve_forever()
+    except KeyboardInterrupt:
+        print("\nServidor encerrado.")
+        servidor.server_close()

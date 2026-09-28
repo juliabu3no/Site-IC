@@ -1,45 +1,52 @@
 ---
-import Link from "@/components/ui/link.astro";
-import { Icon } from "astro-icon/components";
 ---
 
-<section class="bg-[#eeeeee]">
-  <main class="pt-14 pb-12 md:pt-16 md:pb-20">
-    <div class="mx-auto max-w-6xl text-center px-6">
+<section class="pt-10 md:pt-14">
+  <div class="border-b border-slate-200 pb-10 md:pb-14">
+    <div class="w-full">
+      <div class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-blue-700">
+        <span class="h-2 w-2 rounded-full bg-blue-600"></span>
+        Rede de Soro Antiveneno SP
+      </div>
 
       <h1
-        class="text-54xl lg:text-5xl xl:text-6xl font-bold lg:tracking-tight xl:tracking-tighter">
-        Plataforma de Dados e Apoio à Gestão de Acidentes por Animais Peçonhentos
+        class="mt-6 w-full text-4xl font-bold tracking-tight text-[#0A2C57] md:text-5xl lg:text-[3.35rem]"
+        style="line-height: 1.06 !important;"
+      >
+        Informação, atendimento, análise de dados e otimização da rede soroterápica em São Paulo
       </h1>
 
-      <p class="text-lg mt-6 text-slate-600 max-w-4xl mx-auto">
-        Uma plataforma interativa para exploração e análise de dados epidemiológicos sobre 
-        acidentes com animais peçonhentos no Estado de São Paulo, oferecendo visualizações, 
-        indicadores e informações que apoiam a pesquisa, a gestão e a divulgação científica.
+      <p class="mt-6 w-full text-lg leading-8 text-slate-600">
+        Uma plataforma para localizar atendimento, consultar orientações de emergência,
+        explorar dados epidemiológicos e conhecer análises sobre a distribuição da
+        soroterapia no Estado de São Paulo.
       </p>
-
-      <!-- <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-
-        <Link
-          href="/dashboard"
-          class="flex gap-2 items-center justify-center">
-          <Icon
-            class="text-white w-5 h-5"
-            name="bx:bxs-bar-chart-alt-2"
-          />
-          Acessar Dashboard
-        </Link>
-
-        <Link
-          size="lg"
-          style="outline"
-          href="/guia"
-          class="flex gap-2 items-center justify-center">
-          Guia Informativo
-        </Link>
-
-      </div> -->
-
     </div>
-  </main>
+  </div>
+
+  <div class="mt-6 w-full rounded-xl border border-orange-200 bg-orange-50/70 px-5 py-5 md:px-6">
+    <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+      <div class="w-full">
+        <p class="text-xs font-semibold uppercase tracking-wide text-orange-700">
+          Acesso rápido
+        </p>
+
+        <h2 class="mt-1 text-xl font-semibold text-[#0A2C57]">
+          Precisa localizar atendimento?
+        </h2>
+
+        <p class="mt-2 w-full text-sm leading-6 text-slate-600">
+          Informe seu endereço ou CEP e o animal envolvido para consultar unidades
+          da rede e estimar distância e tempo de deslocamento.
+        </p>
+      </div>
+
+      <a
+        href="/encontrar-soro"
+        class="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+      >
+        Buscar atendimento
+      </a>
+    </div>
+  </div>
 </section>

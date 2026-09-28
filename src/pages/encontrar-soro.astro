@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 <Layout title="Encontre Atendimento">
   <Container>
     <main class="py-10 md:py-14">
-      <div class="max-w-3xl">
+      <div class="w-full">
         <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Rede soroterápica</p>
         <h1 class="mt-2 text-3xl md:text-4xl font-bold text-[#0A2C57]">Encontre atendimento</h1>
         <p class="mt-3 text-slate-600">
@@ -72,29 +72,22 @@ import "leaflet/dist/leaflet.css";
       </section>
 
       <section id="resultado" class="mt-8 hidden">
-        <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <div class="space-y-4">
-            <div class="rounded-2xl border border-blue-200 bg-blue-50 p-5">
-              <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Atendimento indicado pela busca</p>
-              <h2 id="resultado-nome" class="mt-2 text-xl font-bold text-[#0A2C57]"></h2>
-              <div class="mt-4 space-y-2 text-sm text-slate-700">
-                <p><strong>Município:</strong> <span id="resultado-municipio"></span></p>
-                <p id="linha-endereco"><strong>Endereço:</strong> <span id="resultado-endereco"></span></p>
-                <p id="linha-telefone"><strong>Telefone:</strong> <span id="resultado-telefone"></span></p>
-                <p><strong>Distância estimada:</strong> <span id="resultado-distancia"></span></p>
-                <p><strong>Tempo estimado:</strong> <span id="resultado-tempo"></span></p>
-                <p id="linha-soro"><strong>Soro considerado:</strong> <span id="resultado-soro"></span></p>
-              </div>
+        <div class="space-y-4">
+          <div class="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+            <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Atendimento indicado pela busca</p>
+            <h2 id="resultado-nome" class="mt-2 text-xl font-bold text-[#0A2C57]"></h2>
+            <div class="mt-4 grid gap-2 text-sm text-slate-700 md:grid-cols-2">
+              <p><strong>Município:</strong> <span id="resultado-municipio"></span></p>
+              <p id="linha-endereco"><strong>Endereço:</strong> <span id="resultado-endereco"></span></p>
+              <p id="linha-telefone"><strong>Telefone:</strong> <span id="resultado-telefone"></span></p>
+              <p><strong>Distância estimada:</strong> <span id="resultado-distancia"></span></p>
+              <p><strong>Tempo estimado:</strong> <span id="resultado-tempo"></span></p>
+              <p id="linha-soro"><strong>Soro considerado:</strong> <span id="resultado-soro"></span></p>
             </div>
+          </div>
 
-            <div id="aviso-especie" class="hidden rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-              Como a espécie não foi informada, não é possível determinar previamente qual soro será necessário. O resultado indica o PESA mais próximo entre os candidatos da rede.
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 bg-white p-5">
-              <h3 class="font-semibold text-slate-900">Outras unidades próximas</h3>
-              <div id="lista-postos" class="mt-3 space-y-3"></div>
-            </div>
+          <div id="aviso-especie" class="hidden rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+            Como a espécie não foi informada, não é possível determinar previamente qual soro será necessário. O resultado indica o PESA mais próximo entre os candidatos da rede.
           </div>
 
           <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
@@ -105,6 +98,11 @@ import "leaflet/dist/leaflet.css";
               <span class="inline-flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-slate-400"></span> Outras unidades</span>
             </div>
           </div>
+
+          <div class="rounded-2xl border border-slate-200 bg-white p-5">
+            <h3 class="font-semibold text-slate-900">Outras unidades próximas</h3>
+            <div id="lista-postos" class="mt-3 grid gap-3 md:grid-cols-2"></div>
+          </div>
         </div>
       </section>
 
@@ -113,6 +111,44 @@ import "leaflet/dist/leaflet.css";
         <p class="mt-2 text-sm leading-6 text-slate-600">
           A localização informada é geocodificada e associada ao município de referência mais próximo. A matriz pré-calculada é usada para selecionar os candidatos mais próximos que possuem o soro correspondente. Em seguida, o OpenRouteService calcula a distância e o tempo reais entre a origem e esses postos de acordo com o modo de transporte selecionado.
         </p>
+
+        <section class="mt-10 border-t border-gray-200 pt-8">
+          <h2 class="text-xl font-bold text-gray-800">
+            Referências
+          </h2>
+          <div class="mt-4 space-y-5 text-sm leading-relaxed text-slate-500">
+            <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <p>
+                <strong>CIEVS</strong> — Centro de Informações Estratégicas em Vigilância em Saúde.
+              </p>
+              <a
+                href="https://cievs.saude.sp.gov.br/soro/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-600 hover:underline"
+              >
+                Acessar publicação oficial
+              </a>
+            </div>
+            <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <p>
+                BRASIL. Ministério da Saúde.
+                <span class="italic">Hospitais de Referência para Atendimento — São Paulo.</span>
+              </p>
+              <a
+                href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/a/animais-peconhentos/hospitais-de-referencia?b_start%3Aint=20"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-600 hover:underline"
+              >
+                Acessar publicação oficial
+              </a>
+            </div>
+            <p class="mt-2 text-xs text-slate-400 text-left">
+              Dados atualizados em 01 de abril de 2026.
+            </p>
+          </div>
+        </section>
       </section>
     </main>
   </Container>
@@ -284,13 +320,10 @@ import "leaflet/dist/leaflet.css";
       marcador.addTo(camadaResultados);
     });
 
-    const pontos = [
-      [dados.origem.latitude, dados.origem.longitude],
-      ...dados.postos.slice(0, 5).map((item) => [item.latitude, item.longitude]),
-    ];
-
-    mapa.fitBounds(pontos, { padding: [35, 35], maxZoom: 12 });
-    setTimeout(() => mapa.invalidateSize(), 100);
+    setTimeout(() => {
+      mapa.invalidateSize();
+      mapa.setView([posto.latitude, posto.longitude], 14);
+    }, 100);
     resultado.classList.remove("hidden");
   }
 
@@ -310,11 +343,21 @@ import "leaflet/dist/leaflet.css";
     };
 
     try {
-      const resposta = await fetch("/api/encontrar_atendimento", {
+      const apiUrl =
+        window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+          ? "http://127.0.0.1:8000/api/encontrar_atendimento"
+          : "/api/encontrar_atendimento";
+
+      const resposta = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
+      const tipo = resposta.headers.get("content-type") || "";
+      if (!tipo.includes("application/json")) {
+        throw new Error("A API não retornou JSON. Verifique se o servidor Python está ativo.");
+      }
 
       const dados = await resposta.json();
 

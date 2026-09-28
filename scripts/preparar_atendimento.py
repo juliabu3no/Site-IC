@@ -9,7 +9,7 @@ import geopandas as gpd
 # ============================================================
 BASE_DIR = Path(__file__).resolve().parents[1]
 PASTA_DADOS = BASE_DIR / "dados_local"
-ARQUIVO_SAIDA = BASE_DIR / "public" / "data" / "atendimento.json"
+ARQUIVO_SAIDA = BASE_DIR / "api" / "data" / "atendimento.json"
 MAX_CANDIDATOS = 25
 
 TIPOS_SORO = [

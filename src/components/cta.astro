@@ -1,32 +1,12 @@
----
-import Link from "./ui/link.astro";
-import { Icon } from "astro-icon/components";
----
-
-<div
-  class="bg-[#eeeeee] p-8 md:px-20 md:py-16 mt-20 mx-auto max-w-5xl rounded-lg flex flex-col items-center text-center"
->
-
-  <h2 class="text-[#0A2C57] text-4xl md:text-5xl font-bold tracking-tight">
-    Explore os dados epidemiológicos
+<section class="mt-16 mb-20 border-t border-slate-200 pt-8">
+  <h2 class="w-full text-xl font-bold text-gray-800">
+    Dados públicos e fontes oficiais
   </h2>
 
-  <p class="text-slate-600 mt-4 text-lg md:text-xl max-w-4xl leading-relaxed">
-    Acesse o dashboard interativo e explore dados sobre acidentes 
-    com animais peçonhentos no Estado de São Paulo, analisando padrões
-    de ocorrência e distribuição dos registros.
+  <p class="mt-3 w-full text-sm leading-6 text-slate-500">
+    A plataforma utiliza dados públicos e informações provenientes de fontes oficiais,
+    incluindo o Sistema de Informação de Agravos de Notificação (SINAN), o Ministério
+    da Saúde e bases relacionadas à rede de atendimento soroterápico do Estado de São Paulo.
+    As fontes específicas são indicadas nas páginas correspondentes.
   </p>
-
-  <div class="flex mt-6">
-    <Link
-      href="/dashboard"
-      class="bg-[#0A2C57]! hover:bg-[#123b6d]! text-white! flex gap-2 items-center justify-center">
-      <Icon
-        class="text-white w-5 h-5"
-        name="bx:bxs-bar-chart-alt-2"
-      />
-      Acessar Dashboard
-    </Link>
-  </div>
-
-</div>
+</section>
