@@ -1,7 +1,2 @@
-pandas
-numpy
-geopandas
-pyogrio
-gdown
-pysus
-gurobipy
+
+requests

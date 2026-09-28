@@ -1,19 +1,338 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Container from "@/components/container.astro";
-import Sectionhead from "@/components/sectionhead.astro";
+import "leaflet/dist/leaflet.css";
 ---
 
-<Layout title="Encontrar soro">
+<Layout title="Encontre Atendimento">
   <Container>
+    <main class="py-10 md:py-14">
+      <div class="max-w-3xl">
+        <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Rede soroterápica</p>
+        <h1 class="mt-2 text-3xl md:text-4xl font-bold text-[#0A2C57]">Encontre atendimento</h1>
+        <p class="mt-3 text-slate-600">
+          Informe sua localização, o animal envolvido e, se souber, a espécie. A ferramenta busca entre os Pontos Estratégicos de Soro Antiveneno e calcula a distância real pela malha viária.
+        </p>
+      </div>
 
-    <Sectionhead>
-      <Fragment slot="title">Encontrar soro</Fragment>
+      <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+        Esta ferramenta é um apoio à localização. A indicação do soro e a conduta clínica devem ser definidas pela equipe de saúde.
+      </div>
 
-      <Fragment slot="desc">
-        Localize unidades de atendimento com soro antiveneno disponível no estado de São Paulo.
-      </Fragment>
-    </Sectionhead>
+      <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-5 md:p-7 shadow-sm">
+        <form id="form-atendimento" class="grid gap-5 md:grid-cols-2">
+          <div class="md:col-span-2">
+            <label for="localizacao" class="block text-sm font-semibold text-slate-800">Endereço ou CEP</label>
+            <input
+              id="localizacao"
+              name="localizacao"
+              type="text"
+              required
+              placeholder="Ex.: Av. Trabalhador São-carlense, 400 ou 13566-590"
+              class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+            <p class="mt-1 text-xs text-slate-500">Para maior precisão, informe rua, número, cidade e estado.</p>
+          </div>
 
+          <div>
+            <label for="animal" class="block text-sm font-semibold text-slate-800">Animal</label>
+            <select id="animal" name="animal" required class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+              <option value="">Selecione</option>
+              <option value="serpente">Serpente</option>
+              <option value="aranha">Aranha</option>
+              <option value="escorpiao">Escorpião</option>
+              <option value="lagarta">Lagarta</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="especie" class="block text-sm font-semibold text-slate-800">Espécie ou grupo, se souber</label>
+            <select id="especie" name="especie" required disabled class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none disabled:bg-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+              <option value="">Selecione primeiro o animal</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="transporte" class="block text-sm font-semibold text-slate-800">Modo de transporte</label>
+            <select id="transporte" name="transporte" required class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+              <option value="carro">Carro</option>
+              <option value="bicicleta">Bicicleta</option>
+              <option value="caminhando">Caminhando</option>
+            </select>
+          </div>
+
+          <div class="flex items-end">
+            <button id="btn-buscar" type="submit" class="w-full rounded-xl bg-[#0A2C57] px-5 py-3 font-semibold text-white transition hover:bg-[#123f73] disabled:cursor-not-allowed disabled:opacity-60">
+              Buscar atendimento
+            </button>
+          </div>
+        </form>
+
+        <div id="mensagem" class="mt-5 hidden rounded-xl p-4 text-sm"></div>
+      </section>
+
+      <section id="resultado" class="mt-8 hidden">
+        <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+          <div class="space-y-4">
+            <div class="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+              <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Atendimento indicado pela busca</p>
+              <h2 id="resultado-nome" class="mt-2 text-xl font-bold text-[#0A2C57]"></h2>
+              <div class="mt-4 space-y-2 text-sm text-slate-700">
+                <p><strong>Município:</strong> <span id="resultado-municipio"></span></p>
+                <p id="linha-endereco"><strong>Endereço:</strong> <span id="resultado-endereco"></span></p>
+                <p id="linha-telefone"><strong>Telefone:</strong> <span id="resultado-telefone"></span></p>
+                <p><strong>Distância estimada:</strong> <span id="resultado-distancia"></span></p>
+                <p><strong>Tempo estimado:</strong> <span id="resultado-tempo"></span></p>
+                <p id="linha-soro"><strong>Soro considerado:</strong> <span id="resultado-soro"></span></p>
+              </div>
+            </div>
+
+            <div id="aviso-especie" class="hidden rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+              Como a espécie não foi informada, não é possível determinar previamente qual soro será necessário. O resultado indica o PESA mais próximo entre os candidatos da rede.
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-5">
+              <h3 class="font-semibold text-slate-900">Outras unidades próximas</h3>
+              <div id="lista-postos" class="mt-3 space-y-3"></div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+            <div id="mapa-atendimento" class="h-[520px] w-full rounded-xl"></div>
+            <div class="mt-3 flex flex-wrap gap-4 px-1 text-xs text-slate-600">
+              <span class="inline-flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-blue-600"></span> Sua localização</span>
+              <span class="inline-flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-orange-500"></span> Unidade indicada</span>
+              <span class="inline-flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-slate-400"></span> Outras unidades</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mt-10 border-t border-slate-200 pt-6">
+        <h2 class="text-lg font-semibold text-[#0A2C57]">Como a busca funciona</h2>
+        <p class="mt-2 text-sm leading-6 text-slate-600">
+          A localização informada é geocodificada e associada ao município de referência mais próximo. A matriz pré-calculada é usada para selecionar os candidatos mais próximos que possuem o soro correspondente. Em seguida, o OpenRouteService calcula a distância e o tempo reais entre a origem e esses postos de acordo com o modo de transporte selecionado.
+        </p>
+      </section>
+    </main>
   </Container>
 </Layout>
+
+<script>
+  import L from "leaflet";
+
+  const opcoesEspecie = {
+    serpente: [
+      ["nao_sei", "Não sei"],
+      ["jararaca", "Jararaca, jararacuçu, urutu ou caiçaca"],
+      ["cascavel", "Cascavel"],
+      ["surucucu", "Surucucu-pico-de-jaca"],
+      ["coral", "Cobra-coral"],
+    ],
+    aranha: [
+      ["nao_sei", "Não sei"],
+      ["marrom", "Aranha-marrom"],
+      ["armadeira", "Aranha-armadeira"],
+      ["viuva_negra", "Viúva-negra"],
+    ],
+    escorpiao: [
+      ["nao_sei", "Não sei"],
+      ["tityus", "Escorpião do gênero Tityus"],
+    ],
+    lagarta: [
+      ["nao_sei", "Não sei"],
+      ["lonomia", "Lonomia (taturana)"],
+    ],
+  };
+
+  const form = document.getElementById("form-atendimento");
+  const animal = document.getElementById("animal");
+  const especie = document.getElementById("especie");
+  const botao = document.getElementById("btn-buscar");
+  const mensagem = document.getElementById("mensagem");
+  const resultado = document.getElementById("resultado");
+
+  const mapa = L.map("mapa-atendimento", {
+    zoomControl: true,
+    scrollWheelZoom: true,
+  }).setView([-22.5, -48.5], 7);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors',
+  }).addTo(mapa);
+
+  let camadaResultados = L.layerGroup().addTo(mapa);
+
+  animal.addEventListener("change", () => {
+    const opcoes = opcoesEspecie[animal.value] || [];
+    especie.innerHTML = "";
+
+    if (!opcoes.length) {
+      especie.disabled = true;
+      especie.innerHTML = '<option value="">Selecione primeiro o animal</option>';
+      return;
+    }
+
+    especie.disabled = false;
+    opcoes.forEach(([valor, rotulo]) => {
+      const option = document.createElement("option");
+      option.value = valor;
+      option.textContent = rotulo;
+      especie.appendChild(option);
+    });
+  });
+
+  function mostrarMensagem(texto, tipo = "erro") {
+    mensagem.classList.remove(
+      "hidden",
+      "border-red-200",
+      "bg-red-50",
+      "text-red-800",
+      "border-blue-200",
+      "bg-blue-50",
+      "text-blue-800"
+    );
+
+    if (tipo === "info") {
+      mensagem.classList.add("border", "border-blue-200", "bg-blue-50", "text-blue-800");
+    } else {
+      mensagem.classList.add("border", "border-red-200", "bg-red-50", "text-red-800");
+    }
+
+    mensagem.textContent = texto;
+  }
+
+  function esconderMensagem() {
+    mensagem.classList.add("hidden");
+  }
+
+  function preencherResultado(dados) {
+    const posto = dados.recomendado;
+
+    document.getElementById("resultado-nome").textContent = posto.nome || "PESA";
+    document.getElementById("resultado-municipio").textContent = posto.municipio || "—";
+    document.getElementById("resultado-distancia").textContent = `${posto.distancia_km.toFixed(2).replace(".", ",")} km`;
+    document.getElementById("resultado-tempo").textContent = posto.tempo_min != null ? `${posto.tempo_min.toFixed(1).replace(".", ",")} min` : "Não disponível";
+
+    const linhaEndereco = document.getElementById("linha-endereco");
+    const linhaTelefone = document.getElementById("linha-telefone");
+    const linhaSoro = document.getElementById("linha-soro");
+
+    linhaEndereco.classList.toggle("hidden", !posto.endereco);
+    linhaTelefone.classList.toggle("hidden", !posto.telefone);
+    linhaSoro.classList.toggle("hidden", !dados.soro_rotulo);
+
+    document.getElementById("resultado-endereco").textContent = posto.endereco || "";
+    document.getElementById("resultado-telefone").textContent = posto.telefone || "";
+    document.getElementById("resultado-soro").textContent = dados.soro_rotulo || "";
+
+    document.getElementById("aviso-especie").classList.toggle(
+      "hidden",
+      dados.status !== "especie_desconhecida"
+    );
+
+    const lista = document.getElementById("lista-postos");
+    lista.innerHTML = "";
+
+    dados.postos.slice(1, 5).forEach((item) => {
+      const div = document.createElement("div");
+      div.className = "rounded-xl border border-slate-200 p-3 text-sm";
+      div.innerHTML = `
+        <p class="font-semibold text-slate-900">${item.nome || "PESA"}</p>
+        <p class="mt-1 text-slate-600">${item.municipio || ""}</p>
+        <p class="mt-1 text-xs text-slate-500">${item.distancia_km.toFixed(2).replace(".", ",")} km · ${item.tempo_min != null ? item.tempo_min.toFixed(1).replace(".", ",") + " min" : "tempo indisponível"}</p>
+      `;
+      lista.appendChild(div);
+    });
+
+    camadaResultados.clearLayers();
+
+    const origem = L.circleMarker(
+      [dados.origem.latitude, dados.origem.longitude],
+      {
+        radius: 8,
+        color: "#1d4ed8",
+        fillColor: "#2563eb",
+        fillOpacity: 1,
+        weight: 2,
+      }
+    ).bindPopup(`<strong>Sua localização</strong><br>${dados.origem.rotulo || ""}`);
+
+    origem.addTo(camadaResultados);
+
+    dados.postos.slice(0, 5).forEach((item, indice) => {
+      const recomendado = indice === 0;
+      const marcador = L.circleMarker(
+        [item.latitude, item.longitude],
+        {
+          radius: recomendado ? 11 : 7,
+          color: recomendado ? "#c2410c" : "#64748b",
+          fillColor: recomendado ? "#f97316" : "#94a3b8",
+          fillOpacity: 1,
+          weight: recomendado ? 3 : 2,
+        }
+      );
+
+      marcador.bindPopup(`
+        <strong>${recomendado ? "Unidade indicada" : "Outra unidade"}</strong><br>
+        ${item.nome || "PESA"}<br>
+        ${item.municipio || ""}<br>
+        ${item.distancia_km.toFixed(2).replace(".", ",")} km
+      `);
+
+      marcador.addTo(camadaResultados);
+    });
+
+    const pontos = [
+      [dados.origem.latitude, dados.origem.longitude],
+      ...dados.postos.slice(0, 5).map((item) => [item.latitude, item.longitude]),
+    ];
+
+    mapa.fitBounds(pontos, { padding: [35, 35], maxZoom: 12 });
+    setTimeout(() => mapa.invalidateSize(), 100);
+    resultado.classList.remove("hidden");
+  }
+
+  form.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    esconderMensagem();
+    resultado.classList.add("hidden");
+
+    botao.disabled = true;
+    botao.textContent = "Buscando...";
+
+    const payload = {
+      localizacao: document.getElementById("localizacao").value.trim(),
+      animal: animal.value,
+      especie: especie.value,
+      transporte: document.getElementById("transporte").value,
+    };
+
+    try {
+      const resposta = await fetch("/api/encontrar_atendimento", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(dados.erro || "Não foi possível realizar a busca.");
+      }
+
+      if (dados.status === "soro_nao_modelado") {
+        mostrarMensagem(dados.mensagem, "info");
+        return;
+      }
+
+      preencherResultado(dados);
+    } catch (erro) {
+      mostrarMensagem(erro.message || "Não foi possível realizar a busca.");
+    } finally {
+      botao.disabled = false;
+      botao.textContent = "Buscar atendimento";
+    }
+  });
+</script>

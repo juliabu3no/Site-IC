@@ -30,3 +30,5 @@ dados_local/
 .env
 .env.*
 !.env.example
+.vercel
+.env*

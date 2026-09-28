@@ -1,0 +1,7 @@
+pandas
+numpy
+geopandas
+pyogrio
+gdown
+pysus
+gurobipy
