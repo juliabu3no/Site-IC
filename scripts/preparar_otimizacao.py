@@ -416,7 +416,18 @@ if gdf_munic.crs is None:
         "divisoes.gpkg não possui sistema de referência (CRS)."
     )
 
-gdf_mapa = gdf_munic.to_crs(epsg=4326).copy()
+# Simplifica as geometrias para uso no mapa web.
+gdf_mapa = gdf_munic.to_crs(epsg=31983).copy()
+
+gdf_mapa["geometry"] = (
+    gdf_mapa.geometry
+    .simplify(
+        tolerance=300,
+        preserve_topology=True,
+    )
+)
+
+gdf_mapa = gdf_mapa.to_crs(epsg=4326)
 
 # GeoJSON dos 645 municípios.
 geojson_municipios = json.loads(
