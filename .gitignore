@@ -26,3 +26,7 @@ geojson_sp.json
 
 .venv/
 dados_local/
+
+.env
+.env.*
+!.env.example

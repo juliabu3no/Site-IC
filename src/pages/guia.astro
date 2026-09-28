@@ -1,591 +1,1367 @@
 ---
+
 import Layout from "@/layouts/Layout.astro";
+
 import Container from "@/components/container.astro";
+
 import Sectionhead from "@/components/sectionhead.astro";
 
 const cuidados = [
+
   {
-    titulo: "Escorpiões e aranhas",
+
+    titulo: "Serpentes",
+
     itens: [
+
       "Lave o local da picada com água e sabão.",
+
+      "Mantenha a vítima em repouso e procure atendimento médico imediatamente.",
+
+      "Não faça torniquete, cortes, perfurações ou sucção no local da picada.",
+
+    ],
+
+    soros: [
+
+      {
+
+        especie: "Jararacas, jararacuçus, urutus e caiçacas",
+
+        genero: "Bothrops e Bothrocophias",
+
+        soro: "Soro Antibotrópico (SAB)",
+
+        observacao: "Na ausência do monovalente, podem ser utilizados SABC ou SABL, conforme indicação clínica.",
+
+      },
+
+      {
+
+        especie: "Cascavéis",
+
+        genero: "Crotalus",
+
+        soro: "Soro Anticrotálico (SAC)",
+
+        observacao: "O Soro Antibotrópico-Crotálico (SABC) também pode ser utilizado.",
+
+      },
+
+      {
+
+        especie: "Surucucus-pico-de-jaca",
+
+        genero: "Lachesis",
+
+        soro: "Soro Antilaquético (SAL) ou Soro Antibotrópico-Laquético (SABL)",
+
+        observacao: "",
+
+      },
+
+      {
+
+        especie: "Cobras-corais",
+
+        genero: "Micrurus e Leptomicrurus",
+
+        soro: "Soro Antielapídico (SAE)",
+
+        observacao: "Acidentes com manifestações clínicas são considerados potencialmente graves.",
+
+      },
+
+    ],
+
+  },
+
+  {
+
+    titulo: "Escorpiões",
+
+    itens: [
+
+      "Lave o local da picada com água e sabão.",
+
       "Aplique compressas mornas na região para auxiliar no alívio da dor.",
+
       "Encaminhe a vítima ao serviço de saúde o mais rapidamente possível, com atenção especial a crianças e idosos.",
+
     ],
+
+    soros: [
+
+      {
+
+        especie: "Escorpiões de importância médica",
+
+        genero: "Tityus spp.",
+
+        soro: "Soro Antiescorpiônico (SAEEs) ou Soro Antiaracnídico (SAAr)",
+
+        observacao: "A soroterapia é indicada nos casos moderados e graves. Casos leves, com manifestações apenas locais, recebem tratamento sintomático.",
+
+      },
+
+    ],
+
   },
+
   {
+
+    titulo: "Aranhas",
+
+    itens: [
+
+      "Lave o local da picada com água e sabão.",
+
+      "Aplique compressas mornas na região para auxiliar no alívio da dor.",
+
+      "Procure atendimento médico, principalmente diante de sintomas sistêmicos ou piora da lesão.",
+
+    ],
+
+    soros: [
+
+      {
+
+        especie: "Aranha-armadeira",
+
+        genero: "Phoneutria",
+
+        soro: "Soro Antiaracnídico (SAAr)",
+
+        observacao: "Indicado nos casos moderados e graves.",
+
+      },
+
+      {
+
+        especie: "Aranha-marrom",
+
+        genero: "Loxosceles",
+
+        soro: "Soro Antiloxoscélico (SALox) ou Soro Antiaracnídico (SAAr)",
+
+        observacao: "Indicado nos casos moderados e graves e na forma cutâneo-visceral.",
+
+      },
+
+      {
+
+        especie: "Viúva-negra",
+
+        genero: "Latrodectus",
+
+        soro: "Soro Antilatrodético (SALatr)",
+
+        observacao: "A indicação deve ser definida pela equipe de saúde conforme avaliação clínica.",
+
+      },
+
+    ],
+
+  },
+
+  {
+
     titulo: "Águas-vivas e caravelas",
+
     itens: [
+
       "Aplique vinagre na área atingida para auxiliar na inativação dos tentáculos aderidos.",
+
       "Utilize compressas geladas de água do mar ou bolsas de gelo protegidas por tecido para aliviar a dor.",
+
       "Remova tentáculos aderidos de forma cuidadosa, sem contato direto com as mãos.",
+
       "Não utilize água doce, urina ou gelo diretamente sobre a pele.",
+
     ],
+
+    soros: [],
+
+    semSoro: "Não há soro antiveneno disponível no Brasil para esses acidentes; o tratamento é baseado em medidas locais e suporte clínico.",
+
   },
+
   {
+
     titulo: "Abelhas e vespas",
+
     itens: [
+
       "Quando houver ferrão retido, remova-o por raspagem, evitando comprimi-lo.",
+
       "Não utilize pinça nem aperte o ferrão com os dedos.",
+
       "Em acidentes com múltiplas ferroadas ou sinais de reação sistêmica, procure atendimento de emergência imediatamente.",
+
     ],
+
+    soros: [],
+
+    semSoro: "Não há soro antiveneno de uso rotineiro disponível; o tratamento é sintomático e de suporte.",
+
   },
+
   {
+
     titulo: "Lagartas",
+
     itens: [
+
       "Lave a área atingida com água fria ou gelada e utilize compressas frias para aliviar a dor.",
+
       "Se possível, fotografe o animal sem tocá-lo. A identificação é especialmente importante diante da possibilidade de contato com Lonomia.",
+
       "Procure atendimento caso surjam sangramentos ou outros sinais sistêmicos.",
+
     ],
+
+    soros: [
+
+      {
+
+        especie: "Taturanas / lagartas-de-fogo",
+
+        genero: "Lonomia",
+
+        soro: "Soro Antilonômico (SALon)",
+
+        observacao: "Indicado nos casos moderados e graves, especialmente quando há alterações da coagulação ou sangramentos.",
+
+      },
+
+    ],
+
   },
+
   {
+
     titulo: "Peixes peçonhentos",
+
     itens: [
+
       "Lave o ferimento com água limpa.",
+
       "Faça imersão ou compressas com água morna, entre 30 °C e 45 °C, durante 30 a 60 minutos, quando possível.",
+
       "Procure avaliação médica, especialmente em ferimentos profundos ou com fragmentos retidos.",
+
     ],
+
+    soros: [],
+
+    semSoro: "Não há soro antiveneno disponível no Brasil; o tratamento é baseado em medidas locais e suporte clínico.",
+
   },
+
   {
+
     titulo: "Potó",
+
     itens: [
+
       "Se o besouro pousar sobre a pele, não o esmague. Afaste-o sem comprimi-lo.",
+
       "Em caso de contato com a substância irritante, lave a região imediatamente com água abundante e sabão.",
+
     ],
+
+    soros: [],
+
+    semSoro: "Não há indicação de soroterapia específica para dermatite causada por potó.",
+
   },
+
 ];
 
 const fazer = [
+
   {
+
     titulo: "Procure atendimento médico imediatamente",
+
     texto:
+
       "O atendimento precoce é essencial. Nos envenenamentos com indicação de antiveneno, a soroterapia específica é realizada no serviço de saúde.",
+
   },
+
   {
+
     titulo: "Mantenha a vítima calma e em repouso",
+
     texto:
+
       "Evite esforço físico desnecessário e, quando aplicável, mantenha o membro atingido elevado e estendido.",
+
   },
+
   {
+
     titulo: "Lave o local da picada",
+
     texto:
+
       "Faça a limpeza delicadamente com água corrente e sabão, desde que isso não atrase a busca por atendimento.",
+
   },
+
   {
+
     titulo: "Mantenha a hidratação",
+
     texto:
+
       "Quando a vítima estiver consciente e puder ingerir líquidos com segurança, ofereça água potável.",
+
   },
+
   {
+
     titulo: "Retire objetos apertados",
+
     texto:
+
       "Remova anéis, pulseiras, relógios, calçados ou outros objetos que possam comprimir a região em caso de edema.",
+
   },
+
   {
+
     titulo: "Identifique o animal apenas se for seguro",
+
     texto:
+
       "Uma fotografia ou descrição do animal pode auxiliar a equipe de saúde, mas nunca tente capturá-lo se isso representar risco ou atrasar o atendimento.",
+
   },
+
 ];
 
 const naoFazer = [
+
   {
+
     titulo: "Não faça torniquete ou garrote",
+
     texto:
+
       "A compressão do membro pode agravar lesões locais e não impede a ação sistêmica da peçonha.",
+
   },
+
   {
+
     titulo: "Não corte, fure ou queime o local",
+
     texto:
+
       "Essas práticas não removem a peçonha e aumentam o risco de sangramento, infecção e lesões teciduais.",
+
   },
+
   {
+
     titulo: "Não tente sugar o veneno",
+
     texto:
+
       "A sucção é ineficaz e pode contaminar a ferida.",
+
   },
+
   {
+
     titulo: "Não aplique substâncias caseiras",
+
     texto:
+
       "Não utilize café, álcool, terra, folhas, querosene, urina ou outras substâncias sobre a lesão.",
+
   },
+
   {
+
     titulo: "Não ofereça bebidas alcoólicas ou preparados caseiros",
+
     texto:
+
       "Essas medidas não neutralizam a peçonha e podem dificultar a avaliação clínica.",
+
   },
+
   {
+
     titulo: "Não faça curativos oclusivos por conta própria",
+
     texto:
+
       "Evite cobrir a lesão de forma fechada sem orientação profissional.",
+
   },
+
 ];
 
 const prevencao = [
+
   {
+
     titulo: "Vedação e proteção da estrutura",
+
     itens: [
+
       "Vede frestas, buracos, vãos em paredes e assoalhos e conserte rodapés despregados.",
+
       "Utilize soleiras ou barreiras nas portas e instale telas nas janelas.",
+
       "Instale telas ou protetores em ralos de chão, pias e tanques.",
+
     ],
+
   },
+
   {
+
     titulo: "Cuidados no interior da casa",
+
     itens: [
+
       "Examine e sacuda calçados, roupas, toalhas e outras vestimentas antes do uso.",
+
       "Mantenha camas e berços afastados das paredes.",
+
       "Evite que lençóis, cobertas e mosquiteiros encostem no chão e não pendure roupas diretamente nas paredes.",
+
     ],
+
   },
+
   {
+
     titulo: "Organização do quintal e área externa",
+
     itens: [
+
       "Mantenha quintais e jardins limpos, sem acúmulo de entulhos, materiais de construção, tijolos, telhas, pedras, madeira, folhas secas ou lixo.",
+
       "Mantenha a grama aparada e evite folhagens densas encostadas em muros e paredes.",
+
       "Faça a limpeza periódica de áreas próximas à residência, incluindo uma faixa de 1 a 2 metros junto às paredes da casa quando aplicável.",
+
     ],
+
   },
+
   {
+
     titulo: "Controle do lixo e das pragas",
+
     itens: [
+
       "Mantenha o lixo domiciliar em sacos plásticos ou recipientes bem fechados.",
+
       "Controle baratas e outros insetos, que servem de alimento para escorpiões e aranhas.",
+
       "Controle roedores para reduzir a atração de serpentes para o entorno da residência.",
+
     ],
+
   },
+
   {
+
     titulo: "Manuseio seguro e proteção individual",
+
     itens: [
+
       "Use calçados fechados e luvas de raspa de couro em atividades de jardinagem, limpeza de quintais e manuseio de lenha, palha ou materiais de construção.",
+
       "Não coloque as mãos sem proteção em buracos, fendas, sob pedras, troncos podres ou cupinzeiros.",
+
       "Preserve, quando possível, predadores naturais desses animais em áreas rurais e no peridomicílio.",
+
     ],
+
   },
+
 ];
 
 ---
 
 <Layout title="Guia de Emergência: Animais Peçonhentos">
+
   <Container>
+
     <Sectionhead>
+
       <Fragment slot="title">
+
         Guia de Emergência: Animais Peçonhentos
+
       </Fragment>
 
       <Fragment slot="desc">
+
         Orientações rápidas de primeiros socorros e prevenção, baseadas em
+
         publicações oficiais do Ministério da Saúde.
+
       </Fragment>
+
     </Sectionhead>
 
-    <main class="mx-auto max-w-5xl mt-14 mb-20">
+    <main class="guia-emergencia mx-auto max-w-5xl mt-14 mb-20">
+
       <!-- EMERGÊNCIA -->
+
       <section class="rounded-xl border border-blue-100 bg-blue-50 p-6 md:p-8">
+
         <div class="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
+
           <div class="min-w-0">
-            <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">
+
+            <p class="text-xs font-semibold uppercase tracking-wide text-blue-700 text-left">
+
               Ação imediata
+
             </p>
 
             <h2 class="mt-3 max-w-3xl text-2xl font-bold leading-tight text-[#0A2C57]">
+
               Em caso de acidente, procure atendimento médico imediatamente
+
             </h2>
 
-            <p class="mt-4 max-w-3xl text-sm leading-6 text-slate-600">
+            <p class="mt-4 max-w-3xl text-sm leading-6 text-slate-600 text-left">
+
               Priorize o deslocamento para um serviço de saúde. Use este guia
+
               apenas como orientação inicial e não atrase o atendimento para
+
               tentar identificar ou capturar o animal.
+
             </p>
+
           </div>
 
           <div class="flex min-w-56 flex-col gap-3 md:self-center">
+
             <div class="flex items-center justify-between rounded-lg border border-blue-200 bg-white px-4 py-3 shadow-sm">
+
               <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+
                 SAMU
+
               </span>
+
               <span class="text-lg font-bold text-[#0A2C57]">
+
                 192
+
               </span>
+
             </div>
 
             <div class="flex items-center justify-between rounded-lg border border-blue-200 bg-white px-4 py-3 shadow-sm">
+
               <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+
                 Disque Saúde
+
               </span>
+
               <span class="text-lg font-bold text-[#0A2C57]">
+
                 136
+
               </span>
+
             </div>
 
             <a
+
               href="/encontrar-soro"
+
               class="inline-flex items-center justify-center rounded-lg bg-[#0A2C57] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#123c70]"
+
             >
+
               Encontrar atendimento
+
             </a>
+
           </div>
+
         </div>
+
       </section>
 
       <!-- INFOGRÁFICO DE CONSULTA RÁPIDA -->
+
       <section class="mt-8">
+
         <div class="mb-4">
-          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+
+          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 text-left">
+
             Consulta rápida
+
           </p>
+
           <h2 class="mt-1 text-2xl font-bold text-gray-800">
+
             Primeiros socorros e prevenção
+
           </h2>
-          <p class="mt-2 text-sm leading-relaxed text-slate-500">
+
+          <p class="mt-2 text-sm leading-relaxed text-slate-500 text-left">
+
             Consulte primeiro as orientações essenciais abaixo. Em seguida,
+
             use os blocos detalhados da página para informações complementares.
+
           </p>
+
         </div>
 
         <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+
           <img
+
             src="/images/guia-emergencia-animais-peconhentos.png"
+
             alt="Infográfico de emergência com primeiros socorros, condutas a evitar e prevenção domiciliar em acidentes por animais peçonhentos"
+
             class="block w-full h-auto"
+
             loading="eager"
+
           />
+
         </div>
 
-        <p class="mt-3 text-xs leading-relaxed text-slate-400">
+        <p class="mt-3 text-xs leading-relaxed text-slate-400 text-left">
+
           Infográfico ilustrativo gerado com Gemini Notebook a partir das
+
           publicações oficiais do Ministério da Saúde citadas nesta página.
+
           Para consulta técnica, prevalecem as orientações das fontes oficiais.
+
         </p>
+
       </section>
 
       <nav
+
         class="mt-8 flex flex-wrap gap-2"
+
         aria-label="Navegação do guia"
+
       >
+
         <a
+
           href="#o-que-fazer"
+
           class="rounded-full bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-100"
+
         >
+
           O que fazer
+
         </a>
+
         <a
+
           href="#o-que-nao-fazer"
+
           class="rounded-full bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100"
+
         >
+
           O que não fazer
+
         </a>
+
         <a
+
           href="#cuidados-especificos"
+
           class="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
+
         >
+
           Cuidados por animal
+
         </a>
+
         <a
+
           href="#prevencao"
+
           class="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
+
         >
+
           Prevenção
+
         </a>
+
       </nav>
 
       <section id="o-que-fazer" class="mt-14 scroll-mt-24">
+
         <div class="mb-7">
-          <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">
+
+          <p class="text-xs font-semibold uppercase tracking-wide text-blue-700 text-left">
+
             Ações rápidas
+
           </p>
+
           <h2 class="mt-1 text-2xl font-bold text-gray-800">
+
             O que fazer
+
           </h2>
-          <p class="mt-2 text-sm leading-relaxed text-slate-500">
+
+          <p class="mt-2 text-sm leading-relaxed text-slate-500 text-left">
+
             Medidas gerais que podem ser adotadas enquanto a vítima é encaminhada
+
             ao serviço de saúde.
+
           </p>
+
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
+
           {
+
             fazer.map((item, index) => (
+
               <article class="rounded-lg border border-gray-200 p-5">
+
                 <div class="flex items-start gap-4">
+
                   <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm font-semibold text-blue-700">
+
                     {index + 1}
+
                   </span>
 
                   <div>
+
                     <h3 class="font-semibold text-gray-800">
+
                       {item.titulo}
+
                     </h3>
-                    <p class="mt-2 text-sm leading-relaxed text-slate-500">
+
+                    <p class="mt-2 text-sm leading-relaxed text-slate-500 text-left">
+
                       {item.texto}
+
                     </p>
+
                   </div>
+
                 </div>
+
               </article>
+
             ))
+
           }
+
         </div>
+
       </section>
 
       <section id="o-que-nao-fazer" class="mt-16 scroll-mt-24">
+
         <div class="mb-7">
-          <p class="text-xs font-semibold uppercase tracking-wide text-red-700">
+
+          <p class="text-xs font-semibold uppercase tracking-wide text-red-700 text-left">
+
             Práticas contraindicadas
+
           </p>
+
           <h2 class="mt-1 text-2xl font-bold text-gray-800">
+
             O que não fazer
+
           </h2>
-          <p class="mt-2 text-sm leading-relaxed text-slate-500">
+
+          <p class="mt-2 text-sm leading-relaxed text-slate-500 text-left">
+
             Algumas práticas populares são ineficazes e podem aumentar o risco
+
             de complicações.
+
           </p>
+
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
+
           {
+
             naoFazer.map((item) => (
+
               <article class="rounded-lg border border-red-100 bg-red-50/40 p-5">
+
                 <h3 class="font-semibold text-gray-800">
+
                   {item.titulo}
+
                 </h3>
-                <p class="mt-2 text-sm leading-relaxed text-slate-500">
+
+                <p class="mt-2 text-sm leading-relaxed text-slate-500 text-left">
+
                   {item.texto}
+
                 </p>
+
               </article>
+
             ))
+
           }
+
         </div>
+
       </section>
 
       <section id="cuidados-especificos" class="mt-16 scroll-mt-24">
+
         <div class="mb-7">
-          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+
+          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 text-left">
+
             Orientações específicas
+
           </p>
+
           <h2 class="mt-1 text-2xl font-bold text-gray-800">
-            Cuidados por tipo de animal
+
+            Cuidados e soroterapia por tipo de animal
+
           </h2>
-          <p class="mt-2 text-sm leading-relaxed text-slate-500">
-            Selecione um grupo para consultar as orientações iniciais específicas.
+
+          <p class="mt-2 text-sm leading-relaxed text-slate-500 text-left">
+
+            Selecione um grupo para consultar as orientações iniciais e os soros
+
+            que podem ser indicados conforme o animal envolvido e a avaliação clínica.
+
           </p>
+
         </div>
 
         <div
-          class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"
+
+          class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3"
+
           role="tablist"
+
           aria-label="Tipos de animais"
+
         >
+
           {
+
             cuidados.map((grupo, index) => (
+
               <button
+
                 type="button"
+
                 class:list={[
+
                   "botao-cuidado-animal text-left rounded-lg border p-4 transition",
+
                   index === 0
+
                     ? "border-[#0A2C57] bg-blue-50 shadow-sm"
+
                     : "border-gray-200 bg-white hover:border-slate-300 hover:bg-slate-50",
+
                 ]}
+
                 data-cuidado-index={index}
+
                 role="tab"
+
                 aria-selected={index === 0 ? "true" : "false"}
+
               >
+
                 <span class="block text-xs font-medium uppercase tracking-wide text-slate-400">
+
                   Orientações
+
                 </span>
+
                 <span class="mt-1 block font-semibold text-[#0A2C57]">
+
                   {grupo.titulo}
+
                 </span>
+
               </button>
+
             ))
+
           }
+
         </div>
 
         <div
+
           id="painel-cuidados-animal"
+
           class="mt-5 rounded-lg border border-gray-200 bg-white p-6"
+
           role="tabpanel"
+
         >
-          <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">
+
+          <p class="text-xs font-semibold uppercase tracking-wide text-blue-700 text-left">
+
             Conduta inicial
+
           </p>
+
           <h3
+
             id="titulo-cuidado-animal"
+
             class="mt-1 text-xl font-semibold text-gray-800"
+
           >
+
             {cuidados[0].titulo}
+
           </h3>
 
-          <ul
-            id="lista-cuidado-animal"
-            class="mt-5 space-y-3"
-          >
+          <ul id="lista-cuidado-animal" class="mt-5 list-disc space-y-3 pl-5 marker:text-blue-600">
+
             {
+
               cuidados[0].itens.map((item) => (
-                <li class="flex gap-3 text-sm leading-relaxed text-slate-600">
-                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600"></span>
-                  <span>{item}</span>
-                </li>
+
+                <li class="pl-1 text-sm leading-relaxed text-slate-600">{item}</li>
+
               ))
+
             }
+
           </ul>
+
+          <div class="mt-6 border-t border-slate-200 pt-5">
+
+            <p class="text-xs font-semibold uppercase tracking-wide text-blue-700 text-left">
+
+              Soro antiveneno
+
+            </p>
+
+            <div id="soros-cuidado-animal" class="mt-3 grid gap-3 md:grid-cols-2">
+
+              {
+
+                cuidados[0].soros.map((item) => (
+
+                  <article class="rounded-lg bg-slate-50 p-4">
+
+                    <p class="font-semibold text-slate-700 text-left">{item.especie}</p>
+
+                    <p class="mt-1 text-xs italic text-slate-400 text-left">{item.genero}</p>
+
+                    <p class="mt-3 text-sm font-medium text-[#0A2C57] text-left">{item.soro}</p>
+
+                    {item.observacao && (
+
+                      <p class="mt-2 text-xs leading-5 text-slate-500 text-left">
+
+                        {item.observacao}
+
+                      </p>
+
+                    )}
+
+                  </article>
+
+                ))
+
+              }
+
+            </div>
+
+          </div>
+
+          <p class="mt-5 text-xs leading-relaxed text-slate-400 text-left">
+
+            A indicação e a dose do antiveneno dependem da classificação clínica
+
+            do acidente e devem ser definidas pela equipe de saúde conforme os
+
+            protocolos oficiais vigentes.
+
+          </p>
+
         </div>
+
       </section>
 
-
       <section id="prevencao" class="mt-16 scroll-mt-24">
+
         <div class="mb-7">
-          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+
+          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 text-left">
+
             Prevenção no ambiente doméstico
+
           </p>
+
           <h2 class="mt-1 text-2xl font-bold text-gray-800">
+
             Como reduzir o risco de acidentes
+
           </h2>
-          <p class="mt-2 text-sm leading-relaxed text-slate-500">
+
+          <p class="mt-2 text-sm leading-relaxed text-slate-500 text-left">
+
             Estas medidas ajudam a reduzir o risco de novos acidentes no ambiente
+
             doméstico e no peridomicílio, eliminando abrigos, fontes de alimento e
+
             vias de acesso dos animais peçonhentos.
+
           </p>
+
         </div>
 
         <div class="grid md:grid-cols-2 gap-5">
+
           {
+
             prevencao.map((grupo, index) => (
+
               <article class:list={[
+
                 "rounded-lg border border-gray-200 p-6",
+
                 index === prevencao.length - 1 ? "md:col-span-2" : "",
+
               ]}>
+
                 <div class="flex items-start gap-4">
+
                   <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-[#0A2C57]">
+
                     {index + 1}
+
                   </span>
 
                   <div>
+
                     <h3 class="text-lg font-semibold text-[#0A2C57]">
+
                       {grupo.titulo}
+
                     </h3>
 
-                    <ul class="mt-4 space-y-3">
+                    <ul class="mt-4 list-disc space-y-3 pl-5 marker:text-slate-400">
+
                       {
+
                         grupo.itens.map((item) => (
-                          <li class="flex gap-3 text-sm leading-relaxed text-slate-600">
-                            <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-                            <span>{item}</span>
-                          </li>
+
+                          <li class="pl-1 text-sm leading-relaxed text-slate-600">{item}</li>
+
                         ))
+
                       }
+
                     </ul>
+
                   </div>
+
                 </div>
+
               </article>
+
             ))
+
           }
+
         </div>
 
         <div class="mt-5 rounded-lg border border-blue-100 bg-blue-50 p-5">
-          <p class="text-sm leading-relaxed text-slate-600">
+
+          <p class="text-sm leading-relaxed text-slate-600 text-left">
+
             A prevenção deve combinar organização do ambiente, vedação de acessos,
+
             manejo adequado do lixo, controle de pragas e uso de proteção individual
+
             em atividades de maior risco.
+
           </p>
+
         </div>
+
       </section>
 
       <section class="mt-16 border-t border-gray-200 pt-8">
+
         <h2 class="text-xl font-bold text-gray-800">
+
           Referências
+
         </h2>
 
         <div class="mt-4 space-y-5 text-sm leading-relaxed text-slate-500">
+
           <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+
             <p>
+
               BRASIL. Ministério da Saúde.
+
               <span class="italic">Guia de Animais Peçonhentos do Brasil.</span>
+
             </p>
 
             <a
-              href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/a/animais-peconhentos/publicacoes/guia-animais-peconhentos-do-brasil.pdf/view"
-              target="_blank"
+
+              href="https\://www\.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/a/animais-peconhentos/publicacoes/guia-animais-peconhentos-do-brasil.pdf/view"
+
+              target="\_blank"
+
               rel="noopener noreferrer"
+
               class="text-blue-600 hover:underline"
+
             >
+
               Acessar publicação oficial
+
             </a>
+
           </div>
 
           <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+
             <p>
+
               BRASIL. Ministério da Saúde.
+
               <span class="italic">Manual de Diagnóstico e Tratamento de Acidentes por Animais Peçonhentos.</span>
+
             </p>
 
             <a
-              href="https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/guias-e-manuais/2024/manual-de-diagnostico-e-tratamento-de-acidentes-por-animais-peconhentos.pdf/view"
-              target="_blank"
+
+              href="https\://www\.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/guias-e-manuais/2024/manual-de-diagnostico-e-tratamento-de-acidentes-por-animais-peconhentos.pdf/view"
+
+              target="\_blank"
+
               rel="noopener noreferrer"
+
               class="text-blue-600 hover:underline"
+
             >
+
               Acessar publicação oficial
+
             </a>
+
           </div>
 
-          <p class="pt-2 text-xs leading-relaxed text-slate-400">
+          <p class="pt-2 text-xs leading-relaxed text-slate-400 text-left">
+
             As orientações apresentadas nesta página constituem uma síntese educativa
+
             elaborada a partir de publicações oficiais do Ministério da Saúde. Em
+
             situações de acidente, recomenda-se a busca imediata por atendimento
+
             profissional.
+
           </p>
 
-          <p class="mt-2 text-xs text-slate-400">
+          <p class="mt-2 text-xs text-slate-400 text-left">
+
             Conteúdo atualizado em 26 de setembro de 2026.
+
           </p>
+
         </div>
+
       </section>
+
     </main>
+
   <script define:vars={{ cuidados }}>
+
     const botoes = document.querySelectorAll(".botao-cuidado-animal");
+
     const titulo = document.querySelector("#titulo-cuidado-animal");
+
     const lista = document.querySelector("#lista-cuidado-animal");
 
+    const soros = document.querySelector("#soros-cuidado-animal");
+
     function selecionarCuidado(index) {
+
       const grupo = cuidados[index];
-      if (!grupo || !titulo || !lista) return;
+
+      if (!grupo || !titulo || !lista || !soros) return;
 
       titulo.textContent = grupo.titulo;
+
       lista.innerHTML = grupo.itens
+
         .map(
+
           (item) => `
-            <li class="flex gap-3 text-sm leading-relaxed text-slate-600">
-              <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600"></span>
-              <span>${item}</span>
-            </li>
+
+            <li class="pl-1 text-sm leading-relaxed text-slate-600">${item}</li>
+
           `
+
         )
+
         .join("");
 
+      if (grupo.soros && grupo.soros.length > 0) {
+
+        soros.innerHTML = grupo.soros
+
+          .map(
+
+            (item) => `
+
+              <article class="rounded-lg bg-slate-50 p-4">
+
+                <p class="font-semibold text-slate-700 text-left">${item.especie}</p>
+
+                <p class="mt-1 text-xs italic text-slate-400 text-left">${item.genero}</p>
+
+                <p class="mt-3 text-sm font-medium text-[#0A2C57] text-left">${item.soro}</p>
+
+                ${
+
+                  item.observacao
+
+                    ? `<p class="mt-2 text-xs leading-5 text-slate-500 text-left">${item.observacao}</p>`
+
+                    : ""
+
+                }
+
+              </article>
+
+            `
+
+          )
+
+          .join("");
+
+      } else {
+
+        soros.innerHTML = `
+
+          <div class="md:col-span-2 rounded-lg border border-slate-200 bg-slate-50 p-4">
+
+            <p class="text-sm leading-relaxed text-slate-600 text-left">
+
+              ${grupo.semSoro || "Não há indicação de soro antiveneno específico."}
+
+            </p>
+
+          </div>
+
+        `;
+
+      }
+
       botoes.forEach((botao, i) => {
+
         const ativo = i === index;
 
         botao.setAttribute(
+
           "aria-selected",
+
           ativo ? "true" : "false"
+
         );
 
         botao.classList.toggle("border-[#0A2C57]", ativo);
+
         botao.classList.toggle("bg-blue-50", ativo);
+
         botao.classList.toggle("shadow-sm", ativo);
+
         botao.classList.toggle("border-gray-200", !ativo);
+
         botao.classList.toggle("bg-white", !ativo);
+
       });
+
     }
 
     botoes.forEach((botao) => {
+
       botao.addEventListener("click", () => {
+
         const index = Number(
+
           botao.getAttribute("data-cuidado-index")
+
         );
+
         selecionarCuidado(index);
+
       });
+
     });
+
   </script>
 
   </Container>
+
 </Layout>
+
+<style is:global>
+
+  .guia-emergencia p,
+
+  .guia-emergencia li,
+
+  .guia-emergencia a,
+
+  .guia-emergencia span {
+
+    text-align: left !important;
+
+    text-align-last: auto !important;
+
+    word-spacing: normal !important;
+
+    letter-spacing: normal;
+
+  }
+
+</style>

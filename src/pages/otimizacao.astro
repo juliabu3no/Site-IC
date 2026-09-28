@@ -2,33 +2,888 @@
 import Layout from "@/layouts/Layout.astro";
 import Container from "@/components/container.astro";
 import Sectionhead from "@/components/sectionhead.astro";
+import fs from "node:fs";
+import path from "node:path";
+const caminhoDados = path.join(process.cwd(), "public", "data", "otimizacao.json");
+const dados = JSON.parse(fs.readFileSync(caminhoDados, "utf8"));
+import "leaflet/dist/leaflet.css";
+
+const metadados = dados.metadados;
+const redeAtual = dados.rede_atual;
+const estrutural = redeAtual.cobertura_estrutural;
+const metricas = redeAtual.metricas_globais;
+const resultadosPorSoro = redeAtual.resultados_por_soro;
+const escorpionico = resultadosPorSoro.find((item) => item.soro === "Escorpiônico");
+const laquetico = resultadosPorSoro.find((item) => item.soro === "Laquético");
+const demandaMunicipios = dados.demanda_municipios;
+const mapaDados = dados.mapa;
+
+function formatarPercentual(valor) {
+  return valor.toFixed(2).replace(".", ",") + "%";
+}
+
+function formatarData(dataISO) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(dataISO + "T00:00:00Z"));
+}
+
+const municipiosDescobertos =
+  estrutural.municipios_descobertos_detalhes || [];
+
+const soroterapia = [
+  {
+    animal: "Serpente",
+    nome_comum: "Jararacas, jararacuçus, urutus e caiçacas",
+    especie: "Bothrops e Bothrocophias",
+    soro: "Soro Antibotrópico; na ausência, Soro Antibotrópico-Crotálico ou Soro Antibotrópico-Laquético",
+    modelagem: "Botrópico",
+  },
+  {
+    animal: "Serpente",
+    nome_comum: "Cascavéis",
+    especie: "Crotalus",
+    soro: "Soro Anticrotálico ou Soro Antibotrópico-Crotálico",
+    modelagem: "Crotálico",
+  },
+  {
+    animal: "Serpente",
+    nome_comum: "Surucucus-pico-de-jaca",
+    especie: "Lachesis",
+    soro: "Soro Antilaquético ou Soro Antibotrópico-Laquético",
+    modelagem: "Laquético",
+  },
+  {
+    animal: "Serpente",
+    nome_comum: "Cobras-corais",
+    especie: "Micrurus e Leptomicrurus",
+    soro: "Soro Antielapídico",
+    modelagem: "Elapídico",
+  },
+  {
+    animal: "Escorpião",
+    nome_comum: "Escorpiões de importância médica",
+    especie: "Tityus spp.",
+    soro: "Soro Antiescorpiônico ou Soro Antiaracnídico",
+    modelagem: "Escorpiônico",
+  },
+  {
+    animal: "Aranha",
+    nome_comum: "Aranha-armadeira",
+    especie: "Phoneutria",
+    soro: "Soro Antiaracnídico",
+    modelagem: "Fonêutrico",
+  },
+  {
+    animal: "Aranha",
+    nome_comum: "Aranha-marrom",
+    especie: "Loxosceles",
+    soro: "Soro Antiloxoscélico ou Soro Antiaracnídico",
+    modelagem: "Loxoscélico",
+  },
+  {
+    animal: "Aranha",
+    nome_comum: "Viúva-negra",
+    especie: "Latrodectus",
+    soro: "Soro Antilatrodético",
+    modelagem: "Não modelado",
+  },
+  {
+    animal: "Lagarta",
+    nome_comum: "Taturanas / lagartas-de-fogo",
+    especie: "Lonomia",
+    soro: "Soro Antilonômico",
+    modelagem: "Lonômico",
+  },
+];
 ---
 
-<Layout title="Otimização">
+<Layout title="Planejamento da Rede Soroterápica">
   <Container>
     <Sectionhead>
-      <Fragment slot="title">
-        Resultados de Otimização
-      </Fragment>
-
+      <Fragment slot="title">Planejamento da Rede Soroterápica</Fragment>
       <Fragment slot="desc">
-        Resultados de modelos matemáticos aplicados à distribuição territorial
-        de soros antiveneno no estado de São Paulo.
+        Explore a distribuição territorial da rede de atendimento soroterápico no
+        estado de São Paulo, sua relação com a demanda estimada e a acessibilidade
+        aos diferentes tipos de antiveneno.
       </Fragment>
     </Sectionhead>
 
-    <main class="mx-auto max-w-5xl mt-14 mb-20">
-      <section class="rounded-lg border border-gray-200 p-6">
-        <h2 class="text-2xl font-bold text-gray-800">
-          Página em desenvolvimento
+    <main class="mx-auto max-w-6xl mt-10 mb-20">
+      <!-- SELETOR DE MODELO -->
+      <section class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">
+              Cenário
+            </p>
+            <h2 class="mt-1 text-lg font-bold text-gray-800">
+              Selecione a análise
+            </h2>
+          </div>
+
+          <select
+            id="modelo-otimizacao"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 md:w-80"
+          >
+            <option value="rede-atual" selected>Configuração atual da rede</option>
+            <option disabled>Outros modelos — em breve</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- ESTRUTURA -->
+      <section class="mt-14">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">
+          Configuração atual
+        </p>
+        <h2 class="mt-1 text-2xl font-bold text-gray-800">
+          Estrutura da rede analisada
+        </h2>
+        <p class="mt-3 text-sm leading-6 text-slate-500">
+          A rede atual é avaliada considerando a localização dos Pontos Estratégicos
+          de Soro Antiveneno, o tempo de acesso e a disponibilidade de cada soro.
+        </p>
+
+        <div class="mt-6 grid gap-5 lg:grid-cols-[1.35fr_1fr]">
+          <div class="rounded-xl border border-blue-100 bg-blue-50/40 p-5 md:p-6">
+            <h3 class="font-semibold text-[#0A2C57]">Como a rede é organizada</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-600">
+              <strong>PESA</strong> significa <strong>Ponto Estratégico de Soro Antiveneno</strong>.
+              A rede analisada reúne <strong>{metadados.pesa} PESAs</strong> em
+              <strong>{metadados.municipios_com_pesa} municípios</strong> e nas 17 RRAS.
+              Sua distribuição considera histórico epidemiológico, sazonalidade, distância,
+              estoque, equipe capacitada, atendimento contínuo e rede de frio entre 2 °C e 8 °C.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
+            <h3 class="font-semibold text-gray-800">Produção e distribuição</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-600">
+              Os soros utilizados pelo SUS são produzidos por laboratórios públicos nacionais.
+              O Ministério da Saúde centraliza a aquisição e o repasse aos estados, que
+              organizam a distribuição aos PESAs e demais serviços habilitados. Os antivenenos
+              de uso humano não são vendidos em farmácias nem destinados à compra por particulares.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-5 grid gap-4 md:grid-cols-2">
+          <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+              Maior disponibilidade na rede
+            </p>
+            <p class="mt-2 text-lg font-semibold text-[#0A2C57]">
+              Soro escorpiônico
+            </p>
+            <p class="mt-1 text-sm leading-6 text-slate-500">
+              Presente nas 17 RRAS e em <strong>{escorpionico?.postos ?? "—"} PESAs</strong>.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+              Distribuição mais restrita
+            </p>
+            <p class="mt-2 text-lg font-semibold text-[#0A2C57]">
+              Soro laquético
+            </p>
+            <p class="mt-1 text-sm leading-6 text-slate-500">
+              Disponível em <strong>{laquetico?.postos ?? "—"} PESAs</strong>,
+              distribuídos em cinco RRAS.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- DEMANDA + SOROTERAPIA -->
+      <section class="mt-16">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">
+          Demanda e soroterapia
+        </p>
+        <h2 class="mt-1 text-2xl font-bold text-gray-800">
+          Demanda por tipo de soro
+        </h2>
+        <p class="mt-3 text-sm leading-6 text-slate-500">
+          Cada acidente é associado ao antiveneno correspondente e a demanda é
+          agregada por município para as mesmas categorias utilizadas na modelagem.
+        </p>
+
+        <div class="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            soroterapia.map((item) => (
+              <article class="rounded-lg border border-slate-200 bg-white px-3.5 py-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <p class="text-xs font-semibold text-[#0A2C57]">
+                      {item.animal}
+                    </p>
+                    <p class="mt-0.5 text-xs text-slate-500">
+                      {item.nome_comum} <span class="italic">({item.especie})</span>
+                    </p>
+                  </div>
+                  <span class="shrink-0 rounded-full bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-700">
+                    {item.modelagem}
+                  </span>
+                </div>
+                <p class="mt-2 text-[11px] leading-5 text-slate-600">
+                  {item.soro}
+                </p>
+              </article>
+            ))
+          }
+        </div>
+
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-5 md:p-6">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h3 class="font-semibold text-gray-800">
+                Distribuição municipal da demanda
+              </h3>
+              <p class="mt-1 text-xs text-slate-400">
+                Selecione o tipo de soro para visualizar todos os municípios.
+              </p>
+            </div>
+
+            <label>
+              <span class="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-400">
+                Tipo de soro
+              </span>
+              <select
+                id="filtro-demanda-mapa"
+                class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
+              >
+                <option value="total">Demanda total</option>
+                {metadados.tipos_soro.map((soro) => (
+                  <option value={soro}>{soro}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div
+            id="mapa-demanda"
+            class="mt-5 h-[620px] w-full overflow-hidden rounded-lg"
+          ></div>
+
+          <div class="mt-4">
+            <div class="h-2 w-full rounded-full bg-gradient-to-r from-orange-50 to-orange-600"></div>
+            <div class="mt-1 flex justify-between text-xs text-slate-400">
+              <span>Menor demanda</span>
+              <span>Maior demanda</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAPA PRINCIPAL -->
+      <section class="mt-16">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">
+          Cobertura territorial
+        </p>
+        <h2 class="mt-1 text-2xl font-bold text-gray-800">
+          Cobertura e distribuição da rede
+        </h2>
+        <p class="mt-3 text-sm leading-6 text-slate-500">
+          O mapa mostra a cobertura territorial da configuração atual. Na visão
+          estrutural, considera-se a existência de qualquer unidade alcançável no
+          limite de tempo. Ao selecionar um antiveneno, são exibidas apenas as
+          unidades que o disponibilizam e os municípios atendidos por elas.
+        </p>
+
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-5 md:p-6">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <label>
+              <span class="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-400">
+                Visualizar cobertura
+              </span>
+              <select
+                id="filtro-mapa"
+                class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
+              >
+                <option value="estrutural">Cobertura estrutural</option>
+                {metadados.tipos_soro.map((soro) => (
+                  <option value={soro}>{soro}</option>
+                ))}
+              </select>
+            </label>
+
+            <div class="flex flex-wrap gap-4 text-xs text-slate-500">
+              <span class="flex items-center gap-2">
+                <span class="inline-block h-3 w-3 rounded-sm bg-blue-500"></span>
+                Município coberto
+              </span>
+              <span class="flex items-center gap-2">
+                <span class="inline-block h-3 w-3 rounded-sm border border-slate-300 bg-white"></span>
+                Município não coberto
+              </span>
+              <span class="flex items-center gap-2">
+                <span class="inline-block h-3 w-3 rounded-full bg-[#0A2C57]"></span>
+                PESA
+              </span>
+            </div>
+          </div>
+
+          <div
+            id="mapa-cobertura"
+            class="mt-5 h-[650px] w-full overflow-hidden rounded-lg"
+          ></div>
+
+          <div class="mt-4 flex flex-wrap gap-x-7 gap-y-2 text-sm text-slate-500">
+            <p>
+              Municípios cobertos:
+              <strong id="mapa-municipios-cobertos" class="text-slate-700">—</strong>
+            </p>
+            <p>
+              PESAs exibidos:
+              <strong id="mapa-postos-exibidos" class="text-slate-700">—</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- COBERTURA ESTRUTURAL -->
+      <section class="mt-16">
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Acessibilidade
+        </p>
+        <h2 class="mt-1 text-2xl font-bold text-gray-800">
+          Alcance territorial da rede
+        </h2>
+        <p class="mt-3 text-sm leading-6 text-slate-500">
+          Antes de considerar qual antiveneno está disponível, verifica-se se cada
+          município possui ao menos um Ponto Estratégico de Soro Antiveneno
+          alcançável dentro do limite adotado.
+        </p>
+
+        <div class="mt-6 grid sm:grid-cols-3 gap-4">
+          <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <p class="text-sm font-medium text-slate-500">Municípios cobertos</p>
+            <p class="mt-2 text-3xl font-bold text-[#0A2C57]">
+              {estrutural.municipios_cobertos}
+            </p>
+            <p class="mt-1 text-xs text-slate-400">
+              de {metadados.municipios} municípios
+            </p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <p class="text-sm font-medium text-slate-500">Cobertura estrutural</p>
+            <p class="mt-2 text-3xl font-bold text-[#0A2C57]">
+              {formatarPercentual(estrutural.percentual)}
+            </p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <p class="text-sm font-medium text-slate-500">
+              Municípios fora de {metadados.tempo_maximo_minutos} min
+            </p>
+            <p class="mt-2 text-3xl font-bold text-[#0A2C57]">
+              {estrutural.municipios_descobertos}
+            </p>
+          </div>
+        </div>
+
+        {
+          municipiosDescobertos.length > 0 && (
+            <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50/50 p-6">
+              <h3 class="font-semibold text-gray-800">
+                Municípios fora do limite adotado
+              </h3>
+              <div class="mt-4 grid md:grid-cols-3 gap-4">
+                {municipiosDescobertos.map((item) => (
+                  <div class="rounded-lg border border-amber-100 bg-white p-4">
+                    <p class="font-semibold text-[#0A2C57]">{item.municipio}</p>
+                    <p class="mt-2 text-sm text-slate-500">
+                      Unidade mais próxima:{" "}
+                      {item.tempo_minimo_minutos.toFixed(2).replace(".", ",")} min
+                    </p>
+                    {item.pesa_mais_proximo && (
+                      <p class="mt-1 text-xs leading-5 text-slate-400">
+                        {item.pesa_mais_proximo}
+                        {item.municipio_pesa_mais_proximo
+                          ? ` — ${item.municipio_pesa_mais_proximo}`
+                          : ""}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        }
+
+        <div class="mt-6 rounded-xl border border-blue-100 bg-blue-50/40 p-6">
+          <p class="text-sm font-medium text-slate-500">
+            Menor limite global para que todos os municípios alcancem uma unidade
+          </p>
+          <div class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span class="text-3xl font-bold text-[#0A2C57]">
+              {estrutural.tempo_minimo_para_cobrir_todos.minutos_exatos
+                .toFixed(2)
+                .replace(".", ",")} min
+            </span>
+            <span class="text-sm text-slate-500">
+              ({estrutural.tempo_minimo_para_cobrir_todos.minutos_inteiros} min,
+              adotando um limite inteiro)
+            </span>
+          </div>
+          <p class="mt-3 text-sm leading-6 text-slate-500">
+            O município limitante é
+            <strong class="text-slate-700">
+              {" "}{estrutural.tempo_minimo_para_cobrir_todos.municipio_limitante.municipio}
+            </strong>.
+          </p>
+        </div>
+      </section>
+
+      <!-- MÉTRICAS POR SORO -->
+      <section class="mt-16">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">
+          Disponibilidade dos antivenenos
+        </p>
+        <h2 class="mt-1 text-2xl font-bold text-gray-800">
+          Cobertura por tipo de soro
+        </h2>
+        <p class="mt-3 text-sm leading-6 text-slate-500">
+          Uma combinação município–soro é considerada coberta quando existe uma
+          unidade que disponibiliza o antiveneno correspondente e pode ser alcançada
+          dentro do limite de tempo.
+        </p>
+
+        <div class="mt-6 grid md:grid-cols-2 gap-4">
+          <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <p class="text-sm font-medium text-slate-500">
+              Cobertura município–soro
+            </p>
+            <p class="mt-2 text-3xl font-bold text-[#0A2C57]">
+              {formatarPercentual(metricas.cobertura_municipio_soro)}
+            </p>
+            <p class="mt-3 text-xs leading-5 text-slate-400">
+              Proporção das {metricas.total_combinacoes_municipio_soro.toLocaleString("pt-BR")}
+              combinações entre municípios e tipos de soro cobertas pela rede.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <p class="text-sm font-medium text-slate-500">
+              Cobertura da demanda
+            </p>
+            <p class="mt-2 text-3xl font-bold text-[#0A2C57]">
+              {formatarPercentual(metricas.cobertura_demanda)}
+            </p>
+            <p class="mt-3 text-xs leading-5 text-slate-400">
+              Proporção da demanda estimada associada a combinações município–soro
+              cobertas no limite de tempo adotado.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-6 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+          <table class="w-full min-w-[760px] text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
+                <th class="px-5 py-3 font-medium">Soro</th>
+                <th class="px-4 py-3 text-right font-medium">PESAs</th>
+                <th class="px-4 py-3 text-right font-medium">Municípios cobertos</th>
+                <th class="px-4 py-3 text-right font-medium">Cobertura territorial</th>
+                <th class="px-5 py-3 text-right font-medium">Demanda coberta</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                resultadosPorSoro.map((item) => (
+                  <tr class="border-b border-slate-100 last:border-0">
+                    <td class="px-5 py-3 font-medium text-slate-700">{item.soro}</td>
+                    <td class="px-4 py-3 text-right text-slate-600">{item.postos}</td>
+                    <td class="px-4 py-3 text-right text-slate-600">
+                      {item.municipios_cobertos} / {metadados.municipios}
+                    </td>
+                    <td class="px-4 py-3 text-right text-slate-600">
+                      {formatarPercentual(item.cobertura_municipio_soro)}
+                    </td>
+                    <td class="px-5 py-3 text-right font-semibold text-[#0A2C57]">
+                      {formatarPercentual(item.cobertura_demanda)}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- INTERPRETAÇÃO -->
+      <section class="mt-16">
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Interpretação
+        </p>
+        <h2 class="mt-1 text-2xl font-bold text-gray-800">
+          Principais observações
         </h2>
 
-        <p class="mt-3 text-sm leading-relaxed text-slate-500">
-          Esta página apresentará os resultados dos modelos de otimização,
-          incluindo cobertura territorial, comparação entre a rede atual e
-          cenários otimizados e alterações propostas na distribuição dos soros.
+        <div class="mt-6 grid md:grid-cols-2 gap-5">
+          <article class="rounded-xl border border-slate-200 bg-white p-6">
+            <h3 class="font-semibold text-[#0A2C57]">
+              O limite de {metadados.tempo_maximo_minutos} minutos não cobre todo o estado
+            </h3>
+            <p class="mt-3 text-sm leading-6 text-slate-500">
+              Existem {estrutural.municipios_descobertos} municípios sem nenhuma
+              unidade alcançável nesse intervalo. Portanto, a cobertura territorial
+              integral nesse limite exige expansão da rede de locais candidatos, e
+              não apenas redistribuição dos antivenenos entre as unidades existentes.
+            </p>
+          </article>
+
+          <article class="rounded-xl border border-slate-200 bg-white p-6">
+            <h3 class="font-semibold text-[#0A2C57]">
+              A disponibilidade varia entre os tipos de soro
+            </h3>
+            <p class="mt-3 text-sm leading-6 text-slate-500">
+              A presença de uma unidade próxima não garante acesso a todos os
+              antivenenos. Por isso, a cobertura territorial deve ser avaliada
+              também de forma específica para cada soro.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- LIMITAÇÕES -->
+      <section class="mt-16">
+        <p class="text-xs font-semibold uppercase tracking-wide text-amber-700">
+          Limitações
         </p>
+        <h2 class="mt-1 text-xl font-bold text-gray-800">
+          Limitações da análise
+        </h2>
+
+        <div class="mt-5 grid gap-4 md:grid-cols-3">
+          <article class="rounded-xl border border-amber-100 bg-amber-50/40 p-5">
+            <h3 class="text-sm font-semibold text-slate-700">
+              Representação espacial
+            </h3>
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+              Cada município é representado por um único ponto, usado como aproximação
+              de sua acessibilidade territorial.
+            </p>
+          </article>
+
+          <article class="rounded-xl border border-amber-100 bg-amber-50/40 p-5">
+            <h3 class="text-sm font-semibold text-slate-700">
+              Tempo de deslocamento
+            </h3>
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+              Os tempos são estimados e não incorporam todas as variações de trânsito,
+              vias, clima ou condições operacionais.
+            </p>
+          </article>
+
+          <article class="rounded-xl border border-amber-100 bg-amber-50/40 p-5">
+            <h3 class="text-sm font-semibold text-slate-700">
+              Atendimento efetivo
+            </h3>
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+              Proximidade geográfica não garante estoque imediato, equipe disponível
+              ou capacidade de atendimento no momento do acidente.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- REFERÊNCIAS -->
+      <section class="mt-16 border-t border-gray-200 pt-8">
+        <h2 class="text-xl font-bold text-gray-800">Referências</h2>
+
+        <div class="mt-4 space-y-4 text-sm leading-relaxed text-slate-500">
+          <div>
+            <p>
+              BRASIL. Ministério da Saúde.
+              <span class="italic">Manual de Diagnóstico e Tratamento de Acidentes por Animais Peçonhentos.</span>
+              <a
+                href="https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/guias-e-manuais/2024/manual-de-diagnostico-e-tratamento-de-acidentes-por-animais-peconhentos.pdf/view"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="ml-1 text-blue-600 hover:underline"
+              >
+                Acessar publicação oficial
+              </a>
+            </p>
+          </div>
+
+          <div>
+            <p>
+              BRASIL. Ministério da Saúde.
+              <span class="italic">Hospitais de Referência para Atendimento — São Paulo.</span>
+              <a
+                href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/a/animais-peconhentos/hospitais-de-referencia/sao-paulo/view"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="ml-1 text-blue-600 hover:underline"
+              >
+                Acessar publicação oficial
+              </a>
+            </p>
+          </div>
+
+          <div>
+            <p>
+              CIEVS São Paulo.
+              <span class="italic">Pontos de Atendimento com Soros Antiveneno.</span>
+              <a
+                href="https://cievs.saude.sp.gov.br/soro/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="ml-1 text-blue-600 hover:underline"
+              >
+                Acessar publicação oficial
+              </a>
+            </p>
+          </div>
+
+          <p class="pt-2 text-xs text-slate-400">
+            Resultados gerados em: {formatarData(metadados.gerado_em)}.
+          </p>
+        </div>
       </section>
     </main>
+
+    <script>
+      import L from "leaflet";
+      let dadosMapa;
+      let demandaMunicipios = [];
+
+      async function carregarDadosPublicos() {
+        const resposta = await fetch("/data/otimizacao.json");
+        if (!resposta.ok) {
+          throw new Error(`Erro ao carregar /data/otimizacao.json: ${resposta.status}`);
+        }
+        const dadosOtimizacao = await resposta.json();
+        dadosMapa = dadosOtimizacao.mapa;
+        demandaMunicipios = dadosOtimizacao.demanda_municipios || [];
+      }
+
+      const mostrarErroMapa = (id, mensagem) => {
+        const elemento = document.getElementById(id);
+        if (!elemento) return;
+
+        elemento.innerHTML = `
+          <div class="flex h-full items-center justify-center rounded-lg bg-slate-50 px-6 text-center text-sm text-slate-400">
+            ${mensagem}
+          </div>
+        `;
+      };
+
+      function iniciarMapaDemanda(dadosMapa, demandaMunicipios) {
+        const elemento = document.getElementById("mapa-demanda");
+        const seletor = document.getElementById("filtro-demanda-mapa");
+
+        if (!elemento || !seletor || elemento.dataset.leafletAtivo === "true") return;
+        if (!dadosMapa || !dadosMapa.municipios || !dadosMapa.municipios.features || !dadosMapa.municipios.features.length) {
+          mostrarErroMapa("mapa-demanda", "Não foi possível carregar os dados geográficos.");
+          return;
+        }
+
+        elemento.dataset.leafletAtivo = "true";
+
+        const demandaPorCodigo = new Map(
+          demandaMunicipios.map((item) => [String(item.codigo_municipio), item])
+        );
+
+        let campo = seletor.value;
+
+        const valorFeature = (feature) => {
+          const item = demandaPorCodigo.get(
+            String(feature.properties.codigo_municipio)
+          );
+
+          return Number(item && item[campo] !== undefined ? item[campo] : 0);
+        };
+
+        const mapa = L.map(elemento, {
+          scrollWheelZoom: true,
+          preferCanvas: true,
+        });
+
+        const obterMaximo = () =>
+          Math.max(
+            1,
+            ...dadosMapa.municipios.features.map((feature) =>
+              valorFeature(feature)
+            )
+          );
+
+        const estilo = (feature) => {
+          const valor = valorFeature(feature);
+          const maximo = obterMaximo();
+          const proporcao = valor > 0 ? Math.sqrt(valor / maximo) : 0;
+
+          return {
+            color: "#ffffff",
+            weight: 0.7,
+            fillColor: "#f97316",
+            fillOpacity: valor > 0 ? 0.18 + 0.72 * proporcao : 0.06,
+          };
+        };
+
+        const camada = L.geoJSON(dadosMapa.municipios, {
+          style: estilo,
+          onEachFeature(feature, layer) {
+            layer.bindTooltip(
+              `<strong>${feature.properties.municipio}</strong><br>Demanda: ${valorFeature(feature).toLocaleString("pt-BR")}`,
+              { sticky: true }
+            );
+          },
+        }).addTo(mapa);
+
+        if (camada.getBounds().isValid()) {
+          mapa.fitBounds(camada.getBounds(), { padding: [12, 12] });
+        }
+
+        seletor.addEventListener("change", () => {
+          campo = seletor.value;
+          camada.setStyle(estilo);
+
+          camada.eachLayer((layer) => {
+            const feature = layer.feature;
+            if (!feature) return;
+
+            layer.setTooltipContent(
+              `<strong>${feature.properties.municipio}</strong><br>Demanda: ${valorFeature(feature).toLocaleString("pt-BR")}`
+            );
+          });
+        });
+
+        setTimeout(() => mapa.invalidateSize(), 150);
+      }
+
+      function iniciarMapaCobertura(dadosMapa) {
+        const elemento = document.getElementById("mapa-cobertura");
+        const seletor = document.getElementById("filtro-mapa");
+
+        if (!elemento || !seletor || elemento.dataset.leafletAtivo === "true") return;
+        if (!dadosMapa || !dadosMapa.municipios || !dadosMapa.municipios.features || !dadosMapa.municipios.features.length) {
+          mostrarErroMapa("mapa-cobertura", "Não foi possível carregar os dados geográficos.");
+          return;
+        }
+
+        elemento.dataset.leafletAtivo = "true";
+        let filtro = seletor.value;
+
+        const estaCoberto = (props) =>
+          filtro === "estrutural"
+            ? Boolean(props.cobertura_estrutural)
+            : Boolean(props.cobertura_soros && props.cobertura_soros[filtro]);
+
+        const mapa = L.map(elemento, {
+          scrollWheelZoom: true,
+          preferCanvas: true,
+        });
+
+        const estilo = (feature) => ({
+          color: "#ffffff",
+          weight: 0.7,
+          fillColor: estaCoberto(feature.properties) ? "#3b82f6" : "#ffffff",
+          fillOpacity: estaCoberto(feature.properties) ? 0.62 : 1,
+        });
+
+        const municipios = L.geoJSON(dadosMapa.municipios, {
+          style: estilo,
+          onEachFeature(feature, layer) {
+            layer.bindTooltip(feature.properties.municipio, { sticky: true });
+          },
+        }).addTo(mapa);
+
+        if (municipios.getBounds().isValid()) {
+          mapa.fitBounds(municipios.getBounds(), { padding: [12, 12] });
+        }
+
+        const pesas = L.layerGroup().addTo(mapa);
+
+        const atualizar = () => {
+          filtro = seletor.value;
+          municipios.setStyle(estilo);
+          pesas.clearLayers();
+
+          const exibidos = (dadosMapa.postos || []).filter(
+            (posto) =>
+              filtro === "estrutural" || posto.soros && posto.soros.includes(filtro)
+          );
+
+          exibidos.forEach((posto) => {
+            const latitude = Number(posto.latitude);
+            const longitude = Number(posto.longitude);
+
+            if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+
+            L.circleMarker([latitude, longitude], {
+              radius: 4.5,
+              weight: 1,
+              color: "#ffffff",
+              fillColor: "#0A2C57",
+              fillOpacity: 0.95,
+            })
+              .bindPopup(
+                `<strong>${posto.nome || "PESA"}</strong><br>` +
+                `${posto.municipio || ""}<br>` +
+                `<span style="font-size:12px">Soros: ${(posto.soros || []).join(", ") || "Não informado"}</span>`
+              )
+              .addTo(pesas);
+          });
+
+          const totalCobertos = dadosMapa.municipios.features.filter(
+            (feature) => estaCoberto(feature.properties)
+          ).length;
+
+          const contadorMunicipios = document.getElementById(
+            "mapa-municipios-cobertos"
+          );
+          const contadorPesas = document.getElementById(
+            "mapa-postos-exibidos"
+          );
+
+          if (contadorMunicipios) {
+            contadorMunicipios.textContent = String(totalCobertos);
+          }
+
+          if (contadorPesas) {
+            contadorPesas.textContent = String(exibidos.length);
+          }
+        };
+
+        seletor.addEventListener("change", atualizar);
+        atualizar();
+
+        setTimeout(() => mapa.invalidateSize(), 150);
+      }
+
+      async function iniciarMapas() {
+        try {
+          await carregarDadosPublicos();
+        } catch (erro) {
+          console.error(erro);
+          mostrarErroMapa("mapa-demanda", "Não foi possível carregar /data/otimizacao.json.");
+          mostrarErroMapa("mapa-cobertura", "Não foi possível carregar /data/otimizacao.json.");
+          return;
+        }
+
+        if (!dadosMapa || !dadosMapa.municipios || !dadosMapa.municipios.features || !dadosMapa.municipios.features.length) {
+          mostrarErroMapa("mapa-demanda", "Dados geográficos não encontrados no arquivo de otimização.");
+          mostrarErroMapa("mapa-cobertura", "Dados geográficos não encontrados no arquivo de otimização.");
+          return;
+        }
+
+        iniciarMapaDemanda(dadosMapa, demandaMunicipios);
+        iniciarMapaCobertura(dadosMapa);
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", iniciarMapas, { once: true });
+      } else {
+        iniciarMapas();
+      }
+
+      document.addEventListener("astro:page-load", iniciarMapas);
+    </script>
   </Container>
 </Layout>

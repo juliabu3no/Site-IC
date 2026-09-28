@@ -4,3 +4,4 @@ geopandas
 pyogrio
 gdown
 pysus
+gurobipy
